@@ -34,6 +34,8 @@ interface Props {
 }
 
 const TEJERA = 'tejera-negra';
+// Hosted builds that can't reach a tile server set VITE_TILES=off and use only the bundled outline.
+const TILES = import.meta.env.VITE_TILES !== 'off';
 
 function markerIcon(item: MapItem, selected: boolean, label: string) {
   const { e, d } = item;
@@ -134,12 +136,15 @@ export function BloomMap(p: Props) {
                 : { fillColor: '#E9E7E1', fillOpacity: 1, color: '#C9C4BA', weight: 1.2 }
             }
             interactive={false}
+            attribution={TILES ? undefined : 'Natural Earth · AEMET · Copernicus Sentinel-2'}
           />
         </Pane>
+{TILES && (
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> · AEMET · Copernicus Sentinel-2'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
+        )}
         {markers.map(({ it, label, icon }) => (
           <Marker
             key={it.d.id}

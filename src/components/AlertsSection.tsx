@@ -1,29 +1,23 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { OFERTAS } from '../data/comercial';
 import { DESTINOS, getDestino } from '../data/destinos';
 import { useI18n } from '../i18n';
 import { FASES_ACTIVAS } from '../lib/fenologia';
-import { fmtDia } from '../lib/fechas';
 import type { FaseActiva } from '../types';
-import { ConfidenceBadge } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
-/** "Avísame cuando llegue la flor" (EXT-3: ALR-1…ALR-5). UI only: nothing is sent. */
+/** "Avísame cuando llegue la flor" (EXT-3: ALR-1, ALR-4). UI only: nothing is sent. Test sends live in the admin panel. */
 export function AlertsSection({ preselect }: { preselect: string | null }) {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const [dest, setDest] = useState(preselect ?? DESTINOS[0].id);
   const [fase, setFase] = useState<FaseActiva>('pleno');
   const [dias, setDias] = useState(7);
   const [done, setDone] = useState(false);
-  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     if (preselect) setDest(preselect);
   }, [preselect]);
 
   const d = getDestino(dest)!;
-  const v = d.ventanas.find((w) => w.fase === fase)!;
-  const ofertas = OFERTAS.filter((o) => o.destinoId === dest);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -83,10 +77,6 @@ export function AlertsSection({ preselect }: { preselect: string | null }) {
               <button type="submit" className="btn btn--sun">
                 {t('alerts.submit')}
               </button>
-              <button type="button" className="btn btn--outline-inverse" onClick={() => setPreview(true)}>
-                <Icon name="mail" size={18} />
-                {t('alerts.simulate')}
-              </button>
             </div>
             {done && (
               <p className="alerts__done" role="status">
@@ -97,44 +87,6 @@ export function AlertsSection({ preselect }: { preselect: string | null }) {
           </form>
         </div>
 
-        {preview && (
-          <div className="email-preview" role="region" aria-label={t('alerts.previewTitle')}>
-            <div className="email-preview__bar">
-              <p className="label">{t('alerts.previewTitle')}</p>
-              <button type="button" className="icon-btn" aria-label={t('alerts.close')} onClick={() => setPreview(false)}>
-                <Icon name="x" />
-              </button>
-            </div>
-            <div className="email">
-              <p className="email__subject">
-                {t('alerts.previewSubject', {
-                  fase: t(`fase.${d.tipo}.${fase}`),
-                  destino: d.nombre,
-                  desde: fmtDia(v.desde, lang),
-                  hasta: fmtDia(v.hasta, lang, true),
-                })}
-              </p>
-              <p>
-                {t('alerts.previewBody', {
-                  n: dias,
-                  conf: `${t(`confianza.${v.confianza}`)}, ${t('confianza.prob', { p: Math.round(v.probabilidad * 100) })}`,
-                })}
-              </p>
-              <ConfidenceBadge confianza={v.confianza} probabilidad={v.probabilidad} />
-              <div className="email__links">
-                {ofertas.slice(0, 2).map((o) => (
-                  <a key={o.id} href="#" className="email__link">
-                    <Icon name={o.tipo === 'alojamiento' ? 'bed' : 'compass'} size={16} />
-                    {o.tipo === 'alojamiento' ? t('alerts.previewStay') : t('alerts.previewDo')}: {o.nombre}
-                  </a>
-                ))}
-              </div>
-              <a href="#" className="small">
-                {t('alerts.previewUnsub')}
-              </a>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

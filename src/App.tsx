@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { AlertsSection } from './components/AlertsSection';
 import { BusinessSection } from './components/BusinessSection';
 import { CitizenSection } from './components/CitizenSection';
-import { DataStatusSection } from './components/DataStatusSection';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -44,7 +43,6 @@ export default function App() {
         <PlansSection fecha={fecha} onPick={pick} />
         <AlertsSection preselect={alertFor} />
         <CitizenSection />
-        <DataStatusSection />
         <BusinessSection />
       </main>
       <Footer onMethod={openMethod} />

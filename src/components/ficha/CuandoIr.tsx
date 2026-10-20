@@ -192,35 +192,6 @@ export function CuandoIr({ d, onMethod, onAlert }: { d: Destino; onMethod: () =>
         </section>
       )}
 
-      {d.comparativa && (
-        <section className="compare">
-          <h4 className="sub">{t('ficha.compare')}</h4>
-          <dl>
-            <div>
-              <dt>{t('ficha.compareProvided')}</dt>
-              <dd>{fmtRango(d.comparativa.proporcionada.desde, d.comparativa.proporcionada.hasta, lang)}</dd>
-            </div>
-            <div>
-              <dt>{t('ficha.compareOwn')}</dt>
-              <dd>
-                {fmtRango(d.comparativa.propia.desde, d.comparativa.propia.hasta, lang)} · {Math.round(d.comparativa.propia.probabilidad * 100)} %
-              </dd>
-            </div>
-            <div>
-              <dt>{t('ficha.compareMae')}</dt>
-              <dd>{t('ficha.compareMaeVal', { n: d.comparativa.maeDias.toLocaleString(lang) })}</dd>
-            </div>
-            <div>
-              <dt>{t('ficha.compareCoverage')}</dt>
-              <dd>{Math.round(d.comparativa.cobertura * 100)} %</dd>
-            </div>
-          </dl>
-          <p className="compare__why">
-            <strong>{t('ficha.compareWhy')}:</strong> {d.comparativa.explicacion}
-          </p>
-        </section>
-      )}
-
       {fotos.length > 0 && (
         <section>
           <h4 className="sub">{t('ficha.photos')}</h4>

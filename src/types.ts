@@ -8,6 +8,7 @@ export type TipoDato = 'observado' | 'estimado' | 'previsto' | 'editorial';
 export type Confianza = 'alta' | 'media' | 'baja';
 export type TipoFenomeno = 'floracion' | 'color_otonal';
 export type CalidadDato = 'ok' | 'nubes' | 'sin_dato';
+export type Ilustracion = 'haya' | 'lavanda' | 'cerezo' | 'almendro';
 
 export interface Fuente {
   id: string;
@@ -106,6 +107,7 @@ export interface Destino {
   lon: number;
   /** Species tint used for headers and cards (not for phase encoding). */
   color: string;
+  ilustracion: Ilustracion;
   temporada: string;
   /** End of the season being tracked: after this the destination is out of season. */
   finTemporada: string;
@@ -147,7 +149,11 @@ export interface FotoCiudadana {
   capturadaEn: string;
   faseReportada: FaseActiva;
   estado: 'valida' | 'pendiente' | 'rechazada';
-  motivo?: string;
+  motivo?: 'lejos' | 'antigua';
+  /** Automatic checks (CIT-2, CIT-3) */
+  distanciaKm: number;
+  zona: string;
+  horas: number;
 }
 
 export interface EstadoFuente {
@@ -163,4 +169,11 @@ export interface EntradaLog {
   hora: string;
   nivel: 'info' | 'warn' | 'error';
   mensaje: string;
+}
+
+export interface Suscripcion {
+  destinoId: string;
+  fase: FaseActiva;
+  confirmadas: number;
+  sinConfirmar: number;
 }

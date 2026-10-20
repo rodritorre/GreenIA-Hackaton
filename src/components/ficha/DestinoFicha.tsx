@@ -4,7 +4,8 @@ import type { EstadoEnFecha } from '../../lib/fenologia';
 import { fmtHora, fmtMes } from '../../lib/fechas';
 import type { Destino } from '../../types';
 import { ConfidenceBadge, DataTypeTag, FasePill } from '../ui/Badges';
-import { Icon, PetalWatermark } from '../ui/Icon';
+import { FlowerArt } from '../ui/FlowerArt';
+import { Icon } from '../ui/Icon';
 import { Comercial } from './Comercial';
 import { CuandoIr } from './CuandoIr';
 import { Editorial } from './Editorial';
@@ -37,8 +38,8 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
           {t('ficha.back')}
         </button>
       </div>
-      <div className="ficha__band" style={{ background: d.color }}>
-        <PetalWatermark className="ficha__petals" />
+      <div className="ficha__band" style={{ background: `color-mix(in srgb, ${d.color} 22%, #fff)` }}>
+        <FlowerArt kind={d.ilustracion} size={132} className="ficha__art" />
         <span className={`ficha__source ${d.datosReales ? 'is-real' : ''}`}>{d.datosReales ? t('ficha.realData') : t('ficha.publicData')}</span>
       </div>
       <header className="ficha__head">

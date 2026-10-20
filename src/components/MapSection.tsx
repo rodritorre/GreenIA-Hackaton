@@ -27,6 +27,7 @@ export function MapSection({ fecha, onFecha, sel, onSel, onMethod, onAlert }: Pr
   const [off, setOff] = useState(true);
   const [zones, setZones] = useState(false);
   const [photos, setPhotos] = useState(false);
+  const [cities, setCities] = useState(true);
 
   const all: MapItem[] = useMemo(() => DESTINOS.map((d) => ({ d, e: estadoEn(d, fecha) })), [fecha]);
   const visible = useMemo(() => {
@@ -89,6 +90,8 @@ export function MapSection({ fecha, onFecha, sel, onSel, onMethod, onAlert }: Pr
               onSelect={onSel}
               showZones={zones}
               showPhotos={photos}
+              showCities={cities}
+              onToggleCities={setCities}
               onToggleZones={setZones}
               onTogglePhotos={setPhotos}
             />

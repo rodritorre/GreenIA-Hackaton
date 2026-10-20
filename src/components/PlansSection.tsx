@@ -4,7 +4,8 @@ import { useI18n } from '../i18n';
 import { estadoEn, ventanaPleno } from '../lib/fenologia';
 import { fmtDia } from '../lib/fechas';
 import { Eyebrow, FasePill, LayerHeading, SponsoredTag } from './ui/Badges';
-import { Icon, PetalWatermark } from './ui/Icon';
+import { FlowerArt } from './ui/FlowerArt';
+import { Icon } from './ui/Icon';
 
 /** "Dónde dormir / qué hacer" — the design's trip cards, now the commercial layer (PRIN-4.2, PRIN-4.3, MON-1). */
 export function PlansSection({ fecha, onPick }: { fecha: string; onPick: (id: string) => void }) {
@@ -37,8 +38,8 @@ export function PlansSection({ fecha, onPick }: { fecha: string; onPick: (id: st
             const e = estadoEn(d, fecha);
             return (
               <article key={o.id} className="card">
-                <div className="card__band" style={{ background: d.color }}>
-                  <PetalWatermark size={240} className="card__petals" />
+                <div className="card__band" style={{ background: `color-mix(in srgb, ${d.color} 22%, #fff)` }}>
+                  <FlowerArt kind={d.ilustracion} size={150} className="card__art" />
                   <span className="card__pill">
                     <FasePill fase={e.fase} tipo={d.tipo} />
                   </span>

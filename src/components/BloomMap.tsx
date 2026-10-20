@@ -2,16 +2,18 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useMemo, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { GeoJSON, MapContainer, Marker, Pane, TileLayer, useMap } from 'react-leaflet';
+import { GeoJSON, MapContainer, Marker, Pane, useMap } from 'react-leaflet';
 import type { FeatureCollection } from 'geojson';
 import basemap from '../data/basemap.json';
 import { SPAIN_BOUNDS, ULTIMA_ACTUALIZACION } from '../data/config';
+import { CIUDADES } from '../data/ciudades';
 import { FOTOS } from '../data/comercial';
 import { getDestino } from '../data/destinos';
 import { useI18n } from '../i18n';
 import type { EstadoEnFecha } from '../lib/fenologia';
 import { fmtDiaLargo, fmtHora } from '../lib/fechas';
 import type { Destino } from '../types';
+import { SatelliteLayers } from './SatelliteLayers';
 import { GLYPH_SIZE, PhaseGlyph } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
@@ -29,13 +31,22 @@ interface Props {
   onSelect: (id: string) => void;
   showZones: boolean;
   showPhotos: boolean;
+  showCities: boolean;
+  onToggleCities: (v: boolean) => void;
   onToggleZones: (v: boolean) => void;
   onTogglePhotos: (v: boolean) => void;
 }
 
 const TEJERA = 'tejera-negra';
-// Hosted builds that can't reach a tile server set VITE_TILES=off and use only the bundled outline.
-const TILES = import.meta.env.VITE_TILES !== 'off';
+
+function cityIcon(nombre: string, capital: boolean) {
+  return L.divIcon({
+    html: `<span class="city${capital ? ' city--capital' : ''}"><i></i>${nombre}</span>`,
+    className: 'mk-wrap',
+    iconSize: [0, 0],
+    iconAnchor: [4, 4],
+  });
+}
 
 function markerIcon(item: MapItem, selected: boolean, label: string) {
   const { e, d } = item;
@@ -125,26 +136,20 @@ export function BloomMap(p: Props) {
 
   return (
     <div className="map-frame">
-      <MapContainer bounds={SPAIN_BOUNDS} zoomControl={false} scrollWheelZoom={false} className="map" attributionControl>
-        {/* Offline fallback under the tiles (NFR-3): if the tile server is unreachable the map still shows Spain. */}
+      <MapContainer bounds={SPAIN_BOUNDS} minZoom={5} maxZoom={14} maxBounds={[[33, -14], [46.5, 8]]} zoomControl={false} scrollWheelZoom={false} className="map" attributionControl>
+        {/* Muted land outline under the imagery, so gaps between satellite passes never show as holes (NFR-3). */}
         <Pane name="fallback" style={{ zIndex: 150 }}>
           <GeoJSON
             data={basemap as FeatureCollection}
-            style={(f) =>
-              f?.properties.iso === 'ES'
-                ? { fillColor: '#F7F5F0', fillOpacity: 1, color: '#8FB8DD', weight: 1.4 }
-                : { fillColor: '#E9E7E1', fillOpacity: 1, color: '#C9C4BA', weight: 1.2 }
-            }
+            style={() => ({ fillColor: '#8C8A74', fillOpacity: 1, color: '#8C8A74', weight: 1 })}
             interactive={false}
-            attribution={TILES ? undefined : 'Natural Earth · AEMET · Copernicus Sentinel-2'}
           />
         </Pane>
-{TILES && (
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a> · AEMET · Copernicus Sentinel-2'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-        />
-        )}
+        <SatelliteLayers />
+        {p.showCities &&
+          CIUDADES.map((c) => (
+            <Marker key={c.nombre} position={[c.lat, c.lon]} icon={cityIcon(c.nombre, c.capital)} interactive={false} keyboard={false} />
+          ))}
         {markers.map(({ it, label, icon }) => (
           <Marker
             key={it.d.id}
@@ -199,6 +204,10 @@ export function BloomMap(p: Props) {
         <label>
           <input type="checkbox" checked={p.showZones} onChange={(e) => p.onToggleZones(e.target.checked)} />
           {t('map.layerZones')}
+        </label>
+        <label>
+          <input type="checkbox" checked={p.showCities} onChange={(e) => p.onToggleCities(e.target.checked)} />
+          {t('map.layerCities')}
         </label>
         <label>
           <input type="checkbox" checked={p.showPhotos} onChange={(e) => p.onTogglePhotos(e.target.checked)} />

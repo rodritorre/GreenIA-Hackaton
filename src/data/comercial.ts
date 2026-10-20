@@ -1,5 +1,5 @@
 // MOCK commercial and community layers. These never feed the computed layer (MON-3).
-import type { EntradaLog, EstadoFuente, FotoCiudadana, OfertaComercial } from '../types';
+import type { EntradaLog, EstadoFuente, FotoCiudadana, OfertaComercial, Suscripcion } from '../types';
 
 export const OFERTAS: OfertaComercial[] = [
   { id: 'tn-a1', destinoId: 'tejera-negra', tipo: 'alojamiento', nombre: 'Casa rural de pizarra', descripcion: 'Casa entera para 6 en Cantalojas, a 10 min del aparcamiento del hayedo.', distanciaKm: 8, precio: '[PRECIO]', patrocinado: true },
@@ -16,9 +16,11 @@ export const OFERTAS: OfertaComercial[] = [
 ];
 
 export const FOTOS: FotoCiudadana[] = [
-  { id: 'f1', destinoId: 'tejera-negra', lat: 41.258, lon: -3.41, capturadaEn: '2026-10-19T11:20:00+02:00', faseReportada: 'avance', estado: 'valida' },
-  { id: 'f2', destinoId: 'tejera-negra', lat: 41.262, lon: -3.417, capturadaEn: '2026-10-19T16:05:00+02:00', faseReportada: 'pleno', estado: 'valida' },
-  { id: 'f3', destinoId: 'tejera-negra', lat: 41.236, lon: -3.401, capturadaEn: '2026-10-20T09:40:00+02:00', faseReportada: 'avance', estado: 'pendiente' },
+  { id: 'f1', destinoId: 'tejera-negra', lat: 41.258, lon: -3.41, capturadaEn: '2026-10-19T11:20:00+02:00', faseReportada: 'avance', estado: 'valida', distanciaKm: 0.6, zona: 'Zona 2', horas: 20 },
+  { id: 'f2', destinoId: 'tejera-negra', lat: 41.262, lon: -3.417, capturadaEn: '2026-10-19T16:05:00+02:00', faseReportada: 'pleno', estado: 'valida', distanciaKm: 0.2, zona: 'Zona 1', horas: 15 },
+  { id: 'f3', destinoId: 'tejera-negra', lat: 41.236, lon: -3.401, capturadaEn: '2026-10-20T09:40:00+02:00', faseReportada: 'avance', estado: 'pendiente', distanciaKm: 2.7, zona: 'Zona 5', horas: 2 },
+  { id: 'f4', destinoId: 'tejera-negra', lat: 41.6, lon: -3.1, capturadaEn: '2026-10-20T08:10:00+02:00', faseReportada: 'pleno', estado: 'rechazada', motivo: 'lejos', distanciaKm: 42, zona: 'Zona 1', horas: 3 },
+  { id: 'f5', destinoId: 'tejera-negra', lat: 41.25, lon: -3.405, capturadaEn: '2026-10-14T12:00:00+02:00', faseReportada: 'pleno', estado: 'rechazada', motivo: 'antigua', distanciaKm: 0.4, zona: 'Zona 3', horas: 141 },
 ];
 
 export const FUENTES: EstadoFuente[] = [
@@ -33,4 +35,12 @@ export const LOG_INGESTA: EntradaLog[] = [
   { hora: '06:10', nivel: 'info', mensaje: 'AEMET: 4 estaciones, 28 valores nuevos' },
   { hora: '06:14', nivel: 'warn', mensaje: 'Sentinel-2: 1 de 7 zonas con nubes → "sin dato" (no se interpola)' },
   { hora: '06:30', nivel: 'info', mensaje: 'Previsiones recalculadas: 4 destinos' },
+];
+
+export const SUSCRIPCIONES: Suscripcion[] = [
+  { destinoId: 'tejera-negra', fase: 'pleno', confirmadas: 412, sinConfirmar: 37 },
+  { destinoId: 'tejera-negra', fase: 'avance', confirmadas: 96, sinConfirmar: 8 },
+  { destinoId: 'brihuega', fase: 'pleno', confirmadas: 1240, sinConfirmar: 102 },
+  { destinoId: 'jerte', fase: 'pleno', confirmadas: 875, sinConfirmar: 64 },
+  { destinoId: 'alpujarra', fase: 'pleno', confirmadas: 233, sinConfirmar: 19 },
 ];

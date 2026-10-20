@@ -3,11 +3,10 @@ import { FUENTES, LOG_INGESTA } from '../data/comercial';
 import { useI18n } from '../i18n';
 import { fmtHora } from '../lib/fechas';
 import type { EntradaLog } from '../types';
-import { Eyebrow } from './ui/Badges';
-import { Icon } from './ui/Icon';
+import { Icon } from '../components/ui/Icon';
 
-/** Data freshness and the automatic pipeline (PRIN-2.3, PRIN-2.5, NFR-4, UX-9). Simulated. */
-export function DataStatusSection() {
+/** Admin: data freshness and the automatic pipeline (PRIN-2.3, PRIN-2.5, NFR-4). Simulated. */
+export function DataSection() {
   const { t, lang } = useI18n();
   const [log, setLog] = useState<EntradaLog[]>(LOG_INGESTA);
   const [running, setRunning] = useState(false);
@@ -22,21 +21,14 @@ export function DataStatusSection() {
   };
 
   return (
-    <section id="datos" className="data-status" aria-labelledby="data-title">
-      <div className="container">
-        <div className="section-head">
-          <div>
-            <Eyebrow>{t('data.eyebrow')}</Eyebrow>
-            <h2 id="data-title" className="h2">
-              {t('data.title')}
-            </h2>
-            <p className="muted lead-sm">{t('data.lead')}</p>
-          </div>
-          <button type="button" className="btn btn--ghost" onClick={run} disabled={running} aria-busy={running}>
-            <Icon name="refresh" size={18} className={running ? 'spin' : ''} />
-            {running ? t('data.running') : t('data.run')}
-          </button>
-        </div>
+    <>
+      <div className="admin-head">
+        <p className="muted lead-sm">{t('data.lead')}</p>
+        <button type="button" className="btn btn--ghost" onClick={run} disabled={running} aria-busy={running}>
+          <Icon name="refresh" size={18} className={running ? 'spin' : ''} />
+          {running ? t('data.running') : t('data.run')}
+        </button>
+      </div>
         <div className="data-grid">
           <div className="table-wrap">
             <table className="sources">
@@ -78,7 +70,6 @@ export function DataStatusSection() {
             </ol>
           </div>
         </div>
-      </div>
-    </section>
+    </>
   );
 }

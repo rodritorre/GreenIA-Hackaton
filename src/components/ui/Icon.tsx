@@ -128,34 +128,20 @@ export function Icon({ name, size = 20, className }: { name: IconName; size?: nu
   );
 }
 
-/** The five-petal brand mark from the design. */
-export function FlowerMark({ size = 32, petal = 'var(--logo)', className }: { size?: number; petal?: string; className?: string }) {
+/** Brand mark: a cherry sprig with one open, notched-petal blossom and a bud. */
+export function FlowerMark({ size = 32, className }: { size?: number; className?: string }) {
+  const petal = 'M0 0 C-4 -2 -5 -8 -2.2 -11 L0 -9.2 L2.2 -11 C5 -8 4 -2 0 0Z';
   return (
     <svg aria-hidden="true" width={size} height={size} viewBox="0 0 32 32" className={className}>
-      <g fill={petal}>
-        <circle cx="16" cy="8" r="6" />
-        <circle cx="23.6" cy="13.5" r="6" />
-        <circle cx="20.7" cy="22.5" r="6" />
-        <circle cx="11.3" cy="22.5" r="6" />
-        <circle cx="8.4" cy="13.5" r="6" />
+      <path d="M5 30 C10 24 14 20 17 15" fill="none" stroke="#5B3A2E" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M11 22 C7 21 5 18 5 15 C9 15 11 18 11 22Z" fill="var(--accent)" />
+      <ellipse cx="9" cy="12" rx="2" ry="3" transform="rotate(-25 9 12)" fill="var(--logo)" />
+      <g transform="translate(20 12)">
+        {[0, 72, 144, 216, 288].map((r) => (
+          <path key={r} d={petal} transform={`rotate(${r})`} fill="#FBD3DE" stroke="var(--logo)" strokeWidth="0.9" />
+        ))}
+        <circle r="2.4" fill="var(--sun)" stroke="var(--logo)" strokeWidth="0.8" />
       </g>
-      <circle cx="16" cy="16" r="4.5" fill="var(--sun)" />
-    </svg>
-  );
-}
-
-/** Decorative oversized petals used on coloured card headers. */
-export function PetalWatermark({ size = 180, className }: { size?: number; className?: string }) {
-  return (
-    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 32 32" className={className}>
-      <g fill="#FFFFFF" opacity="0.45" stroke="#14231B" strokeOpacity="0.12" strokeWidth="0.4">
-        <circle cx="16" cy="8" r="6" />
-        <circle cx="23.6" cy="13.5" r="6" />
-        <circle cx="20.7" cy="22.5" r="6" />
-        <circle cx="11.3" cy="22.5" r="6" />
-        <circle cx="8.4" cy="13.5" r="6" />
-      </g>
-      <circle cx="16" cy="16" r="4" fill="#F9C74F" opacity="0.8" />
     </svg>
   );
 }

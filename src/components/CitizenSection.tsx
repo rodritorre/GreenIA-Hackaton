@@ -5,34 +5,26 @@ import type { FaseActiva } from '../types';
 import { Eyebrow, PhaseGlyph } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
-type Mock = 'ok' | 'far';
-
-/** Citizen verification with geolocated photos (EXT-2: CIT-1…CIT-7). The checks are simulated. */
+/** Citizen verification with geolocated photos (EXT-2: CIT-1…CIT-7). The checks are simulated; moderation is in the admin panel. */
 export function CitizenSection() {
   const { t } = useI18n();
   const [dest, setDest] = useState(DESTINOS[0].id);
   const [file, setFile] = useState<string | null>(null);
-  const [mock, setMock] = useState<Mock>('ok');
   const [fase, setFase] = useState<FaseActiva | null>(null);
-  const [sent, setSent] = useState<null | 'accepted' | 'rejected'>(null);
+  const [sent, setSent] = useState(false);
   const fases: FaseActiva[] = ['inicio', 'avance', 'pleno', 'final'];
   const tipo = DESTINOS.find((d) => d.id === dest)!.tipo;
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    setSent(mock === 'ok' ? 'accepted' : 'rejected');
+    setSent(true);
   };
 
-  const checks =
-    mock === 'ok'
-      ? [
-          { ok: true, text: t('citizen.checkPlace', { n: '0,8', zona: 'Zona 2' }) },
-          { ok: true, text: t('citizen.checkTime', { n: 2 }) },
-        ]
-      : [
-          { ok: false, text: t('citizen.checkFar', { n: 42 }) },
-          { ok: true, text: t('citizen.checkTime', { n: 5 }) },
-        ];
+  // Simulated EXIF checks (CIT-2, CIT-3). Rejections are reviewed in the admin panel.
+  const checks = [
+    { ok: true, text: t('citizen.checkPlace', { n: '0,8', zona: 'Zona 2' }) },
+    { ok: true, text: t('citizen.checkTime', { n: 2 }) },
+  ];
 
   return (
     <section id="verifica" className="citizen" aria-labelledby="citizen-title">
@@ -67,7 +59,7 @@ export function CitizenSection() {
                 className="sr-only"
                 onChange={(e) => {
                   setFile(e.target.files?.[0]?.name ?? null);
-                  setSent(null);
+                  setSent(false);
                 }}
               />
             </label>
@@ -83,9 +75,6 @@ export function CitizenSection() {
                   </li>
                 ))}
               </ul>
-              <button type="button" className="link-button small" onClick={() => setMock(mock === 'ok' ? 'far' : 'ok')}>
-                {mock === 'ok' ? t('citizen.tryFar') : t('citizen.tryOk')}
-              </button>
             </div>
           )}
           <fieldset className="phase-pick">
@@ -105,9 +94,9 @@ export function CitizenSection() {
             {t('citizen.submit')}
           </button>
           {sent && (
-            <p role="status" className={`notice ${sent === 'accepted' ? 'notice--ok' : 'notice--bad'}`}>
-              <Icon name={sent === 'accepted' ? 'check' : 'warn'} size={18} />
-              {sent === 'accepted' ? t('citizen.accepted') : t('citizen.rejected', { motivo: t('citizen.checkFar', { n: 42 }).toLowerCase() })}
+            <p role="status" className="notice notice--ok">
+              <Icon name="check" size={18} />
+              {t('citizen.accepted')}
             </p>
           )}
         </form>

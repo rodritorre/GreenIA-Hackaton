@@ -41,7 +41,7 @@ OUT = ROOT / 'public' / 'sat'
 BUCKET = 'https://sentinel-cogs.s3.us-west-2.amazonaws.com'
 PREFIX = 'sentinel-s2-l2a-cogs'
 BBOX = (-9.6, 35.8, 4.4, 43.9)  # lon/lat
-BASE_MONTHS = [(2025, 7), (2025, 8)]
+BASE_MONTHS = [(2025, 6), (2025, 7), (2025, 8)]
 WEBP_Q = 72
 
 DETAIL = [
@@ -124,13 +124,48 @@ def tone(rgb):
     return (f * 255).astype(np.uint8)
 
 
+def composite(stack):
+    """Per-pixel cloud removal for one 100 km square: median of 3+ passes, else the darker pass."""
+    stack = np.stack(stack).astype(np.float32)  # n, 3, h, w
+    valid = stack.max(axis=1) > 0  # n, h, w
+    stack[~np.repeat(valid[:, None], 3, axis=1)] = np.nan
+    n = valid.sum(axis=0)
+    with np.errstate(all='ignore'):
+        med = np.nanmedian(stack, axis=0)
+        bright = np.nansum(stack, axis=1)  # n, h, w
+        bright[~valid] = np.inf
+        darker = np.take_along_axis(stack, bright.argmin(axis=0)[None, None].repeat(3, axis=1), axis=0)[0]
+    out = np.where(n[None] >= 3, med, darker)
+    return np.nan_to_num(out, nan=0).astype(np.uint8)
+
+
+def land_mask(transform, shape_hw):
+    """Land (buffered ~2 km so coastal pixels are never cut) for masking the open sea."""
+    from rasterio.features import rasterize
+    from shapely.ops import transform as shp_transform
+    geo = json.loads((ROOT / 'src' / 'data' / 'basemap.json').read_text())
+    # Only the countries the product covers; neighbours stay as plain land on the map.
+    shapes = [
+        shp_transform(lambda xs, ys, zs=None: _merc(xs, ys), shape(f['geometry'])).buffer(2600)
+        for f in geo['features']
+        if f['properties']['iso'] in ('ES', 'PT', 'AD')
+    ]
+    return rasterize(shapes, out_shape=shape_hw, transform=transform, fill=0, default_value=1).astype(bool)
+
+
+def _merc(xs, ys):
+    xs, ys = np.asarray(xs), np.asarray(ys)
+    mx = xs * 20037508.342789244 / 180
+    my = np.log(np.tan((90 + ys) * np.pi / 360)) * 6378137
+    return mx, my
+
+
 def build_base():
     tiles = tiles_for_region()
     print(f'{len(tiles)} MGRS tiles')
     with ThreadPoolExecutor(12) as ex:
-        picks = list(ex.map(lambda t: best_items(t, BASE_MONTHS, 3), tiles))
-    scenes = sorted([it for p in picks for it in p], key=lambda it: it['cloud'] * 2 + it['nodata'])
-    print(f'{len(scenes)} scenes')
+        picks = list(ex.map(lambda t: best_items(t, BASE_MONTHS, 5), tiles))
+    print(f'{sum(len(p) for p in picks)} scenes')
 
     # Canvas = the z5 tiles covering BBOX, at z9 resolution, so every zoom level aligns.
     t5 = list(mercantile.tiles(*BBOX, 5))
@@ -143,19 +178,24 @@ def build_base():
     canvas = np.zeros((3, H, W), np.uint8)
     filled = np.zeros((H, W), bool)
 
-    def fetch(it):
-        try:
-            with rasterio.open('/vsicurl/' + it['href']) as src:
-                size = 686
-                data = src.read(out_shape=(3, size, size), resampling=Resampling.average)
-                t = src.transform * src.transform.scale(src.width / size, src.height / size)
-                return it, data, t, src.crs
-        except Exception as e:
-            print('  read failed', it['id'], e, file=sys.stderr)
-            return it, None, None, None
+    def fetch_square(items):
+        """All passes of one 100 km square share a grid, so they can be combined pixel by pixel."""
+        stack, t, crs = [], None, None
+        for it in items:
+            try:
+                with rasterio.open('/vsicurl/' + it['href']) as src:
+                    size = 686
+                    stack.append(src.read(out_shape=(3, size, size), resampling=Resampling.average))
+                    t = src.transform * src.transform.scale(src.width / size, src.height / size)
+                    crs = src.crs
+            except Exception as e:
+                print('  read failed', it['id'], e, file=sys.stderr)
+        if not stack:
+            return None, None, None
+        return composite(stack), t, crs
 
-    with ThreadPoolExecutor(12) as ex:
-        for i, (it, data, t, crs) in enumerate(ex.map(fetch, scenes)):
+    with ThreadPoolExecutor(8) as ex:
+        for i, (data, t, crs) in enumerate(ex.map(fetch_square, [p for p in picks if p])):
             if data is None:
                 continue
             tmp = np.zeros((3, H, W), np.uint8)
@@ -164,9 +204,10 @@ def build_base():
             valid = (tmp.max(axis=0) > 0) & ~filled
             canvas[:, valid] = tmp[:, valid]
             filled |= valid
-            if i % 20 == 0:
-                print(f'  {i}/{len(scenes)} scenes, {filled.mean():.0%} filled')
+            if i % 10 == 0:
+                print(f'  {i}/{len(picks)} squares, {filled.mean():.0%} filled')
 
+    filled &= land_mask(transform, (H, W))
     canvas = tone(canvas)
     canvas[:, ~filled] = 0
     out = {}
@@ -192,8 +233,8 @@ def build_base():
     hi = {k: v for k, v in out.items() if k.startswith('9/')}
     (OUT / 'base-z5-8.json').write_text(json.dumps(lo))
     (OUT / 'base-z9.json').write_text(json.dumps(hi))
-    dates = sorted({s['date'] for s in scenes})
-    return {'base': {'from': dates[0], 'to': dates[-1], 'scenes': len(scenes)}}
+    dates = sorted({it['date'] for p in picks for it in p})
+    return {'base': {'from': dates[0], 'to': dates[-1], 'scenes': sum(len(p) for p in picks)}}
 
 
 def build_detail():
@@ -255,6 +296,25 @@ def build_detail():
     return {'detail': meta}
 
 
+def remask():
+    """Re-apply land_mask() to already built base tiles (no download)."""
+    for name in ('base-z5-8.json', 'base-z9.json'):
+        idx = json.loads((OUT / name).read_text())
+        out = {}
+        for k, v in idx.items():
+            z, x, y = map(int, k.split('/'))
+            b = mercantile.xy_bounds(mercantile.Tile(x, y, z))
+            m = land_mask(from_bounds(b.left, b.bottom, b.right, b.top, 256, 256), (256, 256))
+            img = np.asarray(Image.open(io.BytesIO(base64.b64decode(v.split(',', 1)[1]))).convert('RGBA')).copy()
+            img[..., 3] = np.where(m, img[..., 3], 0)
+            if img[..., 3].mean() < 0.5:
+                continue
+            a = img[..., 3]
+            out[k] = to_webp(img[..., :3], None if a.min() == 255 else a)
+        (OUT / name).write_text(json.dumps(out))
+        print(name, len(idx), '->', len(out))
+
+
 if __name__ == '__main__':
     OUT.mkdir(parents=True, exist_ok=True)
     what = sys.argv[1:] or ['base', 'detail']
@@ -264,6 +324,8 @@ if __name__ == '__main__':
         meta.update(build_detail())
     if 'base' in what:
         meta.update(build_base())
+    if 'remask' in what:
+        remask()
     meta_path.write_text(json.dumps(meta, indent=1))
     for f in sorted(OUT.glob('*.json')):
         print(f.name, f'{f.stat().st_size / 1e6:.1f} MB')

@@ -1,0 +1,25 @@
+{
+ "detail": {
+  "tejera-negra": {
+   "scene": "S2C_30TVL_20251103_0_L2A",
+   "date": "2025-11-03"
+  },
+  "brihuega": {
+   "scene": "S2A_30TWL_20250718_1_L2A",
+   "date": "2025-07-18"
+  },
+  "jerte": {
+   "scene": "S2C_30TTK_20250331_0_L2A",
+   "date": "2025-03-31"
+  },
+  "alpujarra": {
+   "scene": "S2B_30SVF_20250201_0_L2A",
+   "date": "2025-02-01"
+  }
+ },
+ "base": {
+  "from": "2025-06-06",
+  "to": "2025-08-31",
+  "scenes": 605
+ }
+}

@@ -32,10 +32,14 @@ class PackedTiles extends L.GridLayer {
     img.alt = '';
     img.className = 'sat-tile';
     img.setAttribute('role', 'presentation');
+    img.style.visibility = 'hidden'; // an <img> with no source can paint a hairline outline
     load(this.fileFor(coords.z)).then((idx) => {
       const src = idx[`${coords.z}/${coords.x}/${coords.y}`];
       if (!src) return done(undefined, img);
-      img.onload = () => done(undefined, img);
+      img.onload = () => {
+        img.style.visibility = '';
+        done(undefined, img);
+      };
       img.onerror = () => done(undefined, img);
       img.src = src;
     });

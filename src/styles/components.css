@@ -989,6 +989,7 @@
 .leaflet-container img.sat-tile {
   width: 256.5px !important;
   height: 256.5px !important;
+  mix-blend-mode: normal;
 }
 .photo-pin {
   width: 26px;

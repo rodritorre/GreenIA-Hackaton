@@ -1,0 +1,13 @@
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# Future routes go above the static fallback, e.g.:
+	# handle /api/* {
+	# 	reverse_proxy api:8000
+	# }
+
+	handle {
+		root * /srv
+		file_server
+	}
+}

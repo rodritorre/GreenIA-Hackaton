@@ -103,7 +103,7 @@ export const DESTINOS: Destino[] = [
       { fase: 'pleno', tipica: BR.plena_flor.central.slice(5), rangoMin: BR.plena_flor.ampliaDesde.slice(5), rangoMax: BR.plena_flor.ampliaHasta.slice(5) },
       { fase: 'final', tipica: BR.cosecha_10.central.slice(5), rangoMin: BR.cosecha_10.ampliaDesde.slice(5), rangoMax: BR.cosecha_10.ampliaHasta.slice(5) },
     ],
-    entradasHasta: '2026-10-19',
+    entradasHasta: '2026-09-29',
     generadaEn: '2026-10-20T06:30:00+02:00',
     umbrales: { inicio: 0.15, avance: 0.4, pleno: 0.7, final: 0.5 },
     editorial: {

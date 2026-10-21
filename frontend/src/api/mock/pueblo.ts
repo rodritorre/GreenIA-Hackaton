@@ -138,7 +138,10 @@ export function estadoAforo(id: string): EstadoAforo {
   const d = DESTINOS.find((x) => x.id === id);
   const ventanas = VENTANAS[id] ?? [];
   const base = { destinoId: id, modo: v.modo, alternativas: ALTERNATIVAS[id] ?? [] };
-  const tranquila = ventanas.filter((w) => !w.finDeSemana && w.visitantesDia <= v.aforoDiario).sort((a, b) => a.visitantesDia - b.visitantesDia)[0];
+  // Weekdays with room, preferring the ones right after the busiest weekend (still in bloom).
+  const conSitio = ventanas.filter((w) => !w.finDeSemana && w.visitantesDia <= v.aforoDiario);
+  const pico = [...ventanas].sort((a, b) => b.visitantesDia - a.visitantesDia)[0];
+  const tranquila = conSitio.find((w) => pico && w.desde > pico.hasta) ?? conSitio[0];
   const entreSemana = tranquila ? { desde: tranquila.desde, hasta: tranquila.hasta } : null;
 
   if (v.modo === 'pausada') {

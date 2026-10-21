@@ -5,8 +5,10 @@ import { fmtHora, fmtMes } from '../../lib/fechas';
 import { ConfidenceBadge, DataTypeTag, FasePill } from '../ui/Badges';
 import { FlowerArt } from '../ui/FlowerArt';
 import { Icon } from '../ui/Icon';
+import { AforoAviso, useAforo } from '../Aforo';
 import { Comercial } from './Comercial';
 import { CuandoIr } from './CuandoIr';
+import { Descubrir } from './Descubrir';
 import { Editorial } from './Editorial';
 
 type Tab = 'when' | 'see' | 'stay';
@@ -24,6 +26,7 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
   const { t, lang } = useI18n();
   const [tab, setTab] = useState<Tab>('when');
   const ficha = useApi(() => api.ficha(d.id, lang), [d.id, lang]);
+  const aforo = useAforo().get(d.id);
   const tabs: { id: Tab; label: string }[] = [
     { id: 'when', label: t('ficha.tabWhen') },
     { id: 'see', label: t('ficha.tabSee') },
@@ -67,6 +70,7 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
         <p className="small muted">
           {t('ficha.updated', { when: fmtHora(d.estado.actualizadoEn, lang) })} · {t('ficha.source', { fuente: d.estado.fuente })}
         </p>
+        <AforoAviso aforo={aforo} />
       </header>
 
       <div role="tablist" aria-label={t('ficha.tabs')} className="tabs">
@@ -101,7 +105,12 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
         ) : (
           <>
             {tab === 'when' && <CuandoIr d={d} calculado={ficha.data.calculado} onMethod={onMethod} onAlert={onAlert} />}
-            {tab === 'see' && <Editorial editorial={ficha.data.editorial} patrocinio={ficha.data.comercial.patrocinio} />}
+            {tab === 'see' && (
+              <>
+                <Editorial editorial={ficha.data.editorial} patrocinio={ficha.data.comercial.patrocinio} />
+                <Descubrir destinoId={d.id} />
+              </>
+            )}
             {tab === 'stay' && <Comercial ofertas={ficha.data.comercial.ofertas} />}
           </>
         )}

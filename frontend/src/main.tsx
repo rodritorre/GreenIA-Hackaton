@@ -5,6 +5,7 @@ import { I18nProvider } from './i18n';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';
+import './styles/negocio.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

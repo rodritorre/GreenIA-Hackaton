@@ -2,6 +2,7 @@ import { useI18n } from '../i18n';
 import { fmtDiaLargo, fmtMes } from '../lib/fechas';
 import type { TipoFenomeno } from '../api';
 import type { MapItem } from './BloomMap';
+import { AforoBadge, useAforo } from './Aforo';
 import { ConfidenceBadge, FasePill, PhaseGlyph } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
@@ -27,6 +28,7 @@ const activo = (it: MapItem) => it.e.fase !== 'fuera_temporada';
 export function DestinoList(p: Props) {
   const { t, lang } = useI18n();
   const activos = p.all.filter(activo).length;
+  const aforo = useAforo();
   const tipos: { id: FiltroTipo; label: string }[] = [
     { id: 'all', label: t('map.all') },
     { id: 'floracion', label: t('map.bloom') },
@@ -81,6 +83,7 @@ export function DestinoList(p: Props) {
                     <FasePill fase={e.fase} short />
                   )}
                   {e.esPrevision && <ConfidenceBadge confianza={e.confianza} />}
+                  <AforoBadge aforo={aforo.get(d.id)} />
                 </span>
               </span>
             </button>

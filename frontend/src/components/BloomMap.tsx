@@ -11,6 +11,7 @@ import { CIUDADES } from '../data/ciudades';
 import { useI18n } from '../i18n';
 import { fmtDiaLargo, fmtHora } from '../lib/fechas';
 import { useDatos } from '../state';
+import { useAforo } from './Aforo';
 import { SatelliteLayers } from './SatelliteLayers';
 import { GLYPH_SIZE, PhaseGlyph } from './ui/Badges';
 import { Icon } from './ui/Icon';
@@ -46,7 +47,7 @@ function cityIcon(nombre: string, capital: boolean) {
   });
 }
 
-function markerIcon(item: MapItem, selected: boolean, label: string) {
+function markerIcon(item: MapItem, selected: boolean, label: string, lleno: string | null) {
   const { e, d } = item;
   const size = GLYPH_SIZE[e.fase];
   const html = renderToStaticMarkup(
@@ -55,6 +56,7 @@ function markerIcon(item: MapItem, selected: boolean, label: string) {
       {e.esPrevision && <span className="mk__halo" />}
       <PhaseGlyph fase={e.fase} />
       {selected && <span className="mk__tip">{d.nombre}</span>}
+      {lleno && <span className="mk__full">{lleno}</span>}
       <span className="sr-only">{label}</span>
     </div>,
   );
@@ -125,14 +127,18 @@ export function BloomMap(p: Props) {
   const { estadoDatos } = useDatos();
   const zonas = useApi(() => (p.showZones ? api.ficha(TEJERA).then((f) => f.calculado.zonas) : Promise.resolve([])), [p.showZones]);
   const fotos = useApi(() => (p.showPhotos ? api.fotos() : Promise.resolve([])), [p.showPhotos]);
+  const aforo = useAforo();
 
   const markers = useMemo(
     () =>
       p.items.map((it) => {
         const label = `${it.d.nombre}: ${t(`fase.${it.d.tipo}.${it.e.fase}`)}${it.e.esPrevision ? ` (${t('map.modeForecast')}, ${t(`confianza.${it.e.confianza}`)})` : ''}`;
-        return { it, label, icon: markerIcon(it, p.sel === it.d.id, label) };
+        const a = aforo.get(it.d.id)?.completo;
+        const lleno = a ? (a.motivo === 'pausa' ? t('aforo.badgePaused') : t('aforo.badge')) : null;
+        return { it, label: lleno ? `${label}. ${lleno}` : label, icon: markerIcon(it, p.sel === it.d.id, label, lleno) };
       }),
-    [p.items, p.sel, t],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [p.items, p.sel, t, aforo.size, [...aforo.values()].map((a) => a.completo?.desde ?? '').join()],
   );
 
   return (

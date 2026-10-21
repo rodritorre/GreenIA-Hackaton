@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { api, type FaseActiva } from '../api';
 import { useI18n } from '../i18n';
+import { PROVINCIAS } from '../data/provincias';
 import { FASES_ACTIVAS } from '../lib/fases';
 import { useDatos } from '../state';
 import { Icon } from './ui/Icon';
@@ -13,6 +14,7 @@ export function AlertsSection({ preselect }: { preselect: string | null }) {
   const [fase, setFase] = useState<FaseActiva>('pleno');
   const [dias, setDias] = useState(7);
   const [email, setEmail] = useState('');
+  const [provincia, setProvincia] = useState('');
   const [consent, setConsent] = useState(false);
   const [estado, setEstado] = useState<{ tipo: 'ok' | 'error' | 'enviando'; texto?: string } | null>(null);
 
@@ -26,7 +28,7 @@ export function AlertsSection({ preselect }: { preselect: string | null }) {
     e.preventDefault();
     setEstado({ tipo: 'enviando' });
     try {
-      const r = await api.suscribir({ email, destinoId: dest, fase, antelacionDias: dias, idioma: lang, consentimiento: consent });
+      const r = await api.suscribir({ email, destinoId: dest, fase, antelacionDias: dias, idioma: lang, consentimiento: consent, provincia: provincia || undefined });
       setEstado({ tipo: 'ok', texto: r.mensaje });
     } catch (err) {
       setEstado({ tipo: 'error', texto: (err as Error).message });
@@ -70,6 +72,17 @@ export function AlertsSection({ preselect }: { preselect: string | null }) {
                 {[3, 7, 14].map((n) => (
                   <option key={n} value={n}>
                     {t('alerts.days', { n })}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              {t('alerts.province')}
+              <select id="alert-provincia" value={provincia} onChange={(e) => setProvincia(e.target.value)}>
+                <option value="">{t('alerts.provinceAny')}</option>
+                {PROVINCIAS.slice().sort((a, b) => a.localeCompare(b, 'es')).map((p) => (
+                  <option key={p} value={p}>
+                    {p}
                   </option>
                 ))}
               </select>

@@ -51,7 +51,7 @@ def test_mapa_hoy_y_futuro(client):
     hoy = client.get(f'{API}/mapa').json()
     assert hoy['esPrevision'] is False
     tejera = next(x for x in hoy['destinos'] if x['destinoId'] == 'tejera-negra')
-    assert tejera['estado']['fase'] == 'avance'
+    assert tejera['estado']['fase'] == 'inicio'  # organisers' index 0.26 on 14 Oct, below the 0.30 'avance' threshold
     julio = client.get(f'{API}/mapa', params={'fecha': '2027-07-05'}).json()
     assert julio['esPrevision'] is True
     brihuega = next(x for x in julio['destinos'] if x['destinoId'] == 'brihuega')

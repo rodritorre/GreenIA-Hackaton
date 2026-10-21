@@ -361,7 +361,7 @@ export const en: Dict = {
     stepsT: 'Method',
     steps: [
       'Every day we read each zone’s colour index. If there are clouds, that zone shows “no data”.',
-      'We turn the index into a phase with per-species thresholds (for the beech forest, on Greenia's index: start 0.20 · building 0.30 · peak 0.40; the start threshold reproduces the start date the organisers detected, 4 September).',
+      'We turn the index into a phase with per-species thresholds (for the beech forest, on the index from Greenia: start 0.20 · building 0.30 · peak 0.40; the start threshold reproduces the start date the organisers detected, 4 September).',
       'For the future we combine this season’s curve, forecast maximum temperatures and usual dates.',
       'The result is a date range with its probability, never a single day.',
     ],

@@ -4,10 +4,9 @@ import { useDatos, useMapa } from '../state';
 import { BloomMap, type MapItem } from './BloomMap';
 import { DateSelector } from './DateSelector';
 import { DestinoFicha } from './ficha/DestinoFicha';
-import { DestinoList, type FiltroTipo } from './DestinoList';
+import { DestinoList } from './DestinoList';
+import { FILTROS_BASE, aplicar, type Filtros } from './filtros';
 import { Legend } from './Legend';
-
-const RANK = { pleno: 0, avance: 1, inicio: 2, final: 3, fuera_temporada: 4 } as const;
 
 interface Props {
   fecha: string;
@@ -21,8 +20,7 @@ interface Props {
 export function MapSection({ fecha, onFecha, sel, onSel, onMethod, onAlert }: Props) {
   const { t } = useI18n();
   const [q, setQ] = useState('');
-  const [tipo, setTipo] = useState<FiltroTipo>('all');
-  const [off, setOff] = useState(true);
+  const [flt, setFlt] = useState<Filtros>(FILTROS_BASE);
   const [zones, setZones] = useState(false);
   const [photos, setPhotos] = useState(false);
   const [cities, setCities] = useState(true);
@@ -33,16 +31,7 @@ export function MapSection({ fecha, onFecha, sel, onSel, onMethod, onAlert }: Pr
     () => destinos.flatMap((d) => (estados.has(d.id) ? [{ d, e: estados.get(d.id)! }] : [])),
     [destinos, estados],
   );
-  const visible = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    return all
-      .filter(({ d, e }) => {
-        const tipoOk = tipo === 'all' || d.tipo === tipo;
-        const qOk = !needle || `${d.nombre} ${d.lugar} ${d.provincia} ${d.especie} ${d.fenomeno}`.toLowerCase().includes(needle);
-        return tipoOk && qOk && (off || e.fase !== 'fuera_temporada');
-      })
-      .sort((a, b) => RANK[a.e.fase] - RANK[b.e.fase] || a.d.nombre.localeCompare(b.d.nombre));
-  }, [all, q, tipo, off]);
+  const visible = useMemo(() => aplicar(all, q, flt), [all, q, flt]);
 
   const selected = sel ? all.find((it) => it.d.id === sel) : undefined;
   const esPrevision = fecha > HOY;
@@ -75,10 +64,8 @@ export function MapSection({ fecha, onFecha, sel, onSel, onMethod, onAlert }: Pr
                 esPrevision={esPrevision}
                 q={q}
                 onQ={setQ}
-                tipo={tipo}
-                onTipo={setTipo}
-                off={off}
-                onOff={setOff}
+                flt={flt}
+                onFlt={setFlt}
                 onSelect={onSel}
               />
             )}

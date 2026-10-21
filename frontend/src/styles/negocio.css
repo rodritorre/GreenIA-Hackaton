@@ -595,3 +595,121 @@
 .plan .contacto .btn {
   align-self: flex-start;
 }
+
+/* ───────── Map filters (the team's web/css/extra.css) ───────── */
+.panel__head {
+  gap: 10px;
+  padding: 16px;
+}
+.filters__bar {
+  display: flex;
+  gap: 8px;
+}
+.filters__bar .search {
+  flex: 1 1 auto;
+  min-height: 42px;
+}
+.filters__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-input);
+  background: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.filters__toggle[aria-expanded="true"] {
+  background: var(--bg-chip);
+  border-color: var(--ink-2);
+}
+.filters__toggle .chip__count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--pill);
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-grid;
+  place-items: center;
+}
+.panel__head .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.panel__head .chip {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+}
+.filters__group {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.filters__legend,
+.filters__field {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding: 0;
+}
+.filters__legend {
+  margin-bottom: 6px;
+}
+.filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.filters__field {
+  flex: 1 1 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.filters__field select {
+  min-height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-input);
+  background: #fff;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+.filters .check {
+  font-size: 13px;
+  min-height: 28px;
+}
+.filters__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

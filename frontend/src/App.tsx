@@ -9,7 +9,7 @@ import { Hero } from './components/Hero';
 import { ImpactSection } from './components/ImpactSection';
 import { MapSection } from './components/MapSection';
 import { MethodModal } from './components/MethodModal';
-import { PlansSection } from './components/PlansSection';
+import { Kp as PacksSection } from './equipo/packs';
 import { useDatos } from './state';
 
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -43,7 +43,7 @@ export default function App() {
           onMethod={openMethod}
         />
         <MapSection fecha={fecha} onFecha={setFecha} sel={sel} onSel={setSel} onMethod={openMethod} onAlert={alert} />
-        <PlansSection fecha={fecha} onPick={pick} />
+        <PacksSection fecha={fecha} onPick={pick} />
         <AlertsSection preselect={alertFor} />
         <CitizenSection />
         <ImpactSection />

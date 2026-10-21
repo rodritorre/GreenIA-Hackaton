@@ -1,6 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { GeoJSON, MapContainer, Marker, Pane, useMap } from 'react-leaflet';
 import type { FeatureCollection } from 'geojson';
@@ -12,7 +12,7 @@ import { useI18n } from '../i18n';
 import { fmtDiaLargo, fmtHora } from '../lib/fechas';
 import { useDatos } from '../state';
 import { useAforo } from './Aforo';
-import { SatelliteLayers } from './SatelliteLayers';
+import { CANARIAS, ESRI_URL, SatelliteLayers } from './SatelliteLayers';
 import { GLYPH_SIZE, PhaseGlyph } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
@@ -122,12 +122,69 @@ function Controls({ sel, showZones }: { sel: string | null; showZones: boolean }
   );
 }
 
+/** Esri orthophoto for the inset (our own Sentinel tiles do not cover the islands). */
+function CanariasCapa() {
+  const map = useMap();
+  useEffect(() => {
+    const capa = L.tileLayer(ESRI_URL, { maxZoom: 9 });
+    capa.addTo(map);
+    return () => {
+      capa.remove();
+    };
+  }, [map]);
+  return null;
+}
+
+/** Canary Islands in a corner box, as on printed maps of Spain; a click flies the big map there. */
+function CanariasInset({ markers, onSelect, mapa }: { markers: { it: MapItem; label: string; icon: L.DivIcon }[]; onSelect: (id: string) => void; mapa: L.Map | null }) {
+  const { t } = useI18n();
+  const islas = markers.filter(({ it }) => it.d.region === 'Canarias');
+  const [enCanarias, setEnCanarias] = useState(false);
+  useEffect(() => {
+    if (!mapa) return;
+    const on = () => setEnCanarias(mapa.getCenter().lat < 31);
+    mapa.on('moveend', on);
+    return () => {
+      mapa.off('moveend', on);
+    };
+  }, [mapa]);
+  if (enCanarias) return null;
+  return (
+    <div className="map-inset">
+      <MapContainer
+        bounds={CANARIAS}
+        zoomSnap={0.25}
+        dragging={false}
+        zoomControl={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+        boxZoom={false}
+        keyboard={false}
+        attributionControl={false}
+        className="map-inset__map"
+      >
+        <GeoJSON data={basemap as FeatureCollection} style={() => ({ fillColor: '#8C8A74', fillOpacity: 1, color: '#8C8A74', weight: 1 })} interactive={false} />
+        <CanariasCapa />
+        {islas.map(({ it, label, icon }) => (
+          <Marker key={it.d.id} position={[it.d.lat, it.d.lon]} icon={icon} title={label} eventHandlers={{ click: () => onSelect(it.d.id) }} />
+        ))}
+      </MapContainer>
+      <button type="button" className="map-inset__go" onClick={() => mapa?.flyToBounds(CANARIAS, { duration: 0.8 })}>
+        {t('map.canarias')}
+        <Icon name="expand" size={14} />
+      </button>
+    </div>
+  );
+}
+
 export function BloomMap(p: Props) {
   const { t, lang } = useI18n();
   const { estadoDatos } = useDatos();
   const zonas = useApi(() => (p.showZones ? api.ficha(TEJERA).then((f) => f.calculado.zonas) : Promise.resolve([])), [p.showZones]);
   const fotos = useApi(() => (p.showPhotos ? api.fotos() : Promise.resolve([])), [p.showPhotos]);
   const aforo = useAforo();
+  const [mapa, setMapa] = useState<L.Map | null>(null);
 
   const markers = useMemo(
     () =>
@@ -143,7 +200,7 @@ export function BloomMap(p: Props) {
 
   return (
     <div className="map-frame">
-      <MapContainer bounds={SPAIN_BOUNDS} minZoom={5} maxZoom={14} maxBounds={[[33, -14], [46.5, 8]]} zoomControl={false} scrollWheelZoom={false} className="map" attributionControl>
+      <MapContainer ref={setMapa} bounds={SPAIN_BOUNDS} minZoom={5} maxZoom={18} zoomSnap={0.5} zoomDelta={0.5} maxBounds={[[26.5, -19], [46.5, 8]]} zoomControl={false} scrollWheelZoom={false} className="map" attributionControl>
         {/* Muted land outline under the imagery, so gaps between satellite passes never show as holes (NFR-3). */}
         <Pane name="fallback" style={{ zIndex: 150 }}>
           <GeoJSON
@@ -196,6 +253,8 @@ export function BloomMap(p: Props) {
           )}
         <Controls sel={p.sel} showZones={p.showZones} />
       </MapContainer>
+
+      <CanariasInset markers={markers} onSelect={p.onSelect} mapa={mapa} />
 
       <div className="map-status">
         <span className={`map-status__badge ${p.esPrevision ? 'is-forecast' : ''}`}>{p.esPrevision ? t('map.badgeForecast') : t('map.badgeNow')}</span>

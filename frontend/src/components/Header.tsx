@@ -24,7 +24,7 @@ export function Header({ onMethod }: { onMethod: () => void }) {
               {t('nav.map')}
             </a>
             <a href="#mapa">{t('nav.calendar')}</a>
-            <a href="#planes">{t('nav.plans')}</a>
+            <a href="#packs">{t('nav.plans')}</a>
             <a href="#avisos">{t('nav.alerts')}</a>
             <a href="#negocio">{t('nav.towns')}</a>
             <button type="button" className="link-button" onClick={onMethod}>
@@ -42,7 +42,7 @@ export function Header({ onMethod }: { onMethod: () => void }) {
                 </span>
               ))}
             </div>
-            <a href="#planes" className="btn btn--primary">
+            <a href="#packs" className="btn btn--primary">
               {t('nav.cta')}
             </a>
           </div>

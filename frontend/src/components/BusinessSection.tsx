@@ -49,10 +49,14 @@ export function BusinessSection() {
         <ul className="biz-grid biz-grid--extra">
           <li className="biz">
             <span className="biz__icon">
-              <Icon name="bed" />
+              <Icon name="utensils" />
             </span>
             <h3 className="biz__title">{t('business.commT')}</h3>
             <p className="biz__text">{t('business.commD')}</p>
+            <a href="#packs" className="btn btn--ghost btn--sm">
+              {t('business.commCta')}
+              <Icon name="arrowRight" size={16} />
+            </a>
           </li>
           <li className="biz">
             <span className="biz__icon">

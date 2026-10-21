@@ -104,7 +104,12 @@ export interface PanelDestino {
 }
 
 export type DestinoResumen = S['DestinoResumen'];
-export type DestinoFicha = S['DestinoFicha'];
+/** A cited source for a destination's facts (the team's rule: no source, no fact). */
+export interface FuenteCitada {
+  nombre: string;
+  url: string | null;
+}
+export type DestinoFicha = S['DestinoFicha'] & { fuentes?: FuenteCitada[] };
 export type VentanaFase = S['VentanaFase'];
 export type FechaHabitual = S['FechaHabitual'];
 export type EstadoActual = S['EstadoActual'];

@@ -4,7 +4,7 @@ import { addDays } from '../../lib/fechas';
 import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type SolicitudNegocio, type Usuario } from '../types';
 import { FOTOS, FUENTES, LOG_INGESTA, OFERTAS, SUSCRIPCIONES } from './comercial';
 import { HOY, ULTIMA_ACTUALIZACION } from './config';
-import { DESTINOS } from './destinos';
+import { DESTINOS, fuentesDe } from './destinos';
 import { estadoEn } from './fenologia';
 import type { Destino } from './tipos';
 import {
@@ -87,6 +87,7 @@ export const mockApi: Api = {
       calculado: { umbrales: d.umbrales, zonas: (d.zonas ?? []).map((z) => ({ ...z, fecha: d.entradasHasta })), historicoMargen: d.historicoMargen ?? [] },
       editorial: d.editorial,
       comercial: { ofertas: ofertas.filter((o) => o.destinoId === id), patrocinio: d.patrocinio ? { ...d.patrocinio, url: null } : null },
+      fuentes: fuentesDe(id),
     });
   },
   serie: async (id) => {

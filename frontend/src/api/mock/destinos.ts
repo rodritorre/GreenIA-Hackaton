@@ -1,22 +1,22 @@
 // MOCK destination data, shaped like GET /destinos/{id} (spec §9.1).
 // Tejera Negra and Brihuega use the organisers' datasets (datosOrganizadores.ts, generated from
-// data/organizadores/*.csv). Jerte has historical dates only; the Alpujarra is "coming soon".
+// origin/*.csv). The other destinations and all texts come from the team's site (datosEquipo.ts).
 import type { Destino } from './tipos';
 import { previsionTejeraNegra, serieTejeraNegra } from './series';
 import { BRIHUEGA, TEJERA_NEGRA, TN_ZONAS } from './datosOrganizadores';
+import { DESTINOS_EQUIPO, TEXTOS_EQUIPO } from './datosEquipo';
 
 const PROPORCIONADO = 'Datos proporcionados por Greenia';
 const REFERENCIA = 'Fechas de referencia de Greenia (8 temporadas)';
 const PREDICCION_BR = `Predicción de Greenia (${BRIHUEGA.prediccion.plena_flor.modelo}, ${BRIHUEGA.prediccion.plena_flor.anios} años)`;
 const MODELO = 'Modelo Cuándo Florece v0 (simulado)';
-const HISTORICO = 'Fechas históricas de fuentes públicas';
 
 const TN = TEJERA_NEGRA;
 const BR = BRIHUEGA.prediccion;
 const coma = (n: number) => n.toFixed(2).replace('.', ',');
 const pct = (n: number) => `${Math.round(n * 100)} %`;
 
-export const DESTINOS: Destino[] = [
+const PROPIOS: Destino[] = [
   {
     id: 'tejera-negra',
     nombre: 'Hayedo de Tejera Negra',
@@ -116,100 +116,15 @@ export const DESTINOS: Destino[] = [
     },
     patrocinio: { entidad: '[Ayuntamiento de Brihuega]', mensaje: 'Descubre la agenda del Festival de la Lavanda 2027.' },
   },
-  {
-    id: 'jerte',
-    nombre: 'Cerezo del Valle del Jerte',
-    lugar: 'Valle del Jerte',
-    provincia: 'Cáceres',
-    region: 'Extremadura',
-    especie: 'Cerezo (Prunus avium)',
-    fenomeno: 'Floración',
-    tipo: 'floracion',
-    lat: 40.19,
-    lon: -5.8,
-    color: '#EC6A92',
-    ilustracion: 'cerezo',
-    temporada: 'Primavera 2027',
-    finTemporada: '2027-04-30',
-    datosReales: false,
-    estado: {
-      fase: 'fuera_temporada',
-      tipoDato: 'observado',
-      actualizadoEn: '2026-10-20T07:00:00+02:00',
-      fuente: HISTORICO,
-      resumen: 'Árboles en reposo invernal. La floración suele empezar a finales de marzo.',
-    },
-    ventanas: [
-      { fase: 'inicio', desde: '2027-03-12', hasta: '2027-03-26', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'avance', desde: '2027-03-20', hasta: '2027-04-03', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'pleno', desde: '2027-03-28', hasta: '2027-04-12', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'final', desde: '2027-04-10', hasta: '2027-04-25', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-    ],
-    habituales: [
-      { fase: 'inicio', tipica: '03-20', rangoMin: '03-08', rangoMax: '04-01' },
-      { fase: 'avance', tipica: '03-28', rangoMin: '03-16', rangoMax: '04-08' },
-      { fase: 'pleno', tipica: '04-04', rangoMin: '03-24', rangoMax: '04-15' },
-      { fase: 'final', tipica: '04-15', rangoMin: '04-05', rangoMax: '04-28' },
-    ],
-    entradasHasta: '2026-10-19',
-    generadaEn: '2026-10-20T06:30:00+02:00',
-    umbrales: { inicio: 0.15, avance: 0.4, pleno: 0.7, final: 0.5 },
-    editorial: {
-      historia:
-        'Más de un millón de cerezos cubren de blanco las laderas del valle. La floración sube por altitud: empieza en el fondo del valle y termina en los pueblos más altos.',
-      queVer: ['Fiesta del Cerezo en Flor', 'Reserva Natural Garganta de los Infiernos y sus pozas', 'Mirador del Puerto de Tornavacas'],
-      comoLlegar: 'A unas 2 h 30 min desde Madrid por la A-5 y la N-110, o 1 h desde Plasencia.',
-      acceso: 'Acceso libre. En la Garganta de los Infiernos sigue las sendas señalizadas.',
-      consejos: ['Si llegas pronto, sube al valle alto: allí la flor aguanta más.', 'Los fines de semana de la fiesta hay mucho tráfico en la N-110.'],
-    },
-  },
-  {
-    id: 'alpujarra',
-    nombre: 'Almendro de la Alpujarra',
-    lugar: 'La Alpujarra',
-    provincia: 'Granada / Almería',
-    region: 'Andalucía',
-    especie: 'Almendro (Prunus dulcis)',
-    fenomeno: 'Floración',
-    tipo: 'floracion',
-    lat: 36.93,
-    lon: -3.35,
-    color: '#F2A7BC',
-    ilustracion: 'almendro',
-    temporada: 'Invierno 2027',
-    finTemporada: '2027-03-10',
-    datosReales: false,
-    estado: {
-      fase: 'fuera_temporada',
-      tipoDato: 'observado',
-      actualizadoEn: '2026-10-20T07:00:00+02:00',
-      fuente: HISTORICO,
-      resumen: 'Próximamente: aún sin datos reales. Sin flor. Los almendros suelen florecer entre finales de enero y febrero.',
-    },
-    ventanas: [
-      { fase: 'inicio', desde: '2027-01-14', hasta: '2027-01-30', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'avance', desde: '2027-01-24', hasta: '2027-02-08', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'pleno', desde: '2027-02-03', hasta: '2027-02-20', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-      { fase: 'final', desde: '2027-02-20', hasta: '2027-03-05', tipoDato: 'previsto', confianza: 'baja', probabilidad: 0.7, metodo: 'modelo_v0', fuente: HISTORICO },
-    ],
-    habituales: [
-      { fase: 'inicio', tipica: '01-22', rangoMin: '01-10', rangoMax: '02-05' },
-      { fase: 'avance', tipica: '02-01', rangoMin: '01-20', rangoMax: '02-12' },
-      { fase: 'pleno', tipica: '02-10', rangoMin: '01-30', rangoMax: '02-22' },
-      { fase: 'final', tipica: '02-25', rangoMin: '02-15', rangoMax: '03-08' },
-    ],
-    entradasHasta: '2026-10-19',
-    generadaEn: '2026-10-20T06:30:00+02:00',
-    umbrales: { inicio: 0.15, avance: 0.4, pleno: 0.7, final: 0.5 },
-    editorial: {
-      historia:
-        'En pleno invierno, los almendros de las laderas de Sierra Nevada se cubren de blanco y rosa entre bancales y pueblos blancos de tradición morisca.',
-      queVer: ['Barranco del Poqueira: Pampaneira, Bubión y Capileira', 'Acequias y bancales históricos', 'Miradores sobre el valle del Guadalfeo'],
-      comoLlegar: 'Desde Granada, 1 h por la A-44 y la A-348 hasta Órgiva.',
-      acceso: 'Acceso libre. Carreteras de montaña estrechas: conduce con calma.',
-      consejos: ['La flor llega antes a las cotas bajas y sube con las semanas.', 'Tras una helada fuerte la flor puede durar menos.'],
-    },
-  },
 ];
+
+// The team's site wins on content: its texts (with cited sources) replace ours for every destination,
+// and its extra destinations come in whole, in the team's order.
+const ORDEN = ['tejera-negra', 'brihuega', 'montejo', 'tejeda', 'teide', 'jerte', 'alpujarra'];
+export const DESTINOS: Destino[] = [...PROPIOS, ...DESTINOS_EQUIPO]
+  .map((d) => ({ ...d, editorial: TEXTOS_EQUIPO[d.id]?.editorial ?? d.editorial }))
+  .sort((a, b) => ORDEN.indexOf(a.id) - ORDEN.indexOf(b.id));
+
+export const fuentesDe = (id: string) => TEXTOS_EQUIPO[id]?.fuentes ?? [];
 
 export const getDestino = (id: string) => DESTINOS.find((d) => d.id === id);

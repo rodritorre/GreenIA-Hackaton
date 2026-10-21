@@ -13,7 +13,7 @@ export function Footer({ onMethod }: { onMethod: () => void }) {
           <div className="site-footer__col">
             <p className="label">{t('footer.explore')}</p>
             <a href="#mapa">{t('nav.map')}</a>
-            <a href="#planes">{t('nav.plans')}</a>
+            <a href="#packs">{t('nav.plans')}</a>
             <a href="#avisos">{t('nav.alerts')}</a>
             <a href="#verifica">{t('footer.verify')}</a>
           </div>

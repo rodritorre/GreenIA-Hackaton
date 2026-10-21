@@ -107,7 +107,7 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
             {tab === 'when' && <CuandoIr d={d} calculado={ficha.data.calculado} onMethod={onMethod} onAlert={onAlert} />}
             {tab === 'see' && (
               <>
-                <Editorial editorial={ficha.data.editorial} patrocinio={ficha.data.comercial.patrocinio} />
+                <Editorial editorial={ficha.data.editorial} patrocinio={ficha.data.comercial.patrocinio} fuentes={ficha.data.fuentes} />
                 <Descubrir destinoId={d.id} />
               </>
             )}

@@ -125,6 +125,18 @@ export const ALTERNATIVAS: Record<string, Alternativa[]> = {
     { nombre: 'La Vera (Garganta la Olla)', distanciaKm: 35, motivo: 'Cerezos y gargantas en la cara sur de Gredos.' },
     { nombre: 'Valle del Ambroz (Hervás)', distanciaKm: 40, motivo: 'Barrio judío y castañares, con menos tráfico que la N-110.' },
   ],
+  montejo: [
+    { nombre: 'La Hiruela', distanciaKm: 7, motivo: 'Pueblo de pizarra con castañar y molino harinero, muy tranquilo en otoño.' },
+    { nombre: 'Puebla de la Sierra', distanciaKm: 15, motivo: 'Valle apartado de la Sierra del Rincón con rutas de otoño.' },
+  ],
+  tejeda: [
+    { nombre: 'Artenara', distanciaKm: 12, motivo: 'Casas cueva y miradores sobre el Roque Bentayga.' },
+    { nombre: 'Valsequillo', distanciaKm: 25, motivo: 'Almendros de cumbre con menos visitantes que Tejeda.' },
+  ],
+  teide: [
+    { nombre: 'Vilaflor', distanciaKm: 20, motivo: 'El pueblo más alto de Canarias, entre pinares.' },
+    { nombre: 'La Orotava', distanciaKm: 30, motivo: 'Casco histórico y balcones de madera a la bajada del parque.' },
+  ],
   alpujarra: [
     { nombre: 'Valle de Lecrín', distanciaKm: 30, motivo: 'Almendros y naranjos, más cerca de Granada.' },
     { nombre: 'Sierra de la Contraviesa', distanciaKm: 25, motivo: 'Almendros entre viñedos, con carreteras tranquilas.' },

@@ -1,9 +1,9 @@
 import { useI18n } from '../../i18n';
-import type { Editorial as EditorialData, Patrocinio } from '../../api';
+import type { Editorial as EditorialData, FuenteCitada, Patrocinio } from '../../api';
 import { LayerHeading, SponsoredTag } from '../ui/Badges';
 import { Icon } from '../ui/Icon';
 
-export function Editorial({ editorial: e, patrocinio }: { editorial: EditorialData | null; patrocinio: Patrocinio | null }) {
+export function Editorial({ editorial: e, patrocinio, fuentes = [] }: { editorial: EditorialData | null; patrocinio: Patrocinio | null; fuentes?: FuenteCitada[] }) {
   const { t } = useI18n();
   if (!e) return <p className="empty">{t('ficha.nothing')}</p>;
   return (
@@ -40,6 +40,24 @@ export function Editorial({ editorial: e, patrocinio }: { editorial: EditorialDa
           ))}
         </ul>
       </section>
+      {fuentes.length > 0 && (
+        <section>
+          <h4 className="sub">{t('ficha.sources')}</h4>
+          <ul className="bullets small">
+            {fuentes.map((f) => (
+              <li key={f.nombre}>
+                {f.url ? (
+                  <a href={f.url} target="_blank" rel="noopener noreferrer">
+                    {f.nombre}
+                  </a>
+                ) : (
+                  f.nombre
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {patrocinio && (
         <aside className="sponsor-slot" aria-label={t('ficha.sponsoredBy', { entidad: patrocinio.entidad })}>
           <SponsoredTag />

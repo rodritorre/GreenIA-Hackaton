@@ -48,8 +48,16 @@ class PackedTiles extends L.GridLayer {
 }
 
 export const SAT_ATTRIBUTION = 'Contains modified Copernicus Sentinel-2 data (2025) · Natural Earth';
+export const ESRI_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const ESRI_LABELS = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+/** Our own Sentinel tiles only cover the Peninsula and the Balearics. */
+export const CANARIAS: L.LatLngBoundsExpression = [
+  [27.55, -18.25],
+  [29.5, -13.3],
+];
 
-/** Country-wide summer mosaic (z5–9) plus seasonal close-ups of each destination (z10–14). */
+/** Country-wide summer mosaic (z5–9), seasonal close-ups of each destination (z10–14), and Esri
+ *  orthophoto for the Canary Islands at low zoom and everywhere from zoom 10 (needs internet). */
 export function SatelliteLayers() {
   const map = useMap();
   useEffect(() => {
@@ -60,12 +68,12 @@ export function SatelliteLayers() {
       attribution: SAT_ATTRIBUTION,
     });
     const detail = new PackedTiles(() => 'detail.json', { minZoom: 10, maxNativeZoom: 14, className: 'sat' });
-    base.addTo(map);
-    detail.addTo(map);
-    return () => {
-      base.remove();
-      detail.remove();
-    };
+    const canarias = L.tileLayer(ESRI_URL, { minZoom: 5, maxZoom: 9, bounds: [[26.5, -19], [30.5, -12.5]] });
+    const cerca = L.tileLayer(ESRI_URL, { minZoom: 10, maxZoom: 18, maxNativeZoom: 18, keepBuffer: 4, attribution: 'Ortofoto © Esri, Maxar, Earthstar Geographics' });
+    const nombres = L.tileLayer(ESRI_LABELS, { minZoom: 10, maxZoom: 18, maxNativeZoom: 18 });
+    const capas = [base, detail, canarias, cerca, nombres];
+    capas.forEach((c) => c.addTo(map));
+    return () => capas.forEach((c) => c.remove());
   }, [map]);
   return null;
 }

@@ -3,16 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pago seguro · Cuándo Florece</title>
+<meta name="robots" content="noindex">
+<title>Solicitar reserva · Cuándo Florece</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
 <link rel="stylesheet" href="css/tokens.css">
-<!--
-  MAQUETA de la página de pago. Se abre en otra pestaña desde «Reservar ahora».
-  No cobra, no envía y no guarda nada: el formulario es solo visual.
-  En producción, aquí se redirigiría a la pasarela del banco (p. ej. Redsys) para tarjeta/Bizum,
-  de modo que los datos de la tarjeta nunca pasen por esta web.
--->
+<!-- Solicitud de reserva de un pack. No hay pago: se envía por EmailJS al equipo y al viajero. -->
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -115,62 +112,37 @@
     .grid2, .methods { grid-template-columns: 1fr; }
     .secure span { display: none; }
   }
+  label.f textarea { min-height: 80px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; resize: vertical; }
+  .err { margin-top: 10px; padding: 12px 14px; border-radius: var(--radius); background: var(--tag-previsto-bg); color: var(--tag-previsto-fg); font-size: 14px; }
+  .check a { color: var(--accent); }
 </style>
 </head>
 <body>
   <header class="top">
-    <div class="brand"><span aria-hidden="true">🌸</span> Cuándo Florece</div>
-    <div class="secure">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
-      <span data-t="secure">Pago seguro</span>
-    </div>
+    <a class="brand" href="./" style="color:inherit;text-decoration:none"><span aria-hidden="true">🌸</span> Cuándo Florece</a>
+    <div class="secure"><span data-t="noCharge">Sin pago: solo solicitud</span></div>
   </header>
-  <p class="mock" data-t="mock">Maqueta · el pago no está activo y no se cobra nada</p>
 
-  <!-- Paso 1: pago -->
-  <main id="paso-pago" class="wrap">
+  <!-- Paso 1: solicitud -->
+  <main id="paso-form" class="wrap">
     <div>
-      <div class="steps" aria-hidden="true">
-        <span><b>1</b><span data-t="s1">Tu escapada</span></span>
-        <span class="on"><b>2</b><span data-t="s2">Pago</span></span>
-        <span><b>3</b><span data-t="s3">Confirmación</span></span>
-      </div>
-      <h1 data-t="h1">Completa tu reserva</h1>
-      <p class="lead" data-t="lead">Revisa tus datos y elige cómo pagar. Recibirás la confirmación por correo.</p>
+      <h1 data-t="h1">Solicita tu escapada</h1>
+      <p class="lead" data-t="lead">No se cobra nada. Te escribimos para confirmar disponibilidad y precio final con el alojamiento.</p>
 
-      <form id="form" novalidate>
+      <form id="form">
         <section class="card">
           <h2 data-t="who">Tus datos</h2>
           <div class="grid2">
-            <label class="f"><span data-t="name">Nombre</span><input type="text" placeholder="Lucía" autocomplete="off"></label>
-            <label class="f"><span data-t="surname">Apellidos</span><input type="text" placeholder="García López" autocomplete="off"></label>
-            <label class="f"><span data-t="email">Correo electrónico</span><input type="email" placeholder="lucia@email.com" autocomplete="off"></label>
-            <label class="f"><span data-t="phone">Teléfono</span><input type="tel" placeholder="600 000 000" autocomplete="off"></label>
+            <label class="f"><span data-t="name">Nombre y apellidos</span><input name="nombre" type="text" required autocomplete="name"></label>
+            <label class="f"><span data-t="email">Correo electrónico</span><input name="email" type="email" required autocomplete="email"></label>
+            <label class="f"><span data-t="phone">Teléfono (opcional)</span><input name="telefono" type="tel" autocomplete="tel"></label>
+            <label class="f"><span data-t="checkin">Fecha de llegada</span><input name="entrada" type="date" required></label>
+            <label class="f full"><span data-t="notes">Comentarios (opcional)</span><textarea name="comentarios"></textarea></label>
           </div>
         </section>
-
-        <section class="card">
-          <h2 data-t="how">Método de pago</h2>
-          <div class="methods" role="group">
-            <button type="button" class="method" data-m="tarjeta" aria-pressed="true"><strong data-t="card">Tarjeta</strong><small>VISA · Mastercard</small></button>
-            <button type="button" class="method" data-m="bizum" aria-pressed="false"><strong>Bizum</strong><small data-t="bizumSub">Con tu móvil</small></button>
-            <button type="button" class="method" data-m="paypal" aria-pressed="false"><strong>PayPal</strong><small data-t="paypalSub">Con tu cuenta</small></button>
-          </div>
-          <div id="m-tarjeta" class="grid2">
-            <label class="f full"><span data-t="cardNumber">Número de tarjeta</span><input inputmode="numeric" placeholder="•••• •••• •••• ••••" autocomplete="off"></label>
-            <label class="f"><span data-t="expiry">Caducidad</span><input inputmode="numeric" placeholder="MM / AA" autocomplete="off"></label>
-            <label class="f"><span>CVC</span><input inputmode="numeric" placeholder="•••" autocomplete="off"></label>
-          </div>
-          <p id="m-bizum" class="info hidden" data-t="bizumInfo">Te llegará una notificación a la app de tu banco para confirmar el pago con tu número de móvil.</p>
-          <p id="m-paypal" class="info hidden" data-t="paypalInfo">Te llevaremos a PayPal para iniciar sesión y confirmar el pago.</p>
-        </section>
-
-        <label class="check"><input type="checkbox" checked> <span data-t="terms">Acepto las condiciones de la reserva y la política de privacidad.</span></label>
-        <button id="pay" class="pay" type="submit">Pagar</button>
-        <p class="note">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-          <span data-t="note">En la versión real, el pago se haría en la pasarela segura del banco y esta web nunca vería los datos de tu tarjeta.</span>
-        </p>
+        <label class="check"><input type="checkbox" required> <span><span data-t="terms">Acepto que se usen mis datos para gestionar esta solicitud.</span> <a href="privacidad.html" target="_blank" rel="noopener" data-t="privacy">Política de privacidad</a></span></label>
+        <button id="send" class="pay" type="submit" data-t="send">Enviar solicitud</button>
+        <p id="err" class="err hidden" role="alert"></p>
       </form>
     </div>
 
@@ -184,25 +156,28 @@
         <p class="meta"><span data-t="stay">Alojamiento</span><strong id="s-aloj"></strong><span id="s-hab"></span></p>
         <p class="meta"><span data-t="guests">Huéspedes</span><strong id="s-grupo"></strong></p>
         <div id="s-lineas"></div>
-        <div class="total"><span data-t="total">Total</span><strong id="s-total"></strong></div>
+        <div class="total"><span data-t="total">Estimación</span><strong id="s-total"></strong></div>
         <p class="small" id="s-excl"></p>
+        <p class="small" data-t="estimate">Precio orientativo con tarifas publicadas. El definitivo lo confirma el alojamiento.</p>
       </div>
     </aside>
   </main>
 
-  <!-- Paso 2: confirmación (simulada) -->
-  <main id="paso-ok" class="done hidden" aria-live="polite">
-    <div class="done__icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-    <h1 data-t="okTitle">¡Reserva confirmada!</h1>
-    <p class="lead" id="ok-text"></p>
-    <div class="ref"><span data-t="ref">Referencia</span> <b id="ok-ref"></b></div>
-    <div class="btns">
-      <a class="btn btn--p" href="emails/confirmacion-reserva.html" target="_blank" rel="noopener" data-t="seeEmail">Ver el correo de confirmación</a>
-      <button class="btn btn--g" type="button" data-cerrar data-t="close">Cerrar esta ventana</button>
-    </div>
-    <p class="small" style="margin-top:18px" data-t="okMock">Simulación: no se ha cobrado nada ni se ha contactado con el alojamiento.</p>
+  <!-- Sin pack elegido -->
+  <main id="paso-vacio" class="done hidden">
+    <h1 data-t="emptyTitle">Elige primero tu escapada</h1>
+    <p class="lead" data-t="emptyText">Abre un pack en la web y pulsa «Solicitar reserva».</p>
+    <div class="btns"><a class="btn btn--p" href="./#packs" data-t="toPacks">Ver los packs</a></div>
   </main>
 
-<script src="pago.js"></script>
+  <!-- Paso 2: enviada -->
+  <main id="paso-ok" class="done hidden" aria-live="polite">
+    <div class="done__icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h1 data-t="okTitle">Solicitud enviada</h1>
+    <p class="lead" id="ok-text"></p>
+    <div class="btns"><a class="btn btn--g" href="./" data-t="back">Volver a Cuándo Florece</a></div>
+  </main>
+
+<script type="module" src="./src/reserva.js"></script>
 </body>
 </html>

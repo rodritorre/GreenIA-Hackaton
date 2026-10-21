@@ -353,7 +353,7 @@ function Ficha({ m, grupo, lang, t, onClose, onMap }) {
     cerrar = () => ref.current && ref.current.close(),
     // Lo que se muestra refleja las habitaciones con las que se ha calculado el precio.
     visto = { ...grupo, habs: op.pp ? grupo.habs : q.habitaciones },
-    // El pago se abre en otra pestaña (pago.html) con los datos del pedido en la URL.
+    // La solicitud de reserva se abre en otra pestaña (reserva.html) con los datos del pedido en la URL.
     abrirPago = () => {
       const pedido = {
         lang,
@@ -374,7 +374,7 @@ function Ficha({ m, grupo, lang, t, onClose, onMap }) {
         total: q.total,
         noIncluye: L(m.noIncluye, lang),
       };
-      window.open(`pago.html#${encodeURIComponent(JSON.stringify(pedido))}`, "_blank", "noopener");
+      window.open(`reserva.html#${encodeURIComponent(JSON.stringify(pedido))}`, "_blank", "noopener");
     };
   ce.useEffect(() => {
     const dlg = ref.current;

@@ -1,0 +1,4927 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Cuándo Florece API",
+  "description": "Dónde está la flor, cuándo llegará y con qué confianza.\n\nTodas las previsiones son rangos con su confianza, nunca una fecha única. Cada valor indica su tipo (observado, estimado por satélite, previsto) y su fuente.",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/v1/salud": {
+   "get": {
+    "tags": [
+     "sistema"
+    ],
+    "summary": "Comprobación de salud (para Docker/monitorización)",
+    "operationId": "salud_api_v1_salud_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/estado-datos": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Fecha de los datos y estado de cada fuente (UX-8)",
+    "operationId": "estado_datos_api_v1_estado_datos_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EstadoDatos"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/destinos": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Destinos activos con estado actual y ventanas de fase",
+    "operationId": "destinos_api_v1_destinos_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/DestinoResumen"
+         },
+         "type": "array",
+         "title": "Response Destinos Api V1 Destinos Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/destinos/{destino_id}": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Ficha completa: capa calculada, editorial y comercial en bloques separados",
+    "operationId": "ficha_api_v1_destinos__destino_id__get",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "idioma",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "pattern": "^(es|en)$",
+       "default": "es",
+       "title": "Idioma"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DestinoFicha"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/destinos/{destino_id}/serie": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Índice de color diario y temperaturas, con banda de previsión",
+    "operationId": "serie_api_v1_destinos__destino_id__serie_get",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "desde",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Desde"
+      }
+     },
+     {
+      "name": "hasta",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Hasta"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Serie"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/destinos/{destino_id}/prevision": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Rangos por fase con confianza, método y fuente",
+    "operationId": "prevision_api_v1_destinos__destino_id__prevision_get",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/VentanaFase"
+         },
+         "title": "Response Prevision Api V1 Destinos  Destino Id  Prevision Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/mapa": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Estado observado (hoy) o previsto de todos los destinos en una fecha",
+    "operationId": "mapa_api_v1_mapa_get",
+    "parameters": [
+     {
+      "name": "fecha",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Fecha"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mapa"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/ofertas": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Alojamientos y actividades (capa comercial)",
+    "operationId": "ofertas_api_v1_ofertas_get",
+    "parameters": [
+     {
+      "name": "destinoId",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Destinoid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/Oferta"
+         },
+         "title": "Response Ofertas Api V1 Ofertas Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/fotos": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Fotos ciudadanas verificadas",
+    "operationId": "fotos_publicas_api_v1_fotos_get",
+    "parameters": [
+     {
+      "name": "destinoId",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Destinoid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FotoPublica"
+         },
+         "title": "Response Fotos Publicas Api V1 Fotos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/fotos/{foto_id}/imagen": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Imagen de una foto verificada (sin metadatos)",
+    "operationId": "foto_imagen_api_v1_fotos__foto_id__imagen_get",
+    "parameters": [
+     {
+      "name": "foto_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Foto Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/alertas": {
+   "post": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Suscribirse a un aviso (envía un email de confirmación: doble opt-in)",
+    "operationId": "suscribir_api_v1_alertas_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AlertaIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mensaje"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/alertas/confirmar": {
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Enlace del email de confirmación",
+    "operationId": "confirmar_api_v1_alertas_confirmar_get",
+    "parameters": [
+     {
+      "name": "token",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Token"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "text/html": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/alertas/baja": {
+   "post": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Baja en un clic (RFC 8058, List-Unsubscribe-Post)",
+    "operationId": "baja_un_clic",
+    "parameters": [
+     {
+      "name": "token",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Token"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "text/html": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Darse de baja desde el enlace del email",
+    "operationId": "baja_api_v1_alertas_baja_get",
+    "parameters": [
+     {
+      "name": "token",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Token"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "text/html": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/observaciones": {
+   "post": {
+    "tags": [
+     "público"
+    ],
+    "summary": "Subir una foto geolocalizada (verificación ciudadana)",
+    "operationId": "observacion_api_v1_observaciones_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_observacion_api_v1_observaciones_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ObservacionResultado"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/login": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Iniciar sesión (cookie de sesión HttpOnly)",
+    "operationId": "login_api_v1_auth_login_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsuarioOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/logout": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Cerrar sesión",
+    "operationId": "logout_api_v1_auth_logout_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/yo": {
+   "get": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Usuario de la sesión actual",
+    "operationId": "yo_api_v1_auth_yo_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsuarioOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/fuentes": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Estado de cada fuente de datos",
+    "operationId": "fuentes_api_v1_admin_fuentes_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FuenteAdmin"
+         },
+         "title": "Response Fuentes Api V1 Admin Fuentes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ingesta/log": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Registro de ingesta (últimas 24 h)",
+    "operationId": "log_api_v1_admin_ingesta_log_get",
+    "parameters": [
+     {
+      "name": "horas",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 720,
+       "default": 24,
+       "title": "Horas"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/LogEntrada"
+         },
+         "title": "Response Log Api V1 Admin Ingesta Log Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ingesta/ejecuciones": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Últimas ejecuciones de la ingesta",
+    "operationId": "ejecuciones_api_v1_admin_ingesta_ejecuciones_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/Ejecucion"
+         },
+         "title": "Response Ejecuciones Api V1 Admin Ingesta Ejecuciones Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ingesta/ejecutar": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Ejecutar la ingesta ahora (el mismo código que el job diario)",
+    "operationId": "ejecutar_api_v1_admin_ingesta_ejecutar_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Ejecucion"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/importar": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Importar un dataset proporcionado (CSV)",
+    "operationId": "importar_csv_api_v1_admin_importar_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_importar_csv_api_v1_admin_importar_post"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ImportResultado"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/previsiones": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Ventanas vigentes de todos los destinos",
+    "operationId": "previsiones_api_v1_admin_previsiones_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/PrevisionAdmin"
+         },
+         "title": "Response Previsiones Api V1 Admin Previsiones Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/previsiones/recalcular": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Recalcular estados y previsiones",
+    "operationId": "recalcular_api_v1_admin_previsiones_recalcular_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mensaje"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/previsiones/comparativa": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Nuestro modelo frente a la previsión proporcionada",
+    "operationId": "comparativa_api_v1_admin_previsiones_comparativa_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/Comparativa"
+         },
+         "title": "Response Comparativa Api V1 Admin Previsiones Comparativa Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/fotos": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Cola de moderación",
+    "operationId": "fotos_api_v1_admin_fotos_get",
+    "parameters": [
+     {
+      "name": "estado",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^(pendiente|valida|rechazada)$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Estado"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FotoAdmin"
+         },
+         "title": "Response Fotos Api V1 Admin Fotos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/fotos/{foto_id}/imagen": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Imagen de cualquier foto (moderación)",
+    "operationId": "foto_imagen_api_v1_admin_fotos__foto_id__imagen_get",
+    "parameters": [
+     {
+      "name": "foto_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Foto Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/fotos/{foto_id}/moderar": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Aprobar o rechazar una foto",
+    "operationId": "moderar_api_v1_admin_fotos__foto_id__moderar_post",
+    "parameters": [
+     {
+      "name": "foto_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Foto Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Moderacion"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FotoAdmin"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/alertas/suscripciones": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Suscripciones por destino y fase",
+    "operationId": "suscripciones_api_v1_admin_alertas_suscripciones_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SuscripcionResumen"
+         },
+         "title": "Response Suscripciones Api V1 Admin Alertas Suscripciones Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/alertas/prueba": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Enviar un aviso de prueba (se ve en la bandeja de salida)",
+    "operationId": "prueba_api_v1_admin_alertas_prueba_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PruebaAvisoIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmailOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/alertas/despachar": {
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Ejecutar ahora el envío diario de avisos",
+    "operationId": "despachar_api_v1_admin_alertas_despachar_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mensaje"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/correos": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Bandeja de salida (todos los emails enviados o simulados)",
+    "operationId": "correos_api_v1_admin_correos_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/EmailOut"
+         },
+         "title": "Response Correos Api V1 Admin Correos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/destinos": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Configuración de todos los destinos",
+    "operationId": "destinos_api_v1_admin_destinos_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/DestinoConfig"
+         },
+         "title": "Response Destinos Api V1 Admin Destinos Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Añadir un destino",
+    "operationId": "crear_destino_api_v1_admin_destinos_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DestinoConfig"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mensaje"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/destinos/{destino_id}": {
+   "patch": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Cambiar la configuración de un destino",
+    "operationId": "editar_destino_api_v1_admin_destinos__destino_id__patch",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DestinoConfigPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Mensaje"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/destinos/{destino_id}/editorial": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Contenido editorial de un destino",
+    "operationId": "get_editorial_api_v1_admin_destinos__destino_id__editorial_get",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "idioma",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "es",
+       "title": "Idioma"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Editorial"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Guardar el contenido editorial",
+    "operationId": "put_editorial_api_v1_admin_destinos__destino_id__editorial_put",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "idioma",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "es",
+       "title": "Idioma"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Editorial"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Editorial"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/destinos/{destino_id}/patrocinio": {
+   "put": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Patrocinador del destino (vacío = ninguno)",
+    "operationId": "put_patrocinio_api_v1_admin_destinos__destino_id__patrocinio_put",
+    "parameters": [
+     {
+      "name": "destino_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Destino Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/Patrocinio"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "anyOf": [
+          {
+           "$ref": "#/components/schemas/Patrocinio"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Response Put Patrocinio Api V1 Admin Destinos  Destino Id  Patrocinio Put"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ofertas": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Todas las ofertas, también las inactivas",
+    "operationId": "get_ofertas_api_v1_admin_ofertas_get",
+    "parameters": [
+     {
+      "name": "destinoId",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Destinoid"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/Oferta"
+         },
+         "title": "Response Get Ofertas Api V1 Admin Ofertas Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Crear una oferta",
+    "operationId": "crear_oferta_api_v1_admin_ofertas_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OfertaIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Oferta"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ofertas/{oferta_id}": {
+   "patch": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Editar una oferta (p. ej. marcar como patrocinada)",
+    "operationId": "editar_oferta_api_v1_admin_ofertas__oferta_id__patch",
+    "parameters": [
+     {
+      "name": "oferta_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Oferta Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OfertaPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Oferta"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Borrar una oferta",
+    "operationId": "borrar_oferta_api_v1_admin_ofertas__oferta_id__delete",
+    "parameters": [
+     {
+      "name": "oferta_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Oferta Id"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/usuarios": {
+   "get": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Cuentas del panel",
+    "operationId": "usuarios_api_v1_admin_usuarios_get",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/UsuarioOut"
+         },
+         "title": "Response Usuarios Api V1 Admin Usuarios Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Crear una cuenta",
+    "operationId": "crear_usuario_api_v1_admin_usuarios_post",
+    "parameters": [
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UsuarioIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsuarioOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/usuarios/{usuario_id}": {
+   "patch": {
+    "tags": [
+     "admin"
+    ],
+    "summary": "Activar o desactivar una cuenta",
+    "operationId": "activar_usuario_api_v1_admin_usuarios__usuario_id__patch",
+    "parameters": [
+     {
+      "name": "usuario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Usuario Id"
+      }
+     },
+     {
+      "name": "activo",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "boolean",
+       "title": "Activo"
+      }
+     },
+     {
+      "name": "florece_sesion",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Florece Sesion"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsuarioOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AlertaIn": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+     },
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase",
+      "default": "pleno"
+     },
+     "antelacionDias": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 1.0,
+      "title": "Antelaciondias",
+      "default": 7
+     },
+     "idioma": {
+      "type": "string",
+      "enum": [
+       "es",
+       "en"
+      ],
+      "title": "Idioma",
+      "default": "es"
+     },
+     "consentimiento": {
+      "type": "boolean",
+      "title": "Consentimiento",
+      "description": "Must be true (GDPR consent, NFR-7)"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "destinoId",
+     "consentimiento"
+    ],
+    "title": "AlertaIn"
+   },
+   "Body_importar_csv_api_v1_admin_importar_post": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "dataset": {
+      "type": "string",
+      "title": "Dataset",
+      "description": "indice, temperaturas, habituales, prevision"
+     },
+     "archivo": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "Archivo"
+     },
+     "recalcular": {
+      "type": "boolean",
+      "title": "Recalcular",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "dataset",
+     "archivo"
+    ],
+    "title": "Body_importar_csv_api_v1_admin_importar_post"
+   },
+   "Body_observacion_api_v1_observaciones_post": {
+    "properties": {
+     "foto": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "Foto"
+     },
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "consentimiento": {
+      "type": "boolean",
+      "title": "Consentimiento"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lon": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lon"
+     }
+    },
+    "type": "object",
+    "required": [
+     "foto",
+     "destinoId",
+     "fase",
+     "consentimiento"
+    ],
+    "title": "Body_observacion_api_v1_observaciones_post"
+   },
+   "Calculado": {
+    "properties": {
+     "umbrales": {
+      "$ref": "#/components/schemas/Umbrales"
+     },
+     "zonas": {
+      "items": {
+       "$ref": "#/components/schemas/Zona"
+      },
+      "type": "array",
+      "title": "Zonas"
+     },
+     "historicoMargen": {
+      "items": {
+       "$ref": "#/components/schemas/HistoricoMargen"
+      },
+      "type": "array",
+      "title": "Historicomargen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "umbrales",
+     "zonas",
+     "historicoMargen"
+    ],
+    "title": "Calculado"
+   },
+   "Comercial": {
+    "properties": {
+     "ofertas": {
+      "items": {
+       "$ref": "#/components/schemas/Oferta"
+      },
+      "type": "array",
+      "title": "Ofertas"
+     },
+     "patrocinio": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Patrocinio"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "ofertas",
+     "patrocinio"
+    ],
+    "title": "Comercial"
+   },
+   "Comparativa": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "proporcionadaDesde": {
+      "type": "string",
+      "format": "date",
+      "title": "Proporcionadadesde"
+     },
+     "proporcionadaHasta": {
+      "type": "string",
+      "format": "date",
+      "title": "Proporcionadahasta"
+     },
+     "propiaDesde": {
+      "type": "string",
+      "format": "date",
+      "title": "Propiadesde"
+     },
+     "propiaHasta": {
+      "type": "string",
+      "format": "date",
+      "title": "Propiahasta"
+     },
+     "propiaProbabilidad": {
+      "type": "number",
+      "title": "Propiaprobabilidad"
+     },
+     "maeDias": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Maedias"
+     },
+     "cobertura": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cobertura"
+     },
+     "explicacion": {
+      "type": "string",
+      "title": "Explicacion"
+     },
+     "calculadaEn": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Calculadaen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "fase",
+     "proporcionadaDesde",
+     "proporcionadaHasta",
+     "propiaDesde",
+     "propiaHasta",
+     "propiaProbabilidad",
+     "maeDias",
+     "cobertura",
+     "explicacion",
+     "calculadaEn"
+    ],
+    "title": "Comparativa"
+   },
+   "Comprobacion": {
+    "properties": {
+     "clave": {
+      "type": "string",
+      "enum": [
+       "ubicacion",
+       "fecha",
+       "duplicada",
+       "limite"
+      ],
+      "title": "Clave"
+     },
+     "ok": {
+      "type": "boolean",
+      "title": "Ok"
+     },
+     "detalle": {
+      "type": "string",
+      "title": "Detalle"
+     }
+    },
+    "type": "object",
+    "required": [
+     "clave",
+     "ok",
+     "detalle"
+    ],
+    "title": "Comprobacion"
+   },
+   "DestinoConfig": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{2,64}$",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "lugar": {
+      "type": "string",
+      "title": "Lugar"
+     },
+     "provincia": {
+      "type": "string",
+      "title": "Provincia"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "especie": {
+      "type": "string",
+      "title": "Especie"
+     },
+     "fenomeno": {
+      "type": "string",
+      "title": "Fenomeno"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "floracion",
+       "color_otonal"
+      ],
+      "title": "Tipo"
+     },
+     "lat": {
+      "type": "number",
+      "maximum": 44.5,
+      "minimum": 27.0,
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "maximum": 5.0,
+      "minimum": -18.5,
+      "title": "Lon"
+     },
+     "color": {
+      "type": "string",
+      "title": "Color",
+      "default": "#6F4FB8"
+     },
+     "ilustracion": {
+      "type": "string",
+      "enum": [
+       "haya",
+       "lavanda",
+       "cerezo",
+       "almendro"
+      ],
+      "title": "Ilustracion",
+      "default": "cerezo"
+     },
+     "temporada": {
+      "type": "string",
+      "title": "Temporada"
+     },
+     "finTemporada": {
+      "type": "string",
+      "format": "date",
+      "title": "Fintemporada"
+     },
+     "datosReales": {
+      "type": "boolean",
+      "title": "Datosreales",
+      "default": false
+     },
+     "activo": {
+      "type": "boolean",
+      "title": "Activo",
+      "default": true
+     },
+     "umbrales": {
+      "$ref": "#/components/schemas/Umbrales"
+     },
+     "aemetEstacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Aemetestacion"
+     },
+     "aemetMunicipio": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Aemetmunicipio"
+     },
+     "usaSatelite": {
+      "type": "boolean",
+      "title": "Usasatelite",
+      "default": false
+     },
+     "zonas": {
+      "items": {
+       "$ref": "#/components/schemas/ZonaIn"
+      },
+      "type": "array",
+      "title": "Zonas",
+      "default": []
+     },
+     "habituales": {
+      "items": {
+       "$ref": "#/components/schemas/FechaHabitual"
+      },
+      "type": "array",
+      "title": "Habituales",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "lugar",
+     "provincia",
+     "region",
+     "especie",
+     "fenomeno",
+     "tipo",
+     "lat",
+     "lon",
+     "temporada",
+     "finTemporada",
+     "umbrales"
+    ],
+    "title": "DestinoConfig",
+    "description": "Adding a destination is configuration, not code (PRIN-2.4)."
+   },
+   "DestinoConfigPatch": {
+    "properties": {
+     "nombre": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nombre"
+     },
+     "activo": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Activo"
+     },
+     "umbrales": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Umbrales"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "aemetEstacion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Aemetestacion"
+     },
+     "aemetMunicipio": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Aemetmunicipio"
+     },
+     "usaSatelite": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Usasatelite"
+     },
+     "temporada": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temporada"
+     },
+     "finTemporada": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fintemporada"
+     }
+    },
+    "type": "object",
+    "title": "DestinoConfigPatch"
+   },
+   "DestinoFicha": {
+    "properties": {
+     "destino": {
+      "$ref": "#/components/schemas/DestinoResumen"
+     },
+     "calculado": {
+      "$ref": "#/components/schemas/Calculado"
+     },
+     "editorial": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Editorial"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "comercial": {
+      "$ref": "#/components/schemas/Comercial"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destino",
+     "calculado",
+     "editorial",
+     "comercial"
+    ],
+    "title": "DestinoFicha",
+    "description": "Full destination page, with the three layers in separate blocks (spec §9.1)."
+   },
+   "DestinoResumen": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "lugar": {
+      "type": "string",
+      "title": "Lugar"
+     },
+     "provincia": {
+      "type": "string",
+      "title": "Provincia"
+     },
+     "region": {
+      "type": "string",
+      "title": "Region"
+     },
+     "especie": {
+      "type": "string",
+      "title": "Especie"
+     },
+     "fenomeno": {
+      "type": "string",
+      "title": "Fenomeno"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "floracion",
+       "color_otonal"
+      ],
+      "title": "Tipo"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "color": {
+      "type": "string",
+      "title": "Color"
+     },
+     "ilustracion": {
+      "type": "string",
+      "enum": [
+       "haya",
+       "lavanda",
+       "cerezo",
+       "almendro"
+      ],
+      "title": "Ilustracion"
+     },
+     "temporada": {
+      "type": "string",
+      "title": "Temporada"
+     },
+     "finTemporada": {
+      "type": "string",
+      "format": "date",
+      "title": "Fintemporada"
+     },
+     "datosReales": {
+      "type": "boolean",
+      "title": "Datosreales"
+     },
+     "estado": {
+      "$ref": "#/components/schemas/EstadoActual"
+     },
+     "ventanas": {
+      "items": {
+       "$ref": "#/components/schemas/VentanaFase"
+      },
+      "type": "array",
+      "title": "Ventanas"
+     },
+     "habituales": {
+      "items": {
+       "$ref": "#/components/schemas/FechaHabitual"
+      },
+      "type": "array",
+      "title": "Habituales"
+     },
+     "entradasHasta": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Entradashasta"
+     },
+     "generadaEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Generadaen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "lugar",
+     "provincia",
+     "region",
+     "especie",
+     "fenomeno",
+     "tipo",
+     "lat",
+     "lon",
+     "color",
+     "ilustracion",
+     "temporada",
+     "finTemporada",
+     "datosReales",
+     "estado",
+     "ventanas",
+     "habituales",
+     "entradasHasta",
+     "generadaEn"
+    ],
+    "title": "DestinoResumen",
+    "description": "Everything the map, list and cards need."
+   },
+   "Editorial": {
+    "properties": {
+     "historia": {
+      "type": "string",
+      "title": "Historia"
+     },
+     "queVer": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Quever"
+     },
+     "comoLlegar": {
+      "type": "string",
+      "title": "Comollegar"
+     },
+     "acceso": {
+      "type": "string",
+      "title": "Acceso"
+     },
+     "consejos": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Consejos"
+     },
+     "actualizadoEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Actualizadoen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "historia",
+     "queVer",
+     "comoLlegar",
+     "acceso",
+     "consejos"
+    ],
+    "title": "Editorial"
+   },
+   "Ejecucion": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "origen": {
+      "type": "string",
+      "title": "Origen"
+     },
+     "iniciadaEn": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Iniciadaen"
+     },
+     "terminadaEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Terminadaen"
+     },
+     "estado": {
+      "type": "string",
+      "title": "Estado"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "origen",
+     "iniciadaEn",
+     "terminadaEn",
+     "estado"
+    ],
+    "title": "Ejecucion"
+   },
+   "EmailOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "para": {
+      "type": "string",
+      "title": "Para"
+     },
+     "asunto": {
+      "type": "string",
+      "title": "Asunto"
+     },
+     "cuerpo": {
+      "type": "string",
+      "title": "Cuerpo"
+     },
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "backend": {
+      "type": "string",
+      "title": "Backend"
+     },
+     "estado": {
+      "type": "string",
+      "title": "Estado"
+     },
+     "creadoEn": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Creadoen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "para",
+     "asunto",
+     "cuerpo",
+     "tipo",
+     "backend",
+     "estado",
+     "creadoEn"
+    ],
+    "title": "EmailOut"
+   },
+   "EstadoActual": {
+    "properties": {
+     "fase": {
+      "type": "string",
+      "enum": [
+       "fuera_temporada",
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "tipoDato": {
+      "type": "string",
+      "enum": [
+       "observado",
+       "estimado",
+       "previsto"
+      ],
+      "title": "Tipodato"
+     },
+     "actualizadoEn": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Actualizadoen"
+     },
+     "fuente": {
+      "type": "string",
+      "title": "Fuente"
+     },
+     "resumen": {
+      "type": "string",
+      "title": "Resumen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fase",
+     "tipoDato",
+     "actualizadoEn",
+     "fuente",
+     "resumen"
+    ],
+    "title": "EstadoActual"
+   },
+   "EstadoDatos": {
+    "properties": {
+     "hoy": {
+      "type": "string",
+      "format": "date",
+      "title": "Hoy"
+     },
+     "ultimaActualizacion": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultimaactualizacion"
+     },
+     "fuentes": {
+      "items": {
+       "$ref": "#/components/schemas/FuentePublica"
+      },
+      "type": "array",
+      "title": "Fuentes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "hoy",
+     "ultimaActualizacion",
+     "fuentes"
+    ],
+    "title": "EstadoDatos"
+   },
+   "EstadoEnFecha": {
+    "properties": {
+     "fase": {
+      "type": "string",
+      "enum": [
+       "fuera_temporada",
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "tipoDato": {
+      "type": "string",
+      "enum": [
+       "observado",
+       "estimado",
+       "previsto"
+      ],
+      "title": "Tipodato"
+     },
+     "confianza": {
+      "type": "string",
+      "enum": [
+       "alta",
+       "media",
+       "baja"
+      ],
+      "title": "Confianza"
+     },
+     "esPrevision": {
+      "type": "boolean",
+      "title": "Esprevision"
+     },
+     "transicion": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/VentanaFase"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The date falls inside the start window of this phase"
+     },
+     "siguiente": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/VentanaFase"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "fase",
+     "tipoDato",
+     "confianza",
+     "esPrevision",
+     "transicion",
+     "siguiente"
+    ],
+    "title": "EstadoEnFecha",
+    "description": "State of a destination on a given date (observed today, forecast in the future)."
+   },
+   "FechaHabitual": {
+    "properties": {
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "tipica": {
+      "type": "string",
+      "title": "Tipica",
+      "description": "MM-DD"
+     },
+     "rangoMin": {
+      "type": "string",
+      "title": "Rangomin"
+     },
+     "rangoMax": {
+      "type": "string",
+      "title": "Rangomax"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fase",
+     "tipica",
+     "rangoMin",
+     "rangoMax"
+    ],
+    "title": "FechaHabitual"
+   },
+   "FotoAdmin": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lon": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lon"
+     },
+     "capturadaEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capturadaen"
+     },
+     "faseReportada": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fasereportada"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "valida",
+       "pendiente",
+       "rechazada"
+      ],
+      "title": "Estado"
+     },
+     "zona": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Zona"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "distanciaKm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Distanciakm"
+     },
+     "horas": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Horas"
+     },
+     "motivo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Motivo"
+     },
+     "revisadaPor": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Revisadapor"
+     },
+     "recibidaEn": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Recibidaen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "destinoId",
+     "lat",
+     "lon",
+     "capturadaEn",
+     "faseReportada",
+     "estado",
+     "distanciaKm",
+     "horas",
+     "motivo",
+     "revisadaPor",
+     "recibidaEn"
+    ],
+    "title": "FotoAdmin"
+   },
+   "FotoPublica": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "lat": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lat"
+     },
+     "lon": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lon"
+     },
+     "capturadaEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capturadaen"
+     },
+     "faseReportada": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fasereportada"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "valida",
+       "pendiente",
+       "rechazada"
+      ],
+      "title": "Estado"
+     },
+     "zona": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Zona"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "destinoId",
+     "lat",
+     "lon",
+     "capturadaEn",
+     "faseReportada",
+     "estado"
+    ],
+    "title": "FotoPublica"
+   },
+   "FuenteAdmin": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "ultimaCarga": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultimacarga"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "desactualizado",
+       "error"
+      ],
+      "title": "Estado"
+     },
+     "detalle": {
+      "type": "string",
+      "title": "Detalle"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "tipo",
+     "ultimaCarga",
+     "estado",
+     "detalle"
+    ],
+    "title": "FuenteAdmin"
+   },
+   "FuentePublica": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "tipo": {
+      "type": "string",
+      "title": "Tipo"
+     },
+     "ultimaCarga": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultimacarga"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "desactualizado",
+       "error"
+      ],
+      "title": "Estado"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "tipo",
+     "ultimaCarga",
+     "estado"
+    ],
+    "title": "FuentePublica"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "HistoricoMargen": {
+    "properties": {
+     "generadaEn": {
+      "type": "string",
+      "format": "date",
+      "title": "Generadaen"
+     },
+     "desde": {
+      "type": "string",
+      "format": "date",
+      "title": "Desde"
+     },
+     "hasta": {
+      "type": "string",
+      "format": "date",
+      "title": "Hasta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "generadaEn",
+     "desde",
+     "hasta"
+    ],
+    "title": "HistoricoMargen"
+   },
+   "ImportResultado": {
+    "properties": {
+     "dataset": {
+      "type": "string",
+      "title": "Dataset"
+     },
+     "filas": {
+      "type": "integer",
+      "title": "Filas"
+     },
+     "archivoId": {
+      "type": "integer",
+      "title": "Archivoid"
+     },
+     "avisos": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Avisos"
+     }
+    },
+    "type": "object",
+    "required": [
+     "dataset",
+     "filas",
+     "archivoId",
+     "avisos"
+    ],
+    "title": "ImportResultado"
+   },
+   "LogEntrada": {
+    "properties": {
+     "hora": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Hora"
+     },
+     "nivel": {
+      "type": "string",
+      "enum": [
+       "info",
+       "warn",
+       "error"
+      ],
+      "title": "Nivel"
+     },
+     "mensaje": {
+      "type": "string",
+      "title": "Mensaje"
+     }
+    },
+    "type": "object",
+    "required": [
+     "hora",
+     "nivel",
+     "mensaje"
+    ],
+    "title": "LogEntrada"
+   },
+   "LoginIn": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+     },
+     "password": {
+      "type": "string",
+      "title": "Password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "password"
+    ],
+    "title": "LoginIn"
+   },
+   "Mapa": {
+    "properties": {
+     "fecha": {
+      "type": "string",
+      "format": "date",
+      "title": "Fecha"
+     },
+     "hoy": {
+      "type": "string",
+      "format": "date",
+      "title": "Hoy"
+     },
+     "esPrevision": {
+      "type": "boolean",
+      "title": "Esprevision"
+     },
+     "destinos": {
+      "items": {
+       "$ref": "#/components/schemas/MapaItem"
+      },
+      "type": "array",
+      "title": "Destinos"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fecha",
+     "hoy",
+     "esPrevision",
+     "destinos"
+    ],
+    "title": "Mapa"
+   },
+   "MapaItem": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "estado": {
+      "$ref": "#/components/schemas/EstadoEnFecha"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "estado"
+    ],
+    "title": "MapaItem"
+   },
+   "Mensaje": {
+    "properties": {
+     "ok": {
+      "type": "boolean",
+      "title": "Ok",
+      "default": true
+     },
+     "mensaje": {
+      "type": "string",
+      "title": "Mensaje"
+     }
+    },
+    "type": "object",
+    "required": [
+     "mensaje"
+    ],
+    "title": "Mensaje"
+   },
+   "Moderacion": {
+    "properties": {
+     "estado": {
+      "type": "string",
+      "enum": [
+       "valida",
+       "rechazada"
+      ],
+      "title": "Estado"
+     },
+     "motivo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Motivo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "estado"
+    ],
+    "title": "Moderacion"
+   },
+   "ObservacionResultado": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "estado": {
+      "type": "string",
+      "enum": [
+       "valida",
+       "pendiente",
+       "rechazada"
+      ],
+      "title": "Estado"
+     },
+     "motivo": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Motivo"
+     },
+     "comprobaciones": {
+      "items": {
+       "$ref": "#/components/schemas/Comprobacion"
+      },
+      "type": "array",
+      "title": "Comprobaciones"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "estado",
+     "motivo",
+     "comprobaciones"
+    ],
+    "title": "ObservacionResultado"
+   },
+   "Oferta": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "alojamiento",
+       "actividad"
+      ],
+      "title": "Tipo"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion"
+     },
+     "distanciaKm": {
+      "type": "number",
+      "title": "Distanciakm"
+     },
+     "precio": {
+      "type": "string",
+      "title": "Precio"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "patrocinado": {
+      "type": "boolean",
+      "title": "Patrocinado"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "destinoId",
+     "tipo",
+     "nombre",
+     "descripcion",
+     "distanciaKm",
+     "precio",
+     "patrocinado"
+    ],
+    "title": "Oferta"
+   },
+   "OfertaIn": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "alojamiento",
+       "actividad"
+      ],
+      "title": "Tipo"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "descripcion": {
+      "type": "string",
+      "title": "Descripcion",
+      "default": ""
+     },
+     "distanciaKm": {
+      "type": "number",
+      "title": "Distanciakm",
+      "default": 0
+     },
+     "precio": {
+      "type": "string",
+      "title": "Precio",
+      "default": ""
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "patrocinado": {
+      "type": "boolean",
+      "title": "Patrocinado",
+      "default": false
+     },
+     "activa": {
+      "type": "boolean",
+      "title": "Activa",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "tipo",
+     "nombre"
+    ],
+    "title": "OfertaIn"
+   },
+   "OfertaPatch": {
+    "properties": {
+     "nombre": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nombre"
+     },
+     "descripcion": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Descripcion"
+     },
+     "distanciaKm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Distanciakm"
+     },
+     "precio": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Precio"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "patrocinado": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Patrocinado"
+     },
+     "activa": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Activa"
+     }
+    },
+    "type": "object",
+    "title": "OfertaPatch"
+   },
+   "Patrocinio": {
+    "properties": {
+     "entidad": {
+      "type": "string",
+      "title": "Entidad"
+     },
+     "mensaje": {
+      "type": "string",
+      "title": "Mensaje"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "entidad",
+     "mensaje"
+    ],
+    "title": "Patrocinio"
+   },
+   "PrevisionAdmin": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "destino": {
+      "type": "string",
+      "title": "Destino"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "floracion",
+       "color_otonal"
+      ],
+      "title": "Tipo"
+     },
+     "ventana": {
+      "$ref": "#/components/schemas/VentanaFase"
+     },
+     "entradasHasta": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Entradashasta"
+     },
+     "generadaEn": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Generadaen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "destino",
+     "tipo",
+     "ventana",
+     "entradasHasta",
+     "generadaEn"
+    ],
+    "title": "PrevisionAdmin"
+   },
+   "PruebaAvisoIn": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase",
+      "default": "pleno"
+     },
+     "para": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "email"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Para"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId"
+    ],
+    "title": "PruebaAvisoIn"
+   },
+   "PuntoPrevisionSerie": {
+    "properties": {
+     "fecha": {
+      "type": "string",
+      "format": "date",
+      "title": "Fecha"
+     },
+     "p10": {
+      "type": "number",
+      "title": "P10"
+     },
+     "p50": {
+      "type": "number",
+      "title": "P50"
+     },
+     "p90": {
+      "type": "number",
+      "title": "P90"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fecha",
+     "p10",
+     "p50",
+     "p90"
+    ],
+    "title": "PuntoPrevisionSerie"
+   },
+   "PuntoSerie": {
+    "properties": {
+     "fecha": {
+      "type": "string",
+      "format": "date",
+      "title": "Fecha"
+     },
+     "indice": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Indice"
+     },
+     "calidad": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "nubes",
+       "sin_dato"
+      ],
+      "title": "Calidad"
+     },
+     "tMax": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Tmax"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fecha",
+     "indice",
+     "calidad",
+     "tMax"
+    ],
+    "title": "PuntoSerie"
+   },
+   "Serie": {
+    "properties": {
+     "puntos": {
+      "items": {
+       "$ref": "#/components/schemas/PuntoSerie"
+      },
+      "type": "array",
+      "title": "Puntos"
+     },
+     "prevision": {
+      "items": {
+       "$ref": "#/components/schemas/PuntoPrevisionSerie"
+      },
+      "type": "array",
+      "title": "Prevision"
+     }
+    },
+    "type": "object",
+    "required": [
+     "puntos",
+     "prevision"
+    ],
+    "title": "Serie"
+   },
+   "SuscripcionResumen": {
+    "properties": {
+     "destinoId": {
+      "type": "string",
+      "title": "Destinoid"
+     },
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "confirmadas": {
+      "type": "integer",
+      "title": "Confirmadas"
+     },
+     "sinConfirmar": {
+      "type": "integer",
+      "title": "Sinconfirmar"
+     },
+     "proximoEnvio": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Proximoenvio"
+     }
+    },
+    "type": "object",
+    "required": [
+     "destinoId",
+     "fase",
+     "confirmadas",
+     "sinConfirmar",
+     "proximoEnvio"
+    ],
+    "title": "SuscripcionResumen"
+   },
+   "Umbrales": {
+    "properties": {
+     "inicio": {
+      "type": "number",
+      "title": "Inicio"
+     },
+     "avance": {
+      "type": "number",
+      "title": "Avance"
+     },
+     "pleno": {
+      "type": "number",
+      "title": "Pleno"
+     },
+     "final": {
+      "type": "number",
+      "title": "Final"
+     }
+    },
+    "type": "object",
+    "required": [
+     "inicio",
+     "avance",
+     "pleno",
+     "final"
+    ],
+    "title": "Umbrales"
+   },
+   "UsuarioIn": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "rol": {
+      "type": "string",
+      "enum": [
+       "admin",
+       "editor"
+      ],
+      "title": "Rol",
+      "default": "editor"
+     },
+     "password": {
+      "type": "string",
+      "minLength": 10,
+      "title": "Password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "nombre",
+     "password"
+    ],
+    "title": "UsuarioIn"
+   },
+   "UsuarioOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "rol": {
+      "type": "string",
+      "enum": [
+       "admin",
+       "editor"
+      ],
+      "title": "Rol"
+     },
+     "activo": {
+      "type": "boolean",
+      "title": "Activo"
+     },
+     "ultimoAcceso": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ultimoacceso"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "email",
+     "nombre",
+     "rol",
+     "activo"
+    ],
+    "title": "UsuarioOut"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "VentanaFase": {
+    "properties": {
+     "fase": {
+      "type": "string",
+      "enum": [
+       "inicio",
+       "avance",
+       "pleno",
+       "final"
+      ],
+      "title": "Fase"
+     },
+     "desde": {
+      "type": "string",
+      "format": "date",
+      "title": "Desde"
+     },
+     "hasta": {
+      "type": "string",
+      "format": "date",
+      "title": "Hasta"
+     },
+     "tipoDato": {
+      "type": "string",
+      "enum": [
+       "observado",
+       "estimado",
+       "previsto"
+      ],
+      "title": "Tipodato"
+     },
+     "confianza": {
+      "type": "string",
+      "enum": [
+       "alta",
+       "media",
+       "baja"
+      ],
+      "title": "Confianza"
+     },
+     "probabilidad": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Probabilidad"
+     },
+     "metodo": {
+      "type": "string",
+      "enum": [
+       "dato_proporcionado",
+       "modelo_v0",
+       "satelite"
+      ],
+      "title": "Metodo"
+     },
+     "fuente": {
+      "type": "string",
+      "title": "Fuente"
+     }
+    },
+    "type": "object",
+    "required": [
+     "fase",
+     "desde",
+     "hasta",
+     "tipoDato",
+     "confianza",
+     "probabilidad",
+     "metodo",
+     "fuente"
+    ],
+    "title": "VentanaFase"
+   },
+   "Zona": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "indice": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Indice"
+     },
+     "calidad": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "nubes",
+       "sin_dato"
+      ],
+      "title": "Calidad"
+     },
+     "fase": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "fuera_temporada",
+         "inicio",
+         "avance",
+         "pleno",
+         "final"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fase"
+     },
+     "fecha": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fecha"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "lat",
+     "lon",
+     "indice",
+     "calidad",
+     "fase"
+    ],
+    "title": "Zona"
+   },
+   "ZonaIn": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "nombre": {
+      "type": "string",
+      "title": "Nombre"
+     },
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "radioM": {
+      "type": "integer",
+      "title": "Radiom",
+      "default": 250
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "nombre",
+     "lat",
+     "lon"
+    ],
+    "title": "ZonaIn"
+   }
+  }
+ }
+}

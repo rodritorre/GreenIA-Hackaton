@@ -1,96 +1,100 @@
-# Cuándo Florece — UI mockup
+# Cuándo Florece
 
-The living bloom map of Spain (Greenia challenge, EPS UFV Hackathon, 20–22 Oct 2026).
+The living bloom map of Spain (Greenia challenge, EPS UFV Hackathon, October 2026).
 It answers three questions: **where** the bloom is, **when** it will arrive, and **how confident** we are.
 
-> **UI mockup only.** All data in `src/data/` is placeholder data shaped like the API contract (spec §8, §9.1).
-> No business logic yet: ingestion, the state engine, the forecast model, alert emails and photo checks are simulated.
+```
+frontend/   React + TypeScript site and internal panel (#admin). Talks only to the API.
+backend/    Python + FastAPI API, PostGIS database, daily ingestion (AEMET, Sentinel-2), forecast model, alerts.
+deploy/     Docker Compose + Caddy for your server (HTTPS for your domain).
+docs/       DECISIONS.md (decisions + what's pending from you), DEPLOY.md, API.md, openapi.json.
+```
 
-## Run
+- **Deploy on your server**: [docs/DEPLOY.md](docs/DEPLOY.md)
+- **Decisions and inputs still needed**: [docs/DECISIONS.md](docs/DECISIONS.md)
+- **API**: [docs/API.md](docs/API.md), live docs at `/api/v1/docs`
+
+## Architecture
+
+```
+            ┌──────────── Docker Compose on one server ─────────────┐
+ browser ──▶│ web (Caddy: HTTPS, site files) ──/api/*──▶ api (FastAPI)│──▶ db (PostgreSQL + PostGIS)
+            │                                     worker (06:00 / 07:00 jobs)
+            └────────────────────────────────────────────────────────┘
+                     AEMET OpenData ─┐        ┌─ Sentinel-2 L2A (AWS open data)
+                                     └─ daily ingestion ─┘
+```
+
+**Decoupled by contract.** The backend's Pydantic schemas generate the OpenAPI document
+(`docs/openapi.json`); the front end's TypeScript types are generated from it
+(`frontend/src/api/schema.d.ts`). The UI holds no business logic: phase states, forecasts, photo
+checks and alerts all come from the API, so a completely different UI (or a mobile app, or a partner)
+can use the same API.
+
+The front end has two interchangeable API adapters (`frontend/src/api/`): `http` (production) and
+`mock` (an in-browser copy used for the offline demo link, `npm run build:demo`).
+
+## Local development
+
+Requirements: Node 22, Python 3.12+, PostgreSQL 16 with PostGIS (or just `docker compose up db` from `deploy/`).
 
 ```bash
+# backend
+cd backend
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+export FLORECE_DATABASE_URL=postgresql+psycopg://florece:florece@localhost:5432/florece
+export FLORECE_COOKIE_SECURE=false FLORECE_FIXED_TODAY=2026-10-20   # demo date
+florece migrar && florece seed --demo && florece crear-admin you@example.es
+uvicorn florece.main:app --reload --port 8000
+
+# frontend (another terminal): http://localhost:5173, /api is proxied to :8000
+cd frontend
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # typecheck + production build
+npm run dev
 ```
 
-## Stack and why
+Tests: `cd backend && FLORECE_TEST_DATABASE_URL=postgresql+psycopg://…/florece_test pytest` (25 tests: API, alerts,
+photo checks with real EXIF, roles, CSRF, CSV import, model, AEMET parsing).
 
-| Piece | Choice | Why | Ruled out |
-|---|---|---|---|
-| Frontend | React 18 + TypeScript + Vite | Typed data contract, fast dev loop, static build that's easy to host | Plain HTML (gets hard to manage with this many states) |
-| Map | Leaflet 1.9 + react-leaflet | Free, BSD licence, no API key | Google Maps (cost, key), MapLibre (vector tiles not needed yet) |
-| Basemap | Bundled Sentinel-2 imagery (`public/sat/`), built by `scripts/build_satellite_tiles.py` | Same satellite the product uses; works offline and on hosts that block tile servers (NFR-3) | Live imagery tile services (need network, some have non-commercial licences) |
-| Styling | Plain CSS with design tokens (`src/styles/tokens.css`) | Carries over the "Bloom Map Spain" design 1:1 | CSS framework |
-| i18n | Small built-in dictionary (`src/i18n`) | ES first, EN ready (UX-7) | i18n library (overkill for now) |
+After changing the API: `florece openapi --salida ../frontend/src/api/openapi.json` then `npm run api:types` in `frontend/`.
 
-## Satellite basemap
+## Command line (`florece …`)
 
-`public/sat/` holds WebP tiles packed into JSON (about 15 MB in total), read by `src/components/SatelliteLayers.tsx`:
+| Command | What |
+|---|---|
+| `migrar` | Create/update tables |
+| `seed [--demo]` | Load destinations, content, offers (+ sample data) |
+| `crear-admin EMAIL` | Create a panel account |
+| `ingesta [--solo aemet\|sentinel]` | Run the daily ingestion and recompute |
+| `recalcular` | Recompute states and forecasts |
+| `avisos` | Send the alerts that are due |
+| `importar DESTINO DATASET ARCHIVO.csv` | Import a provided dataset |
+| `openapi` | Write the API contract |
 
-- `base-z5-8.json`, `base-z9.json`: cloud-free summer 2025 mosaic of Spain and its neighbours.
-- `detail.json`: close-ups (zoom 10–14) of each destination, taken in its own season: Tejera Negra in November 2025, Brihuega in July, Jerte in March and the Alpujarra in February.
-
-They come from the public Sentinel-2 L2A archive on AWS (`s3://sentinel-cogs`). To rebuild them:
-
-```bash
-pip install rasterio mercantile mgrs shapely pillow numpy packaging
-python scripts/build_satellite_tiles.py            # or: ... detail | base
-```
-
-Attribution: "Contains modified Copernicus Sentinel-2 data (2025)".
-
-## Public site and admin panel
-
-- `/` is the public site for tourists.
-- `/#admin` is the internal Greenia panel (`src/admin/`): data sources and ingestion, forecast validation, photo moderation, alert test sends, destination set-up and editing of content and sponsorship. It's linked from the footer. In production it would be a separate, authenticated app; here it's a hash route so the mockup stays a single page.
-
-## Structure
-
-```
-src/
-  types.ts              data contract (Destino, VentanaFase, Zona, Prevision…)
-  data/                 MOCK data: destinations, series, offers, photos, sources, demo clock
-  lib/fenologia.ts      mock state engine (phase at a date) for the time selector
-  lib/fechas.ts         date formatting (always ranges, never a single forecast date)
-  i18n/                 es.ts (primary), en.ts
-  components/           Header, Hero, MapSection, BloomMap, SatelliteLayers, DestinoList, ficha/*,
-                        charts/*, PlansSection, AlertsSection, CitizenSection, BusinessSection,
-                        MethodModal, Footer, ui/FlowerArt (species illustrations)
-  admin/                internal panel: DataSection, ForecastSection, PhotosSection,
-                        AlertsAdminSection, DestinationsSection, ContentSection
-scripts/                build_satellite_tiles.py
-```
-
-The demo date is fixed in `src/data/config.ts` (`HOY = 2026-10-20`).
-
-## Spec coverage (UI)
+## Spec coverage
 
 | Area | IDs | Where |
 |---|---|---|
-| Real navigable map, 4 destinations (Tejera Negra, Brihuega, Jerte, Alpujarra) | MIN-1, MAP-1, MAP-2 | `BloomMap` |
-| Phase shown by colour **and** shape; legend | MAP-3, MAP-4, UX-6 | `PhaseGlyph`, `Legend` |
-| Time selector (12 months + exact date), forecast mode with an uncertainty ring | MAP-6, MAP-7 | `DateSelector`, marker halo |
-| Tejera Negra's 7 zones layer + zone detail with "no data" (clouds) | MAP-8, FIC-7, HON-4 | map layer, `CuandoIr` |
-| Filter, search, synced list | MAP-9…11 | `DestinoList` |
-| Visitor photo layer | MAP-12, FIC-14 | map layer, ficha |
-| Destination page: "when to go" first, range + confidence, data type, source, update time | FIC-1…4, PRIN-1.1/1.2/1.4, PRIN-4.1, HON-2/3, UX-2/3 | `ficha/CuandoIr` |
-| Index chart with forecast band, gaps not interpolated; temperature chart | FIC-5, FIC-6, HON-4 | `charts/Charts` |
-| Margin narrowing over time; data-cutoff date | PRIN-1.3, TRA-2 | `MarginChart` |
-| Provided forecast vs own model (MAE, coverage, one-line explanation) | PRED-4…6 | admin › Previsiones |
-| Calculated / editorial / commercial blocks kept visibly separate | PRIN-3.1, PRIN-3.3, AC-7 | `LayerHeading`, ficha tabs |
-| Honesty notice + "How we calculate this" | HON-1, HON-5, FIC-8, TRA-1, ENT-7 | `MethodModal` |
-| Where to stay / what to do, sponsored items labelled | PRIN-4.2/4.3, FIC-11/12/15, MON-1…3 | `Comercial`, `PlansSection` |
-| Alerts: destination + phase + notice period, double opt-in; test send in admin | EXT-3, ALR-1…5, NFR-7 | `AlertsSection`, admin › Avisos |
-| Citizen verification: photo, location/time checks, one-tap phase, consent; moderation queue | EXT-2, CIT-1…7 | `CitizenSection`, admin › Fotos |
-| Data status, stale source kept and flagged, logs, "run ingestion" button | PRIN-2.3, PRIN-2.5, NFR-4, UX-8/9 | admin › Datos, map status badge |
-| Destination set-up by configuration; editorial/commercial editing | PRIN-2.4, PRIN-3.2, PHA-2 | admin › Destinos, Contenido |
-| Business case on the page | MIN-4, MON-4…6 | `BusinessSection` |
-| Map/data attribution (Copernicus, Natural Earth, AEMET) | NFR-6 | map + footer |
-| Spanish UI, English ready; responsive | UX-5, UX-7 | `i18n`, CSS |
+| Navigable map, 4 destinations, phase by colour and shape, legend | MIN-1, MAP-1…4 | `frontend/src/components/BloomMap.tsx` |
+| Time selector, forecast with uncertainty | MAP-6, MAP-7 | `GET /mapa?fecha=` |
+| 7 zones of Tejera Negra, "no data" for clouds | MAP-8, FIC-7, HON-4 | `GET /destinos/{id}`, Sentinel-2 ingestion |
+| Every forecast a range + confidence; data type and source on every value | PRIN-1.1/1.2, HON-2/3 | `schemas.py`, `services/modelo.py` |
+| Margin narrowing, data-cutoff date | PRIN-1.3, TRA-2 | forecast history (`ventana_fase.vigente`) |
+| Calculated / editorial / commercial layers kept apart | PRIN-3.1, MON-3 | data model + `DestinoFicha` blocks |
+| Automatic ingestion, stale source kept and flagged, logs, manual run | PRIN-2.1…2.5, NFR-4 | `services/ingesta/`, `worker.py` |
+| Destination added by configuration | PRIN-2.4 | `POST /admin/destinos` |
+| Import of provided datasets, raw files kept with provenance | DATA-1…6 | `services/importar.py` |
+| Own model vs provided forecast | PRED-1…4, 6 | `services/modelo.py`, admin › Previsiones |
+| Alerts with double opt-in and one-click unsubscribe | EXT-3, ALR-1…5, NFR-7 | `services/alertas.py` |
+| Citizen photos: EXIF location/time, radius, duplicates, rate limit, metadata stripped | EXT-2, CIT-1…7 | `services/fotos.py` |
+| Admin accounts, roles, sessions | D-04 | `services/auth.py`, `api/admin.py` |
+| Credentials only in environment variables | ARQ-4 | `deploy/.env.example` |
+| Offline-capable map, attribution | NFR-3, NFR-6 | bundled Sentinel-2 basemap |
+| Spanish UI, English ready; responsive; accessible | UX-5…7 | `frontend/src/i18n`, CSS |
 
-## Still to do (outside the UI mockup)
+## Satellite basemap
 
-- Import DAT-1…DAT-5 and replace `src/data/*` with the real data (formats are still open questions, spec §15).
-- AEMET/Sentinel ingestion job, state engine, forecast model, email sending, photo EXIF checks.
-- Real zone polygons for Tejera Negra (currently points).
+`frontend/public/sat/` holds WebP tiles packed into JSON (~9 MB): a cloud-free summer-2025 Sentinel-2 mosaic of
+Spain and Portugal (zoom 5–9) and close-ups of each destination in its own season (zoom 10–14). Rebuild with
+`frontend/scripts/build_satellite_tiles.py`. Attribution: "Contains modified Copernicus Sentinel-2 data (2025)".

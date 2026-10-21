@@ -1,0 +1,69 @@
+# Cuándo Florece: everything on one server.  Usage (from this folder):
+#   cp .env.example .env   # then fill it in
+#   docker compose up -d --build
+name: cuando-florece
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: florece
+      POSTGRES_USER: florece
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U florece -d florece"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ../backend
+    restart: unless-stopped
+    env_file: .env
+    environment: &backend_env
+      FLORECE_DATABASE_URL: postgresql+psycopg://florece:${POSTGRES_PASSWORD}@db:5432/florece
+      FLORECE_PUBLIC_URL: https://${DOMAIN}
+    volumes:
+      - appdata:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build: ../backend
+    restart: unless-stopped
+    command: ["python", "-m", "florece.worker"]
+    env_file: .env
+    environment: *backend_env
+    volumes:
+      - appdata:/data
+    healthcheck:
+      disable: true
+    depends_on:
+      api:
+        condition: service_healthy
+
+  web:
+    build: ../frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  appdata:
+  caddy_data:
+  caddy_config:

@@ -114,7 +114,6 @@ const PROPIOS: Destino[] = [
       acceso: 'La mayoría de los campos son fincas privadas: respeta las lindes y no entres en las parcelas.',
       consejos: ['La cosecha empieza a finales de julio; después los campos quedan sin flor.', 'Las mejores horas son el amanecer y el atardecer.'],
     },
-    patrocinio: { entidad: '[Ayuntamiento de Brihuega]', mensaje: 'Descubre la agenda del Festival de la Lavanda 2027.' },
   },
 ];
 

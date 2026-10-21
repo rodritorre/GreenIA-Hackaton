@@ -113,14 +113,6 @@ const opciones = {
       habitacion: { es: "Doble exterior", en: "Outside double" },
       pp: 34,
     },
-    {
-      id: "termal",
-      etiqueta: { es: "Premium 5★", en: "Premium 5★" },
-      aloj: "termal",
-      habitacion: { es: "Hotel termal en la Real Fábrica de Paños", en: "Thermal hotel in the Royal Cloth Factory" },
-      noche: 179.35,
-      nota: { es: "Desayuno aparte", en: "Breakfast extra" },
-    },
   ],
   "tejera-negra": [
     {
@@ -141,9 +133,9 @@ const opciones = {
     },
     {
       id: "nido-majada",
-      etiqueta: { es: "Casa aparte", en: "Private house" },
+      etiqueta: { es: "Suite superior", en: "Top suite" },
       aloj: "nido",
-      habitacion: { es: "Majada del Sol, casa independiente con desayuno", en: "Majada del Sol, private house with breakfast" },
+      habitacion: { es: "Suite Majada del Sol, con desayuno", en: "Majada del Sol suite, with breakfast" },
       noche: 175,
       desayuno: true,
     },
@@ -222,8 +214,12 @@ const meses = [
       es: "La lavanda empieza a colorear hacia el 15 de junio. Paseo libre por los campos (gratis) al atardecer y menú del día en la Hospedería Princesa Elima.",
       en: "Lavender starts colouring around 15 June. Wander the fields on your own (free) at sunset and have the set lunch at the Hospedería Princesa Elima.",
     },
-    extras: [{ concepto: { es: "Menú del día en Princesa Elima", en: "Set lunch at Princesa Elima" }, pp: 15 }],
-    noIncluye: { es: "Cena en El Kiosko de la Alameda (menos de 35 €)", en: "Dinner at El Kiosko de la Alameda (under €35)" },
+    // Princesa Elima no publica el precio de su menú: no se suma.
+    extras: [],
+    noIncluye: {
+      es: "Comida en Princesa Elima (20–30 €) y cena en El Kiosko de la Alameda (menos de 35 €)",
+      en: "Lunch at Princesa Elima (€20–30) and dinner at El Kiosko de la Alameda (under €35)",
+    },
   },
   {
     id: "2027-07",
@@ -236,11 +232,12 @@ const meses = [
       es: "El pico cae en la primera quincena; la siega empieza a finales de mes. Visita guiada municipal a los campos (vie–dom, 19:00 o 20:30) y menú del día en Princesa Elima.",
       en: "Peak bloom is in the first half of the month; harvest starts at the end. Town-run guided visit to the fields (Fri–Sun, 19:00 or 20:30) and set lunch at Princesa Elima.",
     },
-    extras: [
-      { concepto: { es: "Visita guiada municipal", en: "Town-run guided visit" }, pp: 3 },
-      { concepto: { es: "Menú del día en Princesa Elima", en: "Set lunch at Princesa Elima" }, pp: 15 },
-    ],
-    noIncluye: { es: "Festival de la Lavanda (entrada aparte)", en: "Lavender Festival (separate ticket)" },
+    // Ni la visita guiada ni el menú tienen precio publicado en las fuentes: no se suman.
+    extras: [],
+    noIncluye: {
+      es: "Visita guiada municipal, comida en Princesa Elima (20–30 €) y Festival de la Lavanda",
+      en: "Town-run guided visit, lunch at Princesa Elima (€20–30) and the Lavender Festival",
+    },
   },
   {
     id: "2026-10",

@@ -27,6 +27,7 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
   const [tab, setTab] = useState<Tab>('when');
   const ficha = useApi(() => api.ficha(d.id, lang), [d.id, lang]);
   const aforo = useAforo().get(d.id);
+  const negocios = useApi(() => api.negocios(d.id), [d.id]);
   const tabs: { id: Tab; label: string }[] = [
     { id: 'when', label: t('ficha.tabWhen') },
     { id: 'see', label: t('ficha.tabSee') },
@@ -111,7 +112,7 @@ export function DestinoFicha({ d, e, fecha, onBack, onMethod, onAlert }: Props) 
                 <Descubrir destinoId={d.id} />
               </>
             )}
-            {tab === 'stay' && <Comercial ofertas={ficha.data.comercial.ofertas} />}
+            {tab === 'stay' && <Comercial ofertas={ficha.data.comercial.ofertas} negocios={negocios.data} />}
           </>
         )}
       </div>

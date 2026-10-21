@@ -1,5 +1,5 @@
 import { useI18n } from '../../i18n';
-import type { Oferta } from '../../api';
+import type { Oferta, SolicitudNegocio } from '../../api';
 import { LayerHeading, SponsoredTag } from '../ui/Badges';
 import { Icon } from '../ui/Icon';
 
@@ -31,7 +31,7 @@ function OfertaRow({ o }: { o: Oferta }) {
 }
 
 /** Commercial layer (FIC-11, FIC-12, MON-1, MON-2). Kept apart from the forecast (MON-3). */
-export function Comercial({ ofertas }: { ofertas: Oferta[] }) {
+export function Comercial({ ofertas, negocios = [] }: { ofertas: Oferta[]; negocios?: SolicitudNegocio[] }) {
   const { t } = useI18n();
   const stay = ofertas.filter((o) => o.tipo === 'alojamiento');
   const act = ofertas.filter((o) => o.tipo === 'actividad');
@@ -40,7 +40,39 @@ export function Comercial({ ofertas }: { ofertas: Oferta[] }) {
       <LayerHeading capa="comercial">
         <span className="small muted">{t('ficha.neutral')}</span>
       </LayerHeading>
-      {ofertas.length === 0 && <p className="empty">{t('ficha.nothing')}</p>}
+      <section>
+        <h4 className="sub">{t('ficha.verifiedT')}</h4>
+        {negocios.length === 0 ? (
+          <p className="small muted">
+            {t('ficha.noBusiness')} <a href="#alta">{t('ficha.addBusiness')}</a>
+          </p>
+        ) : (
+          <ul className="offers">
+            {negocios.map((n) => (
+              <li key={n.id} className="offer">
+                <span className="offer__icon" aria-hidden="true">
+                  <Icon name={n.tipo === 'alojamiento' ? 'bed' : n.tipo === 'productor' ? 'utensils' : 'compass'} />
+                </span>
+                <span className="offer__text">
+                  <span className="offer__name">
+                    {n.nombre} <span className="pill pill--verdict-aprobado">{t('ficha.verifiedBadge')}</span>
+                  </span>
+                  <span className="small muted">{n.descripcion}</span>
+                  <span className="small muted">
+                    {t(`alta.types.${n.tipo}`)} · {n.pueblo}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <p>
+        <a href="#packs" className="btn btn--ghost btn--sm">
+          {t('ficha.packsLink')}
+          <Icon name="arrowRight" size={16} />
+        </a>
+      </p>
       {stay.length > 0 && (
         <section>
           <h4 className="sub">{t('ficha.stayTitle')}</h4>

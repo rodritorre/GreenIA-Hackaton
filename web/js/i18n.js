@@ -1,4 +1,5 @@
 import { a, ce } from "./vendor/react.min.js";
+import { en as extraEn, es as extraEs, fusionar } from "./i18n-extra.js";
 
 const mf = {
     brand: "Cuándo Florece",
@@ -937,7 +938,7 @@ const mf = {
       copy: "© 2026 Cuándo Florece · Reto Greenia, Hackathon EPS UFV",
     },
   },
-  gf = { es: vf, en: mf };
+  gf = { es: fusionar(vf, extraEs), en: fusionar(mf, extraEn) };
 function Bd(f, v) {
   return v.split(".").reduce((m, j) => (m == null ? void 0 : m[j]), f);
 }

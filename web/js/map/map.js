@@ -298,7 +298,10 @@ function Pp(f) {
           [46.5, 8],
         ],
         zoomControl: !1,
-        scrollWheelZoom: !1,
+        // Zoom con la rueda del ratón, centrado en el puntero
+        scrollWheelZoom: !0,
+        wheelPxPerZoomLevel: 120,
+        wheelDebounceTime: 40,
         className: "map",
         attributionControl: !0,
         children: [
@@ -432,6 +435,7 @@ function Pp(f) {
               v("map.layerCities"),
             ],
           }),
+          jl.length > 0 &&
           a.jsxs("label", {
             children: [
               a.jsx("input", {
@@ -461,6 +465,7 @@ function Ep({ fecha: f, onChange: v }) {
     S = f.slice(0, 7),
     M = Us(qt, 364);
   return a.jsxs("div", {
+    id: "calendario",
     className: "date-selector",
     children: [
       a.jsx("div", {
@@ -479,6 +484,7 @@ function Ep({ fecha: f, onChange: v }) {
               type: "button",
               className: "month",
               "aria-pressed": ae,
+              title: `${El(b, j)} ${O} · ${m("map.inSeason", { n: J })}`,
               onClick: () => v(me),
               children: [
                 a.jsxs("span", {
@@ -489,9 +495,17 @@ function Ep({ fecha: f, onChange: v }) {
                       a.jsx("span", { className: "month__now", children: m("map.badgeNow") }),
                   ],
                 }),
+                // Año y un punto por destino en temporada (el texto completo va en title).
                 a.jsxs("span", {
                   className: "month__sub",
-                  children: [O, " · ", m("map.inSeason", { n: J })],
+                  children: [
+                    O,
+                    a.jsx("span", {
+                      className: "month__dots",
+                      "aria-label": m("map.inSeason", { n: J }),
+                      children: Array.from({ length: J }, (Pe, pe) => a.jsx("i", {}, pe)),
+                    }),
+                  ],
                 }),
               ],
             },

@@ -216,10 +216,6 @@ const br = reales.brihuega,
       ],
     },
     umbrales: { inicio: 0.15, avance: 0.4, pleno: 0.7, final: 0.5 },
-    patrocinio: {
-      entidad: "[Ayuntamiento de Brihuega]",
-      mensaje: "Descubre la agenda del Festival de la Lavanda 2027.",
-    },
   };
 
 // ---------- Montejo (solo fechas de referencia, sin seguimiento por satélite) ----------

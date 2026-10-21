@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Solicitar reserva · Cuándo Florece</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<!-- Solicitud de reserva de un pack. No hay pago: se envía por EmailJS al equipo y al viajero. -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  h1, h2, h3, p { margin: 0; }
+  button, input { font: inherit; }
+  .top {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px max(16px, calc((100vw - 1080px) / 2));
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+  .secure { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+  .mock {
+    display: block; text-align: center; padding: 8px 16px;
+    background: var(--tag-estimado-bg); color: var(--tag-estimado-fg);
+    font-size: 13px; font-weight: 700;
+  }
+  .wrap {
+    max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; align-items: start;
+  }
+  .steps { display: flex; gap: 8px; margin-bottom: 18px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .steps span { display: inline-flex; align-items: center; gap: 6px; }
+  .steps b { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--line-2); color: var(--ink-2); font-size: 12px; }
+  .steps .on b { background: var(--accent); color: #fff; }
+  .steps .on { color: var(--ink); }
+  h1 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 38px); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .lead { color: var(--ink-2); margin-bottom: 24px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--radius-lg);
+    padding: 22px; margin-bottom: 16px;
+  }
+  .card h2 { font-family: var(--font-display); font-size: 20px; margin-bottom: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label.f { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  label.f input {
+    min-height: 46px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 500;
+  }
+  label.f input:focus { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+  .full { grid-column: 1 / -1; }
+  .methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .method {
+    display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; text-align: left;
+    border: 1px solid var(--line-2); border-radius: var(--radius); background: var(--surface); color: var(--ink); cursor: pointer;
+  }
+  .method small { color: var(--muted); font-size: 12px; }
+  .method[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: var(--bg-chip); }
+  .method strong { font-size: 15px; }
+  .info { padding: 14px; border-radius: var(--radius); background: var(--bg-soft); color: var(--ink-2); font-size: 14px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; margin: 16px 0; font-size: 14px; color: var(--ink-2); }
+  .check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
+  .pay {
+    width: 100%; min-height: 54px; border: 0; border-radius: 999px; cursor: pointer;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .pay:hover { background: var(--forecast); }
+  .pay[disabled] { opacity: 0.7; cursor: progress; }
+  .note { display: flex; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  /* Resumen */
+  .sum { position: sticky; top: 20px; background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 18px 50px #2b1f1a14; }
+  .sum__band { padding: 20px 22px; background: color-mix(in srgb, var(--season, #EC6A92) 18%, #fff); }
+  .sum__month { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .sum__kicker { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .sum__title { font-family: var(--font-display); font-size: 22px; line-height: 1.15; margin-top: 4px; }
+  .sum__body { padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 12px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--ink-2); }
+  .row b { color: var(--ink); white-space: nowrap; }
+  .meta { font-size: 14px; color: var(--ink-2); }
+  .meta strong { display: block; color: var(--ink); font-size: 15px; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line-3); }
+  .total strong { font-family: var(--font-display); font-size: 32px; }
+  .small { font-size: 12px; color: var(--muted); }
+  /* Confirmación */
+  .done { max-width: 620px; margin: 48px auto; padding: 0 16px 64px; text-align: center; }
+  .done__icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; }
+  .done h1 { margin-bottom: 10px; }
+  .ref { display: inline-block; margin: 18px 0 24px; padding: 10px 16px; border-radius: 12px; background: var(--ink); color: #fff; font-size: 14px; }
+  .ref b { letter-spacing: 1px; font-size: 16px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+  .btn--p { background: var(--accent); color: #fff; }
+  .btn--g { background: var(--surface); color: var(--ink); border-color: var(--border-input); }
+  .hidden { display: none !important; }
+  @media (max-width: 860px) {
+    .wrap { grid-template-columns: 1fr; }
+    .sum { position: static; order: -1; }
+  }
+  @media (max-width: 520px) {
+    .grid2, .methods { grid-template-columns: 1fr; }
+    .secure span { display: none; }
+  }
+  label.f textarea { min-height: 80px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; resize: vertical; }
+  .err { margin-top: 10px; padding: 12px 14px; border-radius: var(--radius); background: var(--tag-previsto-bg); color: var(--tag-previsto-fg); font-size: 14px; }
+  .check a { color: var(--accent); }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./" style="color:inherit;text-decoration:none"><span aria-hidden="true">🌸</span> Cuándo Florece</a>
+    <div class="secure"><span data-t="noCharge">Sin pago: solo solicitud</span></div>
+  </header>
+
+  <!-- Paso 1: solicitud -->
+  <main id="paso-form" class="wrap">
+    <div>
+      <h1 data-t="h1">Solicita tu escapada</h1>
+      <p class="lead" data-t="lead">No se cobra nada. Te escribimos para confirmar disponibilidad y precio final con el alojamiento.</p>
+
+      <form id="form">
+        <section class="card">
+          <h2 data-t="who">Tus datos</h2>
+          <div class="grid2">
+            <label class="f"><span data-t="name">Nombre y apellidos</span><input name="nombre" type="text" required autocomplete="name"></label>
+            <label class="f"><span data-t="email">Correo electrónico</span><input name="email" type="email" required autocomplete="email"></label>
+            <label class="f"><span data-t="phone">Teléfono (opcional)</span><input name="telefono" type="tel" autocomplete="tel"></label>
+            <label class="f"><span data-t="checkin">Fecha de llegada</span><input name="entrada" type="date" required></label>
+            <label class="f full"><span data-t="notes">Comentarios (opcional)</span><textarea name="comentarios"></textarea></label>
+          </div>
+        </section>
+        <label class="check"><input type="checkbox" required> <span><span data-t="terms">Acepto que se usen mis datos para gestionar esta solicitud.</span> <a href="privacidad.html" target="_blank" rel="noopener" data-t="privacy">Política de privacidad</a></span></label>
+        <button id="send" class="pay" type="submit" data-t="send">Enviar solicitud</button>
+        <p id="err" class="err hidden" role="alert"></p>
+      </form>
+    </div>
+
+    <aside class="sum" aria-labelledby="sum-title">
+      <div class="sum__band">
+        <span class="sum__month" id="s-mes"></span>
+        <p class="sum__kicker" id="s-dest"></p>
+        <h2 class="sum__title" id="sum-title"></h2>
+      </div>
+      <div class="sum__body">
+        <p class="meta"><span data-t="stay">Alojamiento</span><strong id="s-aloj"></strong><span id="s-hab"></span></p>
+        <p class="meta"><span data-t="guests">Huéspedes</span><strong id="s-grupo"></strong></p>
+        <div id="s-lineas"></div>
+        <div class="total"><span data-t="total">Estimación</span><strong id="s-total"></strong></div>
+        <p class="small" id="s-excl"></p>
+        <p class="small" data-t="estimate">Precio orientativo con tarifas publicadas. El definitivo lo confirma el alojamiento.</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Sin pack elegido -->
+  <main id="paso-vacio" class="done hidden">
+    <h1 data-t="emptyTitle">Elige primero tu escapada</h1>
+    <p class="lead" data-t="emptyText">Abre un pack en la web y pulsa «Solicitar reserva».</p>
+    <div class="btns"><a class="btn btn--p" href="./#packs" data-t="toPacks">Ver los packs</a></div>
+  </main>
+
+  <!-- Paso 2: enviada -->
+  <main id="paso-ok" class="done hidden" aria-live="polite">
+    <div class="done__icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h1 data-t="okTitle">Solicitud enviada</h1>
+    <p class="lead" id="ok-text"></p>
+    <div class="btns"><a class="btn btn--g" href="./" data-t="back">Volver a Cuándo Florece</a></div>
+  </main>
+
+<script type="module" src="js/reserva.js"></script>
+</body>
+</html>

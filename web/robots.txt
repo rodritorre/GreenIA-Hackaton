@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /reserva.html
+
+Sitemap: https://TU-DOMINIO.es/sitemap.xml

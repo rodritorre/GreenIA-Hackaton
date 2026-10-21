@@ -1,29 +1,46 @@
 import { useEffect, useState } from 'react';
 import { AdminApp } from './admin/AdminApp';
 import App from './App';
+import { DestinoPanel } from './destino/DestinoPanel';
 import { useI18n } from './i18n';
 import { DatosProvider } from './state';
 
 // The internal panel lives at #admin (a plain anchor, so the link also works when the
 // mockup is embedded). In production it would be a separate, authenticated app.
-const isAdmin = () => window.location.hash.startsWith('#admin');
+// The destination panel (paying towns) lives at #destino, the same way.
+type Vista = 'admin' | 'destino' | 'web';
+const vista = (): Vista => {
+  const h = window.location.hash;
+  return h.startsWith('#admin') ? 'admin' : h.startsWith('#destino') ? 'destino' : 'web';
+};
 
 export default function Root() {
-  const [admin, setAdmin] = useState(isAdmin);
+  const [v, setV] = useState(vista);
   useEffect(() => {
     const on = () => {
-      const next = isAdmin();
-      setAdmin((prev) => {
-        if (prev !== next) window.scrollTo(0, 0);
+      const next = vista();
+      setV((prev) => {
+        if (prev !== next) {
+          // Coming back to the public site lands on the section the link points to.
+          const id = window.location.hash.slice(1);
+          if (next !== 'web') setTimeout(() => window.scrollTo(0, 0), 0);
+          else setTimeout(() => (id ? document.getElementById(id)?.scrollIntoView() : window.scrollTo(0, 0)), 400);
+        }
         return next;
       });
     };
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
-  return admin ? (
-    <AdminApp />
-  ) : (
+  if (v === 'admin') return <AdminApp />;
+  if (v === 'destino') {
+    return (
+      <DatosProvider fallback={(f) => <Arranque {...f} />}>
+        <DestinoPanel />
+      </DatosProvider>
+    );
+  }
+  return (
     <DatosProvider fallback={(f) => <Arranque {...f} />}>
       <App />
     </DatosProvider>

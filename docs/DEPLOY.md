@@ -23,7 +23,7 @@ Internet ──443──▶ Caddy (web) ──/api/*──▶ api (FastAPI) ─�
 sudo mkdir -p /opt/cuando-florece && sudo chown $USER /opt/cuando-florece
 cd /opt/cuando-florece
 unzip ~/cuando-florece.zip           # or git clone your repository here
-cd deploy
+cd deploy/fullstack
 cp .env.example .env
 nano .env                            # DOMAIN, ACME_EMAIL, POSTGRES_PASSWORD, FLORECE_SECRET_KEY, AEMET key
 docker compose up -d --build         # first build takes a few minutes
@@ -48,7 +48,7 @@ Then, in the panel:
 
 ## 4. Day to day
 
-| Task | Command (from `deploy/`) |
+| Task | Command (from `deploy/fullstack/`) |
 |---|---|
 | See logs | `docker compose logs -f api worker` |
 | Run ingestion now | `docker compose exec api florece ingesta` |
@@ -56,7 +56,7 @@ Then, in the panel:
 | Send due alerts now | `docker compose exec api florece avisos` |
 | Import a CSV | `docker compose cp file.csv api:/tmp/f.csv && docker compose exec api florece importar tejera-negra indice /tmp/f.csv` |
 | Update to a new version | replace the files, then `docker compose up -d --build` |
-| Back up | `./backup.sh` (add to cron: `15 3 * * * /opt/cuando-florece/deploy/backup.sh`) |
+| Back up | `./backup.sh` (add to cron: `15 3 * * * /opt/cuando-florece/deploy/fullstack/backup.sh`) |
 | Restore the database | `docker compose exec -T db pg_restore -U florece -d florece --clean < db-YYYYMMDD-HHMM.dump` |
 
 ## 5. Checks

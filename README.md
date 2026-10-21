@@ -6,7 +6,7 @@ It answers three questions: **where** the bloom is, **when** it will arrive, and
 ```
 frontend/   React + TypeScript site and internal panel (#admin). Talks only to the API.
 backend/    Python + FastAPI API, PostGIS database, daily ingestion (AEMET, Sentinel-2), forecast model, alerts.
-deploy/     Docker Compose + Caddy for your server (HTTPS for your domain).
+deploy/fullstack/  Docker Compose + Caddy for the full stack (db, api, worker, web).
 docs/       DECISIONS.md (decisions + what's pending from you), DEPLOY.md, API.md, openapi.json.
 ```
 
@@ -36,7 +36,7 @@ The front end has two interchangeable API adapters (`frontend/src/api/`): `http`
 
 ## Local development
 
-Requirements: Node 22, Python 3.12+, PostgreSQL 16 with PostGIS (or just `docker compose up db` from `deploy/`).
+Requirements: Node 22, Python 3.12+, PostgreSQL 16 with PostGIS (or just `docker compose up db` from `deploy/fullstack/`).
 
 ```bash
 # backend
@@ -89,7 +89,7 @@ After changing the API: `florece openapi --salida ../frontend/src/api/openapi.js
 | Alerts with double opt-in and one-click unsubscribe | EXT-3, ALR-1…5, NFR-7 | `services/alertas.py` |
 | Citizen photos: EXIF location/time, radius, duplicates, rate limit, metadata stripped | EXT-2, CIT-1…7 | `services/fotos.py` |
 | Admin accounts, roles, sessions | D-04 | `services/auth.py`, `api/admin.py` |
-| Credentials only in environment variables | ARQ-4 | `deploy/.env.example` |
+| Credentials only in environment variables | ARQ-4 | `deploy/fullstack/.env.example` |
 | Offline-capable map, attribution | NFR-3, NFR-6 | bundled Sentinel-2 basemap |
 | Spanish UI, English ready; responsive; accessible | UX-5…7 | `frontend/src/i18n`, CSS |
 

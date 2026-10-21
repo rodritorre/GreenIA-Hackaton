@@ -20,7 +20,7 @@ services:
       retries: 10
 
   api:
-    build: ../backend
+    build: ../../backend
     restart: unless-stopped
     env_file: .env
     environment: &backend_env
@@ -33,7 +33,7 @@ services:
         condition: service_healthy
 
   worker:
-    build: ../backend
+    build: ../../backend
     restart: unless-stopped
     command: ["python", "-m", "florece.worker"]
     env_file: .env
@@ -47,7 +47,7 @@ services:
         condition: service_healthy
 
   web:
-    build: ../frontend
+    build: ../../frontend
     restart: unless-stopped
     ports:
       - "80:80"

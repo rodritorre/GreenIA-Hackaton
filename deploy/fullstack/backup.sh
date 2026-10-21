@@ -1,6 +1,6 @@
 #!/bin/sh
 # Daily database + uploads backup. Add to the server's crontab, e.g.:
-#   15 3 * * * /opt/cuando-florece/deploy/backup.sh >> /var/log/florece-backup.log 2>&1
+#   15 3 * * * /opt/cuando-florece/deploy/fullstack/backup.sh >> /var/log/florece-backup.log 2>&1
 set -eu
 cd "$(dirname "$0")"
 DEST=${BACKUP_DIR:-/var/backups/cuando-florece}

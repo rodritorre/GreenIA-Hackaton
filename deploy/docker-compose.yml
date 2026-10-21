@@ -1,0 +1,36 @@
+# Live demo stack. Run from the repo root via scripts/deploy.sh.
+# Caddy serves the frontend's demo build (in-browser mock API), built in deploy/Dockerfile.
+# Future services (api, db, worker; see fullstack/) join the `internal` network and get a
+# route in the Caddyfile; Caddy stays the only container publishing ports.
+name: hackathon
+
+services:
+  caddy:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: hackathon-web:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in deploy/.env}
+    volumes:
+      - caddy_data:/data     # certificates: must persist or Let's Encrypt rate limits bite
+      - caddy_config:/config
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:

@@ -1,0 +1,57 @@
+:root {
+  /* Ground and ink — from the "Bloom Map Spain" design */
+  --ink: #14231b;
+  --ink-2: #3f4d45;
+  --muted: #55625b;
+  --placeholder: #6a766f;
+  --bg: #ffffff;
+  --bg-soft: #f3f6f2;
+  --bg-chip: #f6f8f6;
+  --line: #e4e8e5;
+  --line-2: #dde4df;
+  --line-3: #e7ece8;
+  --border-input: #c4cdc7;
+  --ring-dot: #c9d1cc;
+
+  --accent: #1d6a48;
+  --accent-soft: #cfe5d8;
+  --forecast: #8a2b52;
+  --focus: #f9c74f;
+  --sun: #f9c74f;
+  --logo: #d6336c;
+  --sea: #aadaff;
+  --sat-sea: #102c3f;
+
+  --dark: #14231b;
+  --dark-text: #cfe0d6;
+  --dark-line: #3c5446;
+
+  /* Phase encoding: colour + shape (MAP-3) */
+  --fase-fuera: #a7afaa;
+  --fase-inicio: #8cc7a1;
+  --fase-avance: #3e9b6a;
+  --fase-pleno: #1d6a48;
+  --fase-final: #b07d48;
+
+  /* Data-type tags (HON-2) */
+  --tag-observado-bg: #e3eefb;
+  --tag-observado-fg: #1f4e79;
+  --tag-estimado-bg: #fff1d6;
+  --tag-estimado-fg: #7a4b00;
+  --tag-previsto-bg: #f8e6ee;
+  --tag-previsto-fg: #8a2b52;
+  --tag-editorial-bg: #efeaf8;
+  --tag-editorial-fg: #4b3482;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --pill: 999px;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  --container: 1360px;
+  --shadow-float: 0 1px 6px rgba(0, 0, 0, 0.18);
+}

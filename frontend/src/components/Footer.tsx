@@ -24,7 +24,7 @@ export function Footer({ onMethod }: { onMethod: () => void }) {
             </button>
             <a href="#negocio">{t('footer.business')}</a>
             <a href="#destino">{t('nav.panel')}</a>
-            <a href="#">{t('footer.privacy')}</a>
+            <a href="privacidad.html">{t('footer.privacy')}</a>
             <a href="#admin" className="site-footer__admin">
               {t('footer.admin')}
             </a>

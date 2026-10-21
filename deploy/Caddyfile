@@ -14,15 +14,18 @@
 		@assets path /assets/*
 		header @assets Cache-Control "public, max-age=31536000, immutable"
 		header /sat/* Cache-Control "public, max-age=604800"
+		# HTML always fresh, so a new deploy shows at once
+		@html path / /*.html
+		header @html Cache-Control "no-cache"
 	}
 
-	# Security headers, same as the full stack's frontend/Caddyfile. Third parties: Google Fonts and Esri imagery tiles.
+	# Security headers, same as the full stack's frontend/Caddyfile. Third parties: Google Fonts, Esri imagery tiles and EmailJS (form sending).
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options nosniff
 		Referrer-Policy strict-origin-when-cross-origin
 		Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://server.arcgisonline.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://server.arcgisonline.com; connect-src 'self' https://api.emailjs.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 		-Server
 	}
 }

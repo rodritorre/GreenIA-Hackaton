@@ -45,6 +45,8 @@ export const httpApi: Api = {
   alternativas: (id) => call(`/destinos/${encodeURIComponent(id)}/alternativas`),
   agenda: (id) => call(`/destinos/${encodeURIComponent(id)}/agenda`),
   altaNegocio: (body) => call('/negocios', post(body)),
+  contactoDestino: (body) => call('/contacto', post(body)),
+  negocios: (id) => call(`/destinos/${encodeURIComponent(id)}/negocios`),
 
   destino: {
     panel: (id) => call(`/destino/${encodeURIComponent(id)}/panel`),

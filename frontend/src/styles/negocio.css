@@ -576,3 +576,22 @@
     flex-wrap: wrap;
   }
 }
+
+/* ───────── Destination licence contact form (inside the pricing card) ───────── */
+.contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: #fff;
+}
+.contacto .field input,
+.contacto .field select,
+.contacto .field textarea {
+  border-color: var(--border-input);
+}
+.plan .contacto .btn {
+  align-self: flex-start;
+}

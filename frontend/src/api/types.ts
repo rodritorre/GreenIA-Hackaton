@@ -68,6 +68,20 @@ export interface SolicitudNegocioIn {
   fotoDistanciaKm?: number;
   /** Demo hint: the review came from the business's own connection. */
   mismaIp?: boolean;
+  /** Contact email: gets the confirmation and the town's answer. */
+  email?: string;
+  idioma?: string;
+}
+
+/** "Solicitar información" about the destination licence (town councils, parks). */
+export interface ContactoDestinoIn {
+  nombre: string;
+  entidad: string;
+  email: string;
+  telefono?: string;
+  destino: string;
+  mensaje?: string;
+  idioma?: string;
 }
 
 export interface Veredicto {
@@ -171,6 +185,9 @@ export interface Api {
   agenda(destinoId: string): Promise<EventoAgenda[]>;
   /** Business sign-up: the listing goes through automatic moderation and comes back with a verdict. */
   altaNegocio(body: SolicitudNegocioIn): Promise<SolicitudNegocio>;
+  contactoDestino(body: ContactoDestinoIn): Promise<Mensaje>;
+  /** Businesses of a destination that passed moderation (verified listings). */
+  negocios(destinoId: string): Promise<SolicitudNegocio[]>;
 
   /** Panel for a paying destination (town council, natural park). */
   destino: {

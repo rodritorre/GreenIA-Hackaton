@@ -5,6 +5,17 @@ WORKDIR /src
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
+# Public build-time settings (see frontend/src/config.ts). Empty keys = forms stay simulated.
+ARG SITE_URL=""
+ARG EMAILJS_PUBLIC_KEY=""
+ARG EMAILJS_SERVICE_ID=""
+ARG EMAILJS_TEMPLATE_EQUIPO=""
+ARG EMAILJS_TEMPLATE_USUARIO=""
+ENV VITE_SITE_URL=$SITE_URL \
+    VITE_EMAILJS_PUBLIC_KEY=$EMAILJS_PUBLIC_KEY \
+    VITE_EMAILJS_SERVICE_ID=$EMAILJS_SERVICE_ID \
+    VITE_EMAILJS_TEMPLATE_EQUIPO=$EMAILJS_TEMPLATE_EQUIPO \
+    VITE_EMAILJS_TEMPLATE_USUARIO=$EMAILJS_TEMPLATE_USUARIO
 RUN npm run build:demo
 
 FROM caddy:2.11-alpine

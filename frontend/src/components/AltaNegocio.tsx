@@ -37,7 +37,7 @@ const PRESETS: { key: string; datos: SolicitudNegocioIn }[] = [
 
 /** Business sign-up with automatic moderation (licence of the business listing, ~99 €/season). */
 export function AltaNegocio() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { destinos } = useDatos();
   const [f, setF] = useState<SolicitudNegocioIn>(VACIO);
   const [estado, setEstado] = useState<'analizando' | null>(null);
@@ -52,7 +52,7 @@ export function AltaNegocio() {
     setResultado(null);
     setError(null);
     try {
-      setResultado(await api.altaNegocio(f));
+      setResultado(await api.altaNegocio({ ...f, idioma: lang }));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -150,6 +150,16 @@ export function AltaNegocio() {
               onChange={(e) => set('fotoDistanciaKm', e.target.value === '' ? undefined : Number(e.target.value))}
             />
             <span className="small muted">{t('alta.photoHint')}</span>
+          </label>
+          <label className="field field--light">
+            {t('alerts.email')}
+            <input type="email" autoComplete="email" value={f.email ?? ''} onChange={(e) => set('email', e.target.value || undefined)} />
+          </label>
+          <label className="consent consent--light">
+            <input type="checkbox" required />
+            <span>
+              {t('mail.consent')} <a href="privacidad.html" target="_blank" rel="noopener">{t('mail.privacy')}</a>
+            </span>
           </label>
           <div className="alta__actions">
             <button type="submit" className="btn btn--primary" disabled={estado === 'analizando'}>

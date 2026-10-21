@@ -1,4 +1,5 @@
 import { useI18n } from '../i18n';
+import { ContactoDestino } from './ContactoDestino';
 import { Eyebrow } from './ui/Badges';
 import { Icon } from './ui/Icon';
 
@@ -39,7 +40,8 @@ export function BusinessSection() {
                   </li>
                 ))}
               </ul>
-              <a href={p.href} className={`btn ${p.destacado ? 'btn--primary' : 'btn--ghost'}`}>
+              {p.id === 'destino' && <ContactoDestino />}
+              <a href={p.href} className={`btn ${p.destacado ? 'btn--ghost' : 'btn--primary'}`}>
                 {t(`business.${p.id}.cta`)}
                 <Icon name="arrowRight" size={16} />
               </a>

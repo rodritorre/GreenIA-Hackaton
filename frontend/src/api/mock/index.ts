@@ -1,9 +1,12 @@
 // In-browser implementation of the API, used where no backend is reachable (the shared demo link).
 // It answers with the same shapes as the real API, from the sample data in this folder.
+import { emailConfigurado } from '../../config';
 import { addDays } from '../../lib/fechas';
+import { enviarFormulario, fotoComprimida, type Formulario } from '../email';
 import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type SolicitudNegocio, type Usuario } from '../types';
 import { FOTOS, FUENTES, LOG_INGESTA, OFERTAS, SUSCRIPCIONES } from './comercial';
 import { HOY, ULTIMA_ACTUALIZACION } from './config';
+import { correo } from './correos';
 import { DESTINOS, fuentesDe } from './destinos';
 import { estadoEn } from './fenologia';
 import type { Destino } from './tipos';
@@ -41,6 +44,17 @@ for (const [id, historia] of Object.entries(demo.historia)) {
   const d = DESTINOS.find((x) => x.id === id);
   if (d) d.editorial.historia = historia;
 }
+/** With EmailJS keys, the forms really send (team + confirmation); without them they stay simulated. */
+async function enviar(f: Formulario, idioma?: string) {
+  if (!emailConfigurado()) return;
+  try {
+    await enviarFormulario(f);
+  } catch (e) {
+    console.error(e);
+    throw new ApiError(502, correo('error', idioma));
+  }
+}
+
 const solicitudes = (): SolicitudNegocio[] => [...SOLICITUDES_INICIALES, ...demo.solicitudes];
 
 function resumen(d: Destino): DestinoResumen {
@@ -103,11 +117,35 @@ export const mockApi: Api = {
   fotos: (destinoId) => wait(fotos.filter((f) => f.estado === 'valida' && (!destinoId || f.destinoId === destinoId))),
   suscribir: async (body) => {
     if (!body.consentimiento) throw new ApiError(422, 'Hace falta el consentimiento');
+    const d = destino(body.destinoId);
+    const v = d.ventanas.find((w) => w.fase === body.fase);
+    await enviar({
+      tipo: 'aviso', asunto: `Nuevo aviso: ${d.nombre} · ${body.fase}`, email: body.email,
+      campos: {
+        Destino: d.nombre, Fase: body.fase, 'Días de antelación': body.antelacionDias, Provincia: body.provincia,
+        Idioma: body.idioma, 'Ventana prevista': v ? `${v.desde} → ${v.hasta}` : '',
+      },
+      confirmacion: {
+        asunto: correo('alertSubject', body.idioma, { destino: d.nombre }),
+        mensaje: correo('alertBody', body.idioma, { destino: d.nombre, fase: body.fase, n: body.antelacionDias ?? 7 }),
+      },
+    }, body.idioma);
     sumarAlerta(body.destinoId, body.provincia);
     return wait({ ok: true, mensaje: 'Revisa tu correo para confirmar el aviso.' }, 400);
   },
-  subirFoto: async ({ destinoId, fase }) =>
-    wait(
+  subirFoto: async ({ foto, destinoId, fase, lat, lon }) => {
+    const d = destino(destinoId);
+    if (emailConfigurado()) {
+      await enviar({
+        tipo: 'observacion', asunto: `Observación ciudadana: ${d.nombre} · ${fase}`,
+        campos: {
+          Destino: d.nombre, 'Fase observada': fase, Ubicación: lat !== undefined && lon !== undefined ? `${lat}, ${lon}` : '',
+          'Fecha del archivo': new Date(foto.lastModified).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),
+        },
+        adjunto: await fotoComprimida(foto),
+      });
+    }
+    return wait(
       {
         id: fotos.length + 1,
         estado: 'pendiente',
@@ -119,7 +157,8 @@ export const mockApi: Api = {
         ],
       },
       600,
-    ),
+    );
+  },
   aforo: () => wait(DESTINOS.map((d) => estadoAforo(d.id))),
   alternativas: (id) => wait(ALTERNATIVAS[id] ?? []),
   agenda: (id) => wait(agenda(id)),
@@ -127,9 +166,30 @@ export const mockApi: Api = {
     destino(body.destinoId);
     if (!body.nombre.trim()) throw new ApiError(422, 'Falta el nombre del negocio');
     const s: SolicitudNegocio = { ...body, id: solicitudes().length + 1, recibidaEn: ahora(), veredicto: moderar(body) };
+    const d = destino(body.destinoId);
+    await enviar({
+      tipo: 'negocio', asunto: `Alta de negocio: ${body.nombre} (${d.nombre})`, email: body.email, nombre: body.nombre,
+      campos: {
+        Negocio: body.nombre, Destino: d.nombre, Tipo: body.tipo, Pueblo: body.pueblo, Descripción: body.descripcion,
+        'Normas de la finca': body.normas, 'Distancia de la foto (km)': body.fotoDistanciaKm, 'Reseña destacada': body.resena,
+        'Veredicto automático': `${s.veredicto.estado}: ${s.veredicto.motivo}`,
+        'Comprobaciones automáticas': s.veredicto.comprobaciones.map((c) => `${c.ok ? 'OK' : 'NO'} ${c.detalle}`).join(' | '),
+      },
+      confirmacion: { asunto: correo('bizSubject', body.idioma), mensaje: correo('bizBody', body.idioma, { nombre: body.nombre }) },
+    }, body.idioma);
     demo.solicitudes.push(s);
     guardar();
     return wait(s, 1800); // the "analysing" moment
+  },
+  negocios: (id) => wait(solicitudes().filter((s) => s.destinoId === id && s.veredicto.estado === 'aprobado')),
+  contactoDestino: async (body) => {
+    if (!body.nombre.trim() || !body.email.trim()) throw new ApiError(422, 'Faltan el nombre o el email');
+    await enviar({
+      tipo: 'contacto', asunto: `Licencia de destino: ${body.entidad || body.nombre}`, email: body.email, nombre: body.nombre,
+      campos: { Nombre: body.nombre, Entidad: body.entidad, Email: body.email, Teléfono: body.telefono, Destino: body.destino, Mensaje: body.mensaje },
+      confirmacion: { asunto: correo('contactSubject', body.idioma), mensaje: correo('contactBody', body.idioma) },
+    }, body.idioma);
+    return wait({ ok: true, mensaje: emailConfigurado() ? 'enviado' : 'simulado' }, emailConfigurado() ? 0 : 500);
   },
 
   destino: {

@@ -3,7 +3,8 @@ import { yf } from "./i18n.js";
 import { Rf } from "./admin.js";
 import { qt } from "./utils/fases.js";
 import { $f, Bf, Ff, Hf, Wf, Zf } from "./sections.js";
-import { $p, Up, Wp } from "./explorar.js";
+import { $p, Wp } from "./explorar.js";
+import { Kp } from "./packs.js";
 
 const Jd = (f) => {
   var v;
@@ -35,7 +36,7 @@ function Vp() {
             onMethod: ne,
           }),
           a.jsx($p, { fecha: f, onFecha: v, sel: m, onSel: j, onMethod: ne, onAlert: O }),
-          a.jsx(Up, { fecha: f, onPick: C }),
+          a.jsx(Kp, { fecha: f, onPick: C }),
           a.jsx(Ff, { preselect: M }),
           a.jsx(Zf, {}),
           a.jsx(Bf, {}),

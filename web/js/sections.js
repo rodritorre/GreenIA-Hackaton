@@ -338,7 +338,7 @@ function Hf({ onMethod: f }) {
                 children: [
                   a.jsx("p", { className: "label", children: v("footer.explore") }),
                   a.jsx("a", { href: "#mapa", children: v("nav.map") }),
-                  a.jsx("a", { href: "#planes", children: v("nav.plans") }),
+                  a.jsx("a", { href: "#packs", children: v("nav.packs") }),
                   a.jsx("a", { href: "#avisos", children: v("nav.alerts") }),
                   a.jsx("a", { href: "#verifica", children: v("footer.verify") }),
                 ],
@@ -404,7 +404,7 @@ function $f({ onMethod: f }) {
               children: [
                 a.jsx("a", { href: "#mapa", "aria-current": "page", children: v("nav.map") }),
                 a.jsx("a", { href: "#mapa", children: v("nav.calendar") }),
-                a.jsx("a", { href: "#planes", children: v("nav.plans") }),
+                a.jsx("a", { href: "#packs", children: v("nav.packs") }),
                 a.jsx("a", { href: "#avisos", children: v("nav.alerts") }),
                 a.jsx("button", {
                   type: "button",
@@ -446,7 +446,7 @@ function $f({ onMethod: f }) {
                   ),
                 }),
                 a.jsx("a", {
-                  href: "#planes",
+                  href: "#packs",
                   className: "btn btn--primary",
                   children: v("nav.cta"),
                 }),

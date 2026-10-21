@@ -1,13 +1,11 @@
 import { a, ce } from "./vendor/react.min.js";
 import { tt } from "./i18n.js";
 import { He } from "./components/icons.js";
-import { wa } from "./data/ofertas.js";
-import { El, sh, un } from "./utils/fechas.js";
-import { Ot, oo } from "./data/destinos.js";
-import { $s, Ku, Mr, Qu, Tl, ps, zr } from "./components/ui.js";
-import { Cl, qt, ro } from "./utils/fases.js";
+import { El, sh } from "./utils/fechas.js";
+import { Ot } from "./data/destinos.js";
+import { Ku, Mr, ps, zr } from "./components/ui.js";
+import { Cl, qt } from "./utils/fases.js";
 import { Ep, Pp } from "./map/map.js";
-import { jh } from "./components/ilustraciones.js";
 import { Fp } from "./ficha.js";
 
 const Yd = (f) => f.e.fase !== "fuera_temporada";
@@ -329,122 +327,4 @@ function Wp({ open: f, onClose: v }) {
     }),
   });
 }
-function Up({ fecha: f, onPick: v }) {
-  const { t: m, lang: j } = tt(),
-    T = Ot.filter((C) => Cl(C, f).fase !== "fuera_temporada").map((C) => C.id),
-    S = Ot.slice()
-      .sort((C, O) => ro(C).desde.localeCompare(ro(O).desde))
-      .find((C) => ro(C).hasta >= f),
-    M = T.length ? T : S ? [S.id] : [],
-    b = wa
-      .filter((C) => M.includes(C.destinoId))
-      .sort((C, O) => Number(O.patrocinado) - Number(C.patrocinado))
-      .slice(0, 6);
-  return a.jsx("section", {
-    id: "planes",
-    className: "plans",
-    "aria-labelledby": "plans-title",
-    children: a.jsxs("div", {
-      className: "container",
-      children: [
-        a.jsxs("div", {
-          className: "section-head",
-          children: [
-            a.jsxs("div", {
-              children: [
-                a.jsx(Tl, { children: m("plans.eyebrow") }),
-                a.jsx("h2", {
-                  id: "plans-title",
-                  className: "h2",
-                  children: m("plans.title", { fecha: un(f, j, !0) }),
-                }),
-                a.jsx("p", {
-                  className: "muted lead-sm",
-                  children: T.length ? m("plans.lead") : m("plans.leadNone"),
-                }),
-              ],
-            }),
-            a.jsx($s, {
-              capa: "comercial",
-              children: a.jsx("span", { className: "small muted", children: m("ficha.neutral") }),
-            }),
-          ],
-        }),
-        a.jsx("div", {
-          className: "cards",
-          children: b.map((C) => {
-            const O = oo(C.destinoId),
-              ne = Cl(O, f);
-            return a.jsxs(
-              "article",
-              {
-                className: "card",
-                children: [
-                  a.jsxs("div", {
-                    className: "card__band",
-                    style: { background: `color-mix(in srgb, ${O.color} 22%, #fff)` },
-                    children: [
-                      a.jsx(jh, { kind: O.ilustracion, size: 150, className: "card__art" }),
-                      a.jsx("span", {
-                        className: "card__pill",
-                        children: a.jsx(Ku, { fase: ne.fase, tipo: O.tipo }),
-                      }),
-                      C.patrocinado &&
-                        a.jsx("span", { className: "card__sponsor", children: a.jsx(Qu, {}) }),
-                    ],
-                  }),
-                  a.jsxs("div", {
-                    className: "card__body",
-                    children: [
-                      a.jsxs("p", {
-                        className: "card__kicker",
-                        children: [
-                          a.jsx(He, {
-                            name: C.tipo === "alojamiento" ? "bed" : "compass",
-                            size: 16,
-                          }),
-                          C.tipo === "alojamiento" ? m("plans.stay") : m("plans.activity"),
-                          " ·",
-                          " ",
-                          a.jsx("button", {
-                            type: "button",
-                            className: "link-button",
-                            onClick: () => v(O.id),
-                            children: O.nombre,
-                          }),
-                        ],
-                      }),
-                      a.jsx("h3", { className: "card__title", children: C.nombre }),
-                      a.jsx("p", { className: "card__text", children: C.descripcion }),
-                      a.jsxs("div", {
-                        className: "card__foot",
-                        children: [
-                          a.jsxs("span", {
-                            className: "small muted",
-                            children: [
-                              m("ficha.fromPrice"),
-                              " ",
-                              a.jsx("strong", { className: "price", children: C.precio }),
-                            ],
-                          }),
-                          a.jsx("a", {
-                            href: "#",
-                            className: "btn btn--primary",
-                            children: m("plans.view"),
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                ],
-              },
-              C.id,
-            );
-          }),
-        }),
-      ],
-    }),
-  });
-}
-
-export { $p, Up, Wp };
+export { $p, Wp };

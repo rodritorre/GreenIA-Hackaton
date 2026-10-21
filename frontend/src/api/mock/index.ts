@@ -2,7 +2,7 @@
 // It answers with the same shapes as the real API, from the sample data in this folder.
 import { emailConfigurado } from '../../config';
 import { addDays } from '../../lib/fechas';
-import { enviarFormulario, fotoComprimida, type Formulario } from '../email';
+import { enviarFormulario, type Formulario } from '../email';
 import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type SolicitudNegocio, type Usuario } from '../types';
 import { FOTOS, FUENTES, LOG_INGESTA, OFERTAS, SUSCRIPCIONES } from './comercial';
 import { HOY, ULTIMA_ACTUALIZACION } from './config';
@@ -141,8 +141,9 @@ export const mockApi: Api = {
         campos: {
           Destino: d.nombre, 'Fase observada': fase, Ubicación: lat !== undefined && lon !== undefined ? `${lat}, ${lon}` : '',
           'Fecha del archivo': new Date(foto.lastModified).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),
+          // The free EmailJS plan has no attachments: the email names the photo, it does not carry it.
+          Foto: `${foto.name} (${Math.round(foto.size / 1024)} KB), no adjunta`,
         },
-        adjunto: await fotoComprimida(foto),
       });
     }
     return wait(

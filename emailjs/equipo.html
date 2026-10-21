@@ -7,9 +7,8 @@
     To Email:  el correo del equipo (fijo)
     From Name: Cuándo Florece
     Reply To:  {{reply_to}}
-    Attachments → Add Attachment → Variable Attachment:
-               Parameter name: adjunto · Filename: foto.jpg · Content type: image/jpeg
-               (solo lo usa la observación ciudadana; en el resto va vacío)
+    Sin adjuntos: el plan gratuito no los permite. La observación ciudadana
+    indica el nombre y el tamaño de la foto en el resumen.
 
   Variables que envía la web (js/email.js):
     tipo      aviso | reserva | negocio | observacion | contacto
@@ -19,7 +18,6 @@
     reply_to  email de quien envía (puede ir vacío)
     fecha     fecha y hora del envío (Europe/Madrid)
     sitio     URL de la web (config.siteUrl)
-    adjunto   foto en data URL (solo «observacion»)
 -->
 <div style="font-family: Arial, Helvetica, sans-serif; color: #2b1f1a; max-width: 600px;">
   <p style="margin: 0 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #a5432c; font-weight: bold;">

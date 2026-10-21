@@ -9,7 +9,7 @@ permite pocas plantillas, así que se reutilizan):
 | `usuario.html` | `usuario` | Confirmación para quien envía (solo si dejó su email) |
 
 Cada archivo explica en su comentario inicial el asunto, destinatario, Reply-To,
-adjunto y variables que hay que configurar en EmailJS.
+y variables que hay que configurar en EmailJS (sin adjuntos: el plan gratuito no los permite).
 
 Cada formulario enviado gasta **2 envíos** (equipo + confirmación). Revisa la cuota del plan.
 

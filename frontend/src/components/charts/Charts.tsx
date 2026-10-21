@@ -23,7 +23,16 @@ export function IndiceChart({
   const end = prevision.length ? prevision[prevision.length - 1].fecha : serie[serie.length - 1].fecha;
   const span = diffDays(end, start);
   const x = (f: string) => PAD.l + (diffDays(f, start) / span) * (W - PAD.l - PAD.r);
-  const y = (v: number) => PAD.t + (1 - v) * (H - PAD.t - PAD.b);
+  // The y range follows the data: each index has its own scale (the organisers' one goes below 0).
+  const valores = [
+    ...serie.flatMap((p) => (p.indice === null ? [] : [p.indice])),
+    ...prevision.flatMap((p) => [p.p10, p.p90]),
+    umbrales.pleno,
+  ];
+  const lo = Math.min(0, Math.floor(Math.min(...valores) * 10) / 10);
+  const hi = Math.max(0.5, Math.ceil(Math.max(...valores) * 10) / 10);
+  const y = (v: number) => PAD.t + (1 - (v - lo) / (hi - lo)) * (H - PAD.t - PAD.b);
+  const grid = Array.from(new Set([lo, 0, hi]));
 
   const segments: string[] = [];
   let cur = '';
@@ -57,7 +66,7 @@ export function IndiceChart({
   return (
     <figure className="chart">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${t('ficha.chartIndex')}. ${t('ficha.chartIndexDesc')}`}>
-        {[0, 0.5, 1].map((v) => (
+        {grid.map((v) => (
           <g key={v}>
             <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} className="chart__grid" />
             <text x={PAD.l - 6} y={y(v) + 4} className="chart__axis" textAnchor="end">

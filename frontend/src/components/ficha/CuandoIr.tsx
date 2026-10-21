@@ -178,7 +178,7 @@ export function CuandoIr({ d, calculado, onMethod, onAlert }: Props) {
               <li key={z.id} className={z.indice === null ? 'is-nodata' : ''}>
                 <span className="zones__name">{z.nombre}</span>
                 <span className="zones__track" aria-hidden="true">
-                  {z.indice !== null && <span className="zones__bar" style={{ width: `${z.indice * 100}%` }} />}
+                  {z.indice !== null && <span className="zones__bar" style={{ width: `${Math.max(2, Math.min(100, (z.indice / calculado.umbrales.pleno) * 100))}%` }} />}
                 </span>
                 <span className="zones__val">
                   {z.indice === null ? (

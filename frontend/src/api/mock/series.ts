@@ -1,51 +1,29 @@
-// MOCK series for Tejera Negra, shaped like DAT-1 (aggregated colour index) and
-// DAT-2 (daily max temperatures). Replace with the organisers' files once received.
+// Series for Tejera Negra. The observed colour index and temperatures are the organisers' data
+// (datosOrganizadores.ts, DAT-1 and DAT-2). The forecast band after the last observation is the
+// v0 model's projection on the same scale; it is a simulation until the model is validated.
 import type { PuntoPrevisionSerie, PuntoSerie } from './tipos';
 import { addDays } from '../../lib/fechas';
+import { TEJERA_NEGRA, TN_SERIE } from './datosOrganizadores';
 
-function seeded(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
+export const serieTejeraNegra = (): PuntoSerie[] => TN_SERIE.map((p) => ({ ...p }));
 
-const logistic = (day: number, mid: number, k: number) => 0.08 + 0.85 / (1 + Math.exp(-(day - mid) / k));
-
-const START = '2026-09-01';
-const MID = 48; // ≈ 19 Oct, days since START
-const CLOUDY = new Set(['2026-09-12', '2026-09-13', '2026-09-27', '2026-10-03', '2026-10-11', '2026-10-12']);
-
-export function serieTejeraNegra(): PuntoSerie[] {
-  const rnd = seeded(7);
-  const out: PuntoSerie[] = [];
-  for (let d = 0; d <= 49; d++) {
-    const fecha = addDays(START, d);
-    const nubes = CLOUDY.has(fecha);
-    const indice = Math.max(0, Math.min(1, logistic(d, MID, 6) + (rnd() - 0.5) * 0.04));
-    const tMax = 27 - d * 0.26 + (rnd() - 0.5) * 4;
-    out.push({
-      fecha,
-      indice: nubes ? null : Number(indice.toFixed(3)),
-      calidad: nubes ? 'nubes' : 'ok',
-      tMax: Number(tMax.toFixed(1)),
-    });
-  }
-  return out;
-}
+const PICO = '2026-10-31'; // centre of the v0 model's full-colour window
+const FIN = '2026-11-25';
 
 export function previsionTejeraNegra(): PuntoPrevisionSerie[] {
+  const { fecha, indice } = TEJERA_NEGRA.ultima;
   const out: PuntoPrevisionSerie[] = [];
-  for (let d = 50; d <= 75; d++) {
-    const leafFall = d > 66 ? (d - 66) * 0.03 : 0;
-    const p50 = Math.min(0.95, logistic(d, MID, 6)) - leafFall;
-    const spread = 0.03 + (d - 50) * 0.006;
+  const total = Math.round((Date.parse(FIN) - Date.parse(fecha)) / 86_400_000);
+  const subida = Math.round((Date.parse(PICO) - Date.parse(fecha)) / 86_400_000);
+  for (let d = 1; d <= total; d++) {
+    // rises towards the peak, then drops as leaves fall
+    const p50 = d <= subida ? indice + (0.42 - indice) * (d / subida) : 0.42 - (d - subida) * 0.012;
+    const spread = 0.03 + d * 0.0025;
     out.push({
-      fecha: addDays(START, d),
-      p10: Number(Math.max(0, p50 - spread).toFixed(3)),
+      fecha: addDays(fecha, d),
+      p10: Number((p50 - spread).toFixed(3)),
       p50: Number(p50.toFixed(3)),
-      p90: Number(Math.min(1, p50 + spread).toFixed(3)),
+      p90: Number((p50 + spread).toFixed(3)),
     });
   }
   return out;

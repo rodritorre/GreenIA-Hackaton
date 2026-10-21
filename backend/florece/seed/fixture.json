@@ -19,72 +19,72 @@
    "finTemporada": "2026-11-25",
    "datosReales": true,
    "estado": {
-    "fase": "avance",
-    "tipoDato": "estimado",
-    "actualizadoEn": "2026-10-20T07:00:00+02:00",
-    "fuente": "Copernicus Sentinel-2 (estimación)",
-    "resumen": "El color avanza en 6 de las 7 zonas. La umbría más alta ya roza el pleno color."
+    "fase": "inicio",
+    "tipoDato": "observado",
+    "actualizadoEn": "2026-10-14T12:00:00+02:00",
+    "fuente": "Datos proporcionados por Greenia",
+    "resumen": "Índice de color 0,26 (4 de 7 zonas con dato). El cambio de color empezó el 4 de septiembre y aún no llega al umbral de avance (0,30)."
    },
    "ventanas": [
     {
      "fase": "inicio",
-     "desde": "2026-10-06",
-     "hasta": "2026-10-09",
-     "tipoDato": "estimado",
-     "confianza": "alta",
-     "probabilidad": 0.95,
-     "metodo": "satelite",
-     "fuente": "Copernicus Sentinel-2 (estimación)"
-    },
-    {
-     "fase": "avance",
-     "desde": "2026-10-15",
-     "hasta": "2026-10-18",
-     "tipoDato": "estimado",
-     "confianza": "alta",
-     "probabilidad": 0.9,
-     "metodo": "satelite",
-     "fuente": "Copernicus Sentinel-2 (estimación)"
-    },
-    {
-     "fase": "pleno",
-     "desde": "2026-10-24",
-     "hasta": "2026-10-31",
-     "tipoDato": "previsto",
+     "desde": "2026-09-04",
+     "hasta": "2026-09-07",
+     "tipoDato": "observado",
      "confianza": "media",
      "probabilidad": 0.8,
      "metodo": "dato_proporcionado",
      "fuente": "Datos proporcionados por Greenia"
     },
     {
-     "fase": "final",
-     "desde": "2026-11-06",
-     "hasta": "2026-11-16",
+     "fase": "avance",
+     "desde": "2026-10-21",
+     "hasta": "2026-10-30",
      "tipoDato": "previsto",
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "dato_proporcionado",
-     "fuente": "Datos proporcionados por Greenia"
+     "fuente": "Fechas de referencia de Greenia (8 temporadas)"
+    },
+    {
+     "fase": "pleno",
+     "desde": "2026-10-26",
+     "hasta": "2026-11-08",
+     "tipoDato": "previsto",
+     "confianza": "baja",
+     "probabilidad": 0.7,
+     "metodo": "modelo_v0",
+     "fuente": "Modelo Cuándo Florece v0 (simulado)"
+    },
+    {
+     "fase": "final",
+     "desde": "2026-11-09",
+     "hasta": "2026-11-22",
+     "tipoDato": "previsto",
+     "confianza": "baja",
+     "probabilidad": 0.7,
+     "metodo": "modelo_v0",
+     "fuente": "Modelo Cuándo Florece v0 (simulado)"
     }
    ],
    "habituales": [
     {
      "fase": "inicio",
-     "tipica": "10-08",
-     "rangoMin": "10-01",
-     "rangoMax": "10-15"
+     "tipica": "10-07",
+     "rangoMin": "09-19",
+     "rangoMax": "10-25"
     },
     {
      "fase": "avance",
-     "tipica": "10-16",
-     "rangoMin": "10-10",
-     "rangoMax": "10-24"
+     "tipica": "10-14",
+     "rangoMin": "09-27",
+     "rangoMax": "10-30"
     },
     {
      "fase": "pleno",
-     "tipica": "10-31",
-     "rangoMin": "10-22",
-     "rangoMax": "11-08"
+     "tipica": "10-19",
+     "rangoMin": "10-06",
+     "rangoMax": "12-19"
     },
     {
      "fase": "final",
@@ -93,97 +93,60 @@
      "rangoMax": "11-24"
     }
    ],
-   "entradasHasta": "2026-10-19",
+   "entradasHasta": "2026-10-14",
    "generadaEn": "2026-10-20T06:30:00+02:00",
-   "historicoMargen": [
-    {
-     "generadaEn": "2026-09-30",
-     "desde": "2026-10-18",
-     "hasta": "2026-11-08"
-    },
-    {
-     "generadaEn": "2026-10-07",
-     "desde": "2026-10-20",
-     "hasta": "2026-11-05"
-    },
-    {
-     "generadaEn": "2026-10-14",
-     "desde": "2026-10-22",
-     "hasta": "2026-11-02"
-    },
-    {
-     "generadaEn": "2026-10-20",
-     "desde": "2026-10-24",
-     "hasta": "2026-10-31"
-    }
-   ],
-   "comparativa": {
-    "fase": "pleno",
-    "proporcionada": {
-     "desde": "2026-10-24",
-     "hasta": "2026-10-31"
-    },
-    "propia": {
-     "desde": "2026-10-25",
-     "hasta": "2026-11-01",
-     "probabilidad": 0.8
-    },
-    "maeDias": 2.6,
-    "cobertura": 0.78,
-    "explicacion": "Las máximas por debajo de 15 °C de esta semana adelantan el pleno color respecto a lo habitual."
-   },
    "zonas": [
     {
      "id": "z1",
      "nombre": "Zona 1",
      "lat": 41.262,
      "lon": -3.418,
-     "indice": 0.71,
-     "calidad": "ok",
-     "fase": "pleno"
+     "indice": null,
+     "calidad": "nubes",
+     "fase": null
     },
     {
      "id": "z2",
      "nombre": "Zona 2",
      "lat": 41.256,
      "lon": -3.398,
-     "indice": 0.62,
-     "calidad": "ok",
-     "fase": "avance"
+     "indice": null,
+     "calidad": "nubes",
+     "fase": null
     },
     {
      "id": "z3",
      "nombre": "Zona 3",
      "lat": 41.249,
      "lon": -3.425,
-     "indice": 0.58,
-     "calidad": "ok",
-     "fase": "avance"
+     "indice": null,
+     "calidad": "nubes",
+     "fase": null
     },
     {
      "id": "z4",
      "nombre": "Zona 4",
      "lat": 41.243,
      "lon": -3.389,
-     "indice": null,
-     "calidad": "nubes",
-     "fase": null
+     "indice": 0.205,
+     "calidad": "ok",
+     "fase": "inicio"
     },
     {
      "id": "z5",
      "nombre": "Zona 5",
      "lat": 41.237,
      "lon": -3.412,
-     "indice": 0.55,
+     "indice": 0.239,
      "calidad": "ok",
-     "fase": "avance"
+     "fase": "inicio"
     },
     {
      "id": "z6",
      "nombre": "Zona 6",
      "lat": 41.231,
      "lon": -3.396,
-     "indice": 0.49,
+     "indice": 0.307,
      "calidad": "ok",
      "fase": "avance"
     },
@@ -192,476 +155,518 @@
      "nombre": "Zona 7",
      "lat": 41.226,
      "lon": -3.42,
-     "indice": 0.41,
+     "indice": 0.273,
      "calidad": "ok",
      "fase": "inicio"
     }
    ],
    "serie": [
     {
-     "fecha": "2026-09-01",
-     "indice": 0.06,
+     "fecha": "2026-07-21",
+     "indice": -0.188,
      "calidad": "ok",
-     "tMax": 28.7
+     "tMax": null
+    },
+    {
+     "fecha": "2026-07-23",
+     "indice": -0.185,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-07-26",
+     "indice": -0.166,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-07-29",
+     "indice": -0.039,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-07-31",
+     "indice": -0.09,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-02",
+     "indice": -0.085,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-03",
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-05",
+     "indice": -0.044,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-08",
+     "indice": 0,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-10",
+     "indice": 0.067,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-12",
+     "indice": 0,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-13",
+     "indice": 0.094,
+     "calidad": "ok",
+     "tMax": null
+    },
+    {
+     "fecha": "2026-08-18",
+     "indice": 0.041,
+     "calidad": "ok",
+     "tMax": 29.5
+    },
+    {
+     "fecha": "2026-08-20",
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 21.2
+    },
+    {
+     "fecha": "2026-08-22",
+     "indice": -0.001,
+     "calidad": "ok",
+     "tMax": 22.8
+    },
+    {
+     "fecha": "2026-08-23",
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 23
+    },
+    {
+     "fecha": "2026-08-25",
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 19.8
+    },
+    {
+     "fecha": "2026-08-28",
+     "indice": 0.034,
+     "calidad": "ok",
+     "tMax": 16.2
+    },
+    {
+     "fecha": "2026-08-30",
+     "indice": 0.005,
+     "calidad": "ok",
+     "tMax": 22.9
+    },
+    {
+     "fecha": "2026-09-01",
+     "indice": 0.025,
+     "calidad": "ok",
+     "tMax": 24.9
     },
     {
      "fecha": "2026-09-02",
-     "indice": 0.072,
+     "indice": 0.026,
      "calidad": "ok",
-     "tMax": 25.6
-    },
-    {
-     "fecha": "2026-09-03",
-     "indice": 0.09,
-     "calidad": "ok",
-     "tMax": 26.6
+     "tMax": 27.6
     },
     {
      "fecha": "2026-09-04",
-     "indice": 0.074,
+     "indice": 0.249,
      "calidad": "ok",
-     "tMax": 27.2
-    },
-    {
-     "fecha": "2026-09-05",
-     "indice": 0.091,
-     "calidad": "ok",
-     "tMax": 26.1
-    },
-    {
-     "fecha": "2026-09-06",
-     "indice": 0.088,
-     "calidad": "ok",
-     "tMax": 26.2
+     "tMax": 30
     },
     {
      "fecha": "2026-09-07",
-     "indice": 0.093,
+     "indice": 0.314,
      "calidad": "ok",
-     "tMax": 24.4
-    },
-    {
-     "fecha": "2026-09-08",
-     "indice": 0.076,
-     "calidad": "ok",
-     "tMax": 26
+     "tMax": 28.5
     },
     {
      "fecha": "2026-09-09",
-     "indice": 0.089,
-     "calidad": "ok",
-     "tMax": 23.1
-    },
-    {
-     "fecha": "2026-09-10",
-     "indice": 0.089,
-     "calidad": "ok",
-     "tMax": 24.5
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 14.4
     },
     {
      "fecha": "2026-09-11",
-     "indice": 0.098,
-     "calidad": "ok",
-     "tMax": 25.6
-    },
-    {
-     "fecha": "2026-09-12",
-     "indice": null,
-     "calidad": "nubes",
-     "tMax": 24.2
-    },
-    {
-     "fecha": "2026-09-13",
-     "indice": null,
-     "calidad": "nubes",
-     "tMax": 24.6
-    },
-    {
-     "fecha": "2026-09-14",
-     "indice": 0.088,
-     "calidad": "ok",
-     "tMax": 23.9
-    },
-    {
-     "fecha": "2026-09-15",
-     "indice": 0.099,
-     "calidad": "ok",
-     "tMax": 25
-    },
-    {
-     "fecha": "2026-09-16",
-     "indice": 0.078,
-     "calidad": "ok",
-     "tMax": 22.4
-    },
-    {
-     "fecha": "2026-09-17",
-     "indice": 0.098,
-     "calidad": "ok",
-     "tMax": 22.2
-    },
-    {
-     "fecha": "2026-09-18",
-     "indice": 0.071,
+     "indice": 0.391,
      "calidad": "ok",
      "tMax": 21.8
     },
     {
-     "fecha": "2026-09-19",
-     "indice": 0.083,
+     "fecha": "2026-09-12",
+     "indice": 0.334,
      "calidad": "ok",
-     "tMax": 21.5
+     "tMax": 22.9
     },
     {
-     "fecha": "2026-09-20",
-     "indice": 0.104,
+     "fecha": "2026-09-14",
+     "indice": 0.3,
      "calidad": "ok",
-     "tMax": 22.3
+     "tMax": 26.5
+    },
+    {
+     "fecha": "2026-09-17",
+     "indice": 0.28,
+     "calidad": "ok",
+     "tMax": 17.9
     },
     {
      "fecha": "2026-09-21",
-     "indice": 0.097,
+     "indice": 0.233,
      "calidad": "ok",
-     "tMax": 23.3
+     "tMax": 25.1
     },
     {
      "fecha": "2026-09-22",
-     "indice": 0.072,
+     "indice": 0.264,
      "calidad": "ok",
-     "tMax": 20.6
-    },
-    {
-     "fecha": "2026-09-23",
-     "indice": 0.093,
-     "calidad": "ok",
-     "tMax": 21.3
+     "tMax": 24.6
     },
     {
      "fecha": "2026-09-24",
-     "indice": 0.09,
+     "indice": 0.252,
      "calidad": "ok",
-     "tMax": 19.8
-    },
-    {
-     "fecha": "2026-09-25",
-     "indice": 0.112,
-     "calidad": "ok",
-     "tMax": 19
-    },
-    {
-     "fecha": "2026-09-26",
-     "indice": 0.093,
-     "calidad": "ok",
-     "tMax": 19.9
+     "tMax": 26
     },
     {
      "fecha": "2026-09-27",
      "indice": null,
      "calidad": "nubes",
-     "tMax": 21.9
-    },
-    {
-     "fecha": "2026-09-28",
-     "indice": 0.106,
-     "calidad": "ok",
-     "tMax": 18.6
-    },
-    {
-     "fecha": "2026-09-29",
-     "indice": 0.106,
-     "calidad": "ok",
-     "tMax": 18.9
-    },
-    {
-     "fecha": "2026-09-30",
-     "indice": 0.109,
-     "calidad": "ok",
-     "tMax": 19.2
+     "tMax": 22.3
     },
     {
      "fecha": "2026-10-01",
-     "indice": 0.114,
-     "calidad": "ok",
-     "tMax": 19.3
-    },
-    {
-     "fecha": "2026-10-02",
-     "indice": 0.132,
-     "calidad": "ok",
+     "indice": null,
+     "calidad": "nubes",
      "tMax": 17.9
     },
     {
-     "fecha": "2026-10-03",
+     "fecha": "2026-10-02",
      "indice": null,
      "calidad": "nubes",
-     "tMax": 18.5
+     "tMax": 17
     },
     {
      "fecha": "2026-10-04",
-     "indice": 0.159,
+     "indice": 0.228,
      "calidad": "ok",
-     "tMax": 19
-    },
-    {
-     "fecha": "2026-10-05",
-     "indice": 0.161,
-     "calidad": "ok",
-     "tMax": 18.2
-    },
-    {
-     "fecha": "2026-10-06",
-     "indice": 0.168,
-     "calidad": "ok",
-     "tMax": 18.7
+     "tMax": 16.1
     },
     {
      "fecha": "2026-10-07",
-     "indice": 0.199,
-     "calidad": "ok",
-     "tMax": 17.2
-    },
-    {
-     "fecha": "2026-10-08",
-     "indice": 0.205,
-     "calidad": "ok",
-     "tMax": 16.4
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 10.4
     },
     {
      "fecha": "2026-10-09",
-     "indice": 0.219,
+     "indice": 0.24,
      "calidad": "ok",
-     "tMax": 16.5
-    },
-    {
-     "fecha": "2026-10-10",
-     "indice": 0.228,
-     "calidad": "ok",
-     "tMax": 16.4
+     "tMax": 12.1
     },
     {
      "fecha": "2026-10-11",
      "indice": null,
      "calidad": "nubes",
-     "tMax": 18.1
-    },
-    {
-     "fecha": "2026-10-12",
-     "indice": null,
-     "calidad": "nubes",
-     "tMax": 17.6
-    },
-    {
-     "fecha": "2026-10-13",
-     "indice": 0.292,
-     "calidad": "ok",
-     "tMax": 15.7
-    },
-    {
-     "fecha": "2026-10-14",
-     "indice": 0.324,
-     "calidad": "ok",
-     "tMax": 14.1
-    },
-    {
-     "fecha": "2026-10-15",
-     "indice": 0.388,
-     "calidad": "ok",
      "tMax": 14.4
     },
     {
-     "fecha": "2026-10-16",
-     "indice": 0.406,
+     "fecha": "2026-10-12",
+     "indice": 0.214,
      "calidad": "ok",
-     "tMax": 13.9
+     "tMax": 17.7
+    },
+    {
+     "fecha": "2026-10-14",
+     "indice": 0.257,
+     "calidad": "ok",
+     "tMax": 19.5
     },
     {
      "fecha": "2026-10-17",
-     "indice": 0.433,
-     "calidad": "ok",
-     "tMax": 15.4
-    },
-    {
-     "fecha": "2026-10-18",
-     "indice": 0.455,
-     "calidad": "ok",
-     "tMax": 16.5
-    },
-    {
-     "fecha": "2026-10-19",
-     "indice": 0.52,
-     "calidad": "ok",
-     "tMax": 16.1
-    },
-    {
-     "fecha": "2026-10-20",
-     "indice": 0.556,
-     "calidad": "ok",
-     "tMax": 15.9
+     "indice": null,
+     "calidad": "nubes",
+     "tMax": 10.9
     }
    ],
    "serieprevision": [
     {
+     "fecha": "2026-10-15",
+     "p10": 0.234,
+     "p50": 0.267,
+     "p90": 0.299
+    },
+    {
+     "fecha": "2026-10-16",
+     "p10": 0.241,
+     "p50": 0.276,
+     "p90": 0.311
+    },
+    {
+     "fecha": "2026-10-17",
+     "p10": 0.248,
+     "p50": 0.286,
+     "p90": 0.323
+    },
+    {
+     "fecha": "2026-10-18",
+     "p10": 0.255,
+     "p50": 0.295,
+     "p90": 0.335
+    },
+    {
+     "fecha": "2026-10-19",
+     "p10": 0.262,
+     "p50": 0.305,
+     "p90": 0.347
+    },
+    {
+     "fecha": "2026-10-20",
+     "p10": 0.27,
+     "p50": 0.315,
+     "p90": 0.36
+    },
+    {
      "fecha": "2026-10-21",
-     "p10": 0.545,
-     "p50": 0.575,
-     "p90": 0.605
+     "p10": 0.277,
+     "p50": 0.324,
+     "p90": 0.372
     },
     {
      "fecha": "2026-10-22",
-     "p10": 0.573,
-     "p50": 0.609,
-     "p90": 0.645
+     "p10": 0.284,
+     "p50": 0.334,
+     "p90": 0.384
     },
     {
      "fecha": "2026-10-23",
-     "p10": 0.6,
-     "p50": 0.642,
-     "p90": 0.684
+     "p10": 0.291,
+     "p50": 0.343,
+     "p90": 0.396
     },
     {
      "fecha": "2026-10-24",
-     "p10": 0.625,
-     "p50": 0.673,
-     "p90": 0.721
+     "p10": 0.298,
+     "p50": 0.353,
+     "p90": 0.408
     },
     {
      "fecha": "2026-10-25",
-     "p10": 0.647,
-     "p50": 0.701,
-     "p90": 0.755
+     "p10": 0.305,
+     "p50": 0.362,
+     "p90": 0.42
     },
     {
      "fecha": "2026-10-26",
-     "p10": 0.668,
-     "p50": 0.728,
-     "p90": 0.788
+     "p10": 0.312,
+     "p50": 0.372,
+     "p90": 0.432
     },
     {
      "fecha": "2026-10-27",
-     "p10": 0.687,
-     "p50": 0.753,
-     "p90": 0.819
+     "p10": 0.319,
+     "p50": 0.382,
+     "p90": 0.444
     },
     {
      "fecha": "2026-10-28",
-     "p10": 0.703,
-     "p50": 0.775,
-     "p90": 0.847
+     "p10": 0.326,
+     "p50": 0.391,
+     "p90": 0.456
     },
     {
      "fecha": "2026-10-29",
-     "p10": 0.717,
-     "p50": 0.795,
-     "p90": 0.873
+     "p10": 0.333,
+     "p50": 0.401,
+     "p90": 0.468
     },
     {
      "fecha": "2026-10-30",
-     "p10": 0.729,
-     "p50": 0.813,
-     "p90": 0.897
+     "p10": 0.34,
+     "p50": 0.41,
+     "p90": 0.48
     },
     {
      "fecha": "2026-10-31",
-     "p10": 0.739,
-     "p50": 0.829,
-     "p90": 0.919
+     "p10": 0.347,
+     "p50": 0.42,
+     "p90": 0.492
     },
     {
      "fecha": "2026-11-01",
-     "p10": 0.747,
-     "p50": 0.843,
-     "p90": 0.939
+     "p10": 0.333,
+     "p50": 0.408,
+     "p90": 0.483
     },
     {
      "fecha": "2026-11-02",
-     "p10": 0.753,
-     "p50": 0.855,
-     "p90": 0.957
+     "p10": 0.318,
+     "p50": 0.396,
+     "p90": 0.473
     },
     {
      "fecha": "2026-11-03",
-     "p10": 0.758,
-     "p50": 0.866,
-     "p90": 0.974
+     "p10": 0.304,
+     "p50": 0.384,
+     "p90": 0.464
     },
     {
      "fecha": "2026-11-04",
-     "p10": 0.761,
-     "p50": 0.875,
-     "p90": 0.989
+     "p10": 0.289,
+     "p50": 0.372,
+     "p90": 0.455
     },
     {
      "fecha": "2026-11-05",
-     "p10": 0.763,
-     "p50": 0.883,
-     "p90": 1
+     "p10": 0.275,
+     "p50": 0.36,
+     "p90": 0.445
     },
     {
      "fecha": "2026-11-06",
-     "p10": 0.764,
-     "p50": 0.89,
-     "p90": 1
+     "p10": 0.26,
+     "p50": 0.348,
+     "p90": 0.435
     },
     {
      "fecha": "2026-11-07",
-     "p10": 0.734,
-     "p50": 0.866,
-     "p90": 0.998
+     "p10": 0.246,
+     "p50": 0.336,
+     "p90": 0.426
     },
     {
      "fecha": "2026-11-08",
-     "p10": 0.703,
-     "p50": 0.841,
-     "p90": 0.979
+     "p10": 0.231,
+     "p50": 0.324,
+     "p90": 0.416
     },
     {
      "fecha": "2026-11-09",
-     "p10": 0.671,
-     "p50": 0.815,
-     "p90": 0.959
+     "p10": 0.217,
+     "p50": 0.312,
+     "p90": 0.407
     },
     {
      "fecha": "2026-11-10",
-     "p10": 0.639,
-     "p50": 0.789,
-     "p90": 0.939
+     "p10": 0.202,
+     "p50": 0.3,
+     "p90": 0.397
     },
     {
      "fecha": "2026-11-11",
-     "p10": 0.606,
-     "p50": 0.762,
-     "p90": 0.918
+     "p10": 0.188,
+     "p50": 0.288,
+     "p90": 0.388
     },
     {
      "fecha": "2026-11-12",
-     "p10": 0.573,
-     "p50": 0.735,
-     "p90": 0.897
+     "p10": 0.173,
+     "p50": 0.276,
+     "p90": 0.378
     },
     {
      "fecha": "2026-11-13",
-     "p10": 0.539,
-     "p50": 0.707,
-     "p90": 0.875
+     "p10": 0.159,
+     "p50": 0.264,
+     "p90": 0.369
     },
     {
      "fecha": "2026-11-14",
-     "p10": 0.505,
-     "p50": 0.679,
-     "p90": 0.853
+     "p10": 0.145,
+     "p50": 0.252,
+     "p90": 0.359
     },
     {
      "fecha": "2026-11-15",
-     "p10": 0.471,
-     "p50": 0.651,
-     "p90": 0.831
+     "p10": 0.13,
+     "p50": 0.24,
+     "p90": 0.35
+    },
+    {
+     "fecha": "2026-11-16",
+     "p10": 0.115,
+     "p50": 0.228,
+     "p90": 0.34
+    },
+    {
+     "fecha": "2026-11-17",
+     "p10": 0.101,
+     "p50": 0.216,
+     "p90": 0.331
+    },
+    {
+     "fecha": "2026-11-18",
+     "p10": 0.086,
+     "p50": 0.204,
+     "p90": 0.322
+    },
+    {
+     "fecha": "2026-11-19",
+     "p10": 0.072,
+     "p50": 0.192,
+     "p90": 0.312
+    },
+    {
+     "fecha": "2026-11-20",
+     "p10": 0.057,
+     "p50": 0.18,
+     "p90": 0.302
+    },
+    {
+     "fecha": "2026-11-21",
+     "p10": 0.043,
+     "p50": 0.168,
+     "p90": 0.293
+    },
+    {
+     "fecha": "2026-11-22",
+     "p10": 0.028,
+     "p50": 0.156,
+     "p90": 0.283
+    },
+    {
+     "fecha": "2026-11-23",
+     "p10": 0.014,
+     "p50": 0.144,
+     "p90": 0.274
+    },
+    {
+     "fecha": "2026-11-24",
+     "p10": -0.001,
+     "p50": 0.132,
+     "p90": 0.264
+    },
+    {
+     "fecha": "2026-11-25",
+     "p10": -0.015,
+     "p50": 0.12,
+     "p90": 0.255
     }
    ],
    "umbrales": {
     "inicio": 0.2,
-    "avance": 0.45,
-    "pleno": 0.7,
-    "final": 0.6
+    "avance": 0.3,
+    "pleno": 0.4,
+    "final": 0.3
    },
    "editorial": {
     "historia": "Uno de los hayedos más meridionales de Europa, refugio de un bosque que necesita frío y humedad. Está en el Parque Natural de la Sierra Norte de Guadalajara, entre pizarras y arroyos de montaña.",
@@ -692,55 +697,55 @@
    "color": "#6F4FB8",
    "ilustracion": "lavanda",
    "temporada": "Verano 2027",
-   "finTemporada": "2027-08-05",
+   "finTemporada": "2027-08-24",
    "datosReales": true,
    "estado": {
     "fase": "fuera_temporada",
     "tipoDato": "observado",
-    "actualizadoEn": "2026-10-20T07:00:00+02:00",
+    "actualizadoEn": "2026-09-29T12:00:00+02:00",
     "fuente": "Datos proporcionados por Greenia",
-    "resumen": "Campos cosechados. La próxima floración se espera a finales de junio de 2027."
+    "resumen": "Temporada 2026 cerrada: el 10 % del lavandín se cortó el 21 de julio y el 50 % el 11 de agosto (61 % de 832 ha cosechado). Plena flor prevista del 1 al 8 de julio de 2027."
    },
    "ventanas": [
     {
      "fase": "inicio",
-     "desde": "2027-06-08",
-     "hasta": "2027-06-22",
+     "desde": "2027-06-12",
+     "hasta": "2027-06-24",
      "tipoDato": "previsto",
      "confianza": "baja",
      "probabilidad": 0.7,
-     "metodo": "dato_proporcionado",
-     "fuente": "Datos proporcionados por Greenia"
+     "metodo": "modelo_v0",
+     "fuente": "Modelo Cuándo Florece v0 (simulado)"
     },
     {
      "fase": "avance",
-     "desde": "2027-06-18",
-     "hasta": "2027-07-02",
+     "desde": "2027-06-25",
+     "hasta": "2027-06-30",
      "tipoDato": "previsto",
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "dato_proporcionado",
-     "fuente": "Datos proporcionados por Greenia"
+     "fuente": "Predicción de Greenia (v0-climatologia, 10 años)"
     },
     {
      "fase": "pleno",
-     "desde": "2027-06-28",
-     "hasta": "2027-07-14",
+     "desde": "2027-07-01",
+     "hasta": "2027-07-08",
      "tipoDato": "previsto",
-     "confianza": "baja",
-     "probabilidad": 0.7,
+     "confianza": "media",
+     "probabilidad": 0.8,
      "metodo": "dato_proporcionado",
-     "fuente": "Datos proporcionados por Greenia"
+     "fuente": "Predicción de Greenia (v0-climatologia, 10 años)"
     },
     {
      "fase": "final",
-     "desde": "2027-07-15",
-     "hasta": "2027-07-31",
+     "desde": "2027-07-25",
+     "hasta": "2027-08-01",
      "tipoDato": "previsto",
-     "confianza": "baja",
-     "probabilidad": 0.7,
+     "confianza": "media",
+     "probabilidad": 0.8,
      "metodo": "dato_proporcionado",
-     "fuente": "Datos proporcionados por Greenia"
+     "fuente": "Predicción de Greenia (v0-climatologia, 10 años)"
     }
    ],
    "habituales": [
@@ -760,13 +765,13 @@
      "fase": "pleno",
      "tipica": "07-05",
      "rangoMin": "06-25",
-     "rangoMax": "07-15"
+     "rangoMax": "07-16"
     },
     {
      "fase": "final",
-     "tipica": "07-22",
-     "rangoMin": "07-12",
-     "rangoMax": "08-01"
+     "tipica": "07-29",
+     "rangoMin": "07-10",
+     "rangoMax": "08-08"
     }
    ],
    "entradasHasta": "2026-10-19",
@@ -828,7 +833,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "avance",
@@ -838,7 +843,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "pleno",
@@ -848,7 +853,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "final",
@@ -858,7 +863,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     }
    ],
    "habituales": [
@@ -931,7 +936,7 @@
     "tipoDato": "observado",
     "actualizadoEn": "2026-10-20T07:00:00+02:00",
     "fuente": "Fechas históricas de fuentes públicas",
-    "resumen": "Sin flor. Los almendros suelen florecer entre finales de enero y febrero."
+    "resumen": "Próximamente: aún sin datos reales. Sin flor. Los almendros suelen florecer entre finales de enero y febrero."
    },
    "ventanas": [
     {
@@ -942,7 +947,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "avance",
@@ -952,7 +957,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "pleno",
@@ -962,7 +967,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     },
     {
      "fase": "final",
@@ -972,7 +977,7 @@
      "confianza": "baja",
      "probabilidad": 0.7,
      "metodo": "modelo_v0",
-     "fuente": "Modelo Cuándo Florece v0"
+     "fuente": "Fechas históricas de fuentes públicas"
     }
    ],
    "habituales": [

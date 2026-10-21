@@ -1,12 +1,16 @@
 // In-browser implementation of the API, used where no backend is reachable (the shared demo link).
 // It answers with the same shapes as the real API, from the sample data in this folder.
 import { addDays } from '../../lib/fechas';
-import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type Usuario } from '../types';
+import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type SolicitudNegocio, type Usuario } from '../types';
 import { FOTOS, FUENTES, LOG_INGESTA, OFERTAS, SUSCRIPCIONES } from './comercial';
 import { HOY, ULTIMA_ACTUALIZACION } from './config';
 import { DESTINOS } from './destinos';
 import { estadoEn } from './fenologia';
 import type { Destino } from './tipos';
+import {
+  ENTIDAD, SOLICITUDES_INICIALES, agenda, demanda, estado as demo, estadoAforo, guardar, kpis, moderar, reiniciar, sumarAlerta, visibilidad,
+  ALTERNATIVAS,
+} from './pueblo';
 
 const wait = <T>(v: T, ms = 120): Promise<T> => new Promise((r) => setTimeout(() => r(structuredClone(v)), ms));
 
@@ -31,6 +35,13 @@ const fotos = FOTOS.map((f, i) => ({
 }));
 const correos: EmailOut[] = [];
 let sesion = false;
+
+// Stories the town edited in its panel survive a reload (demo state in localStorage).
+for (const [id, historia] of Object.entries(demo.historia)) {
+  const d = DESTINOS.find((x) => x.id === id);
+  if (d) d.editorial.historia = historia;
+}
+const solicitudes = (): SolicitudNegocio[] => [...SOLICITUDES_INICIALES, ...demo.solicitudes];
 
 function resumen(d: Destino): DestinoResumen {
   return {
@@ -91,6 +102,7 @@ export const mockApi: Api = {
   fotos: (destinoId) => wait(fotos.filter((f) => f.estado === 'valida' && (!destinoId || f.destinoId === destinoId))),
   suscribir: async (body) => {
     if (!body.consentimiento) throw new ApiError(422, 'Hace falta el consentimiento');
+    sumarAlerta(body.destinoId, body.provincia);
     return wait({ ok: true, mensaje: 'Revisa tu correo para confirmar el aviso.' }, 400);
   },
   subirFoto: async ({ destinoId, fase }) =>
@@ -107,6 +119,58 @@ export const mockApi: Api = {
       },
       600,
     ),
+  aforo: () => wait(DESTINOS.map((d) => estadoAforo(d.id))),
+  alternativas: (id) => wait(ALTERNATIVAS[id] ?? []),
+  agenda: (id) => wait(agenda(id)),
+  altaNegocio: async (body) => {
+    destino(body.destinoId);
+    if (!body.nombre.trim()) throw new ApiError(422, 'Falta el nombre del negocio');
+    const s: SolicitudNegocio = { ...body, id: solicitudes().length + 1, recibidaEn: ahora(), veredicto: moderar(body) };
+    demo.solicitudes.push(s);
+    guardar();
+    return wait(s, 1800); // the "analysing" moment
+  },
+
+  destino: {
+    panel: async (id) => {
+      const d = destino(id);
+      return wait({
+        destinoId: id,
+        entidad: ENTIDAD[id] ?? d.nombre,
+        plan: 'Licencia de destino',
+        demanda: demanda(id),
+        kpis: kpis(id),
+        visibilidad: visibilidad(id),
+        aforo: estadoAforo(id),
+        solicitudes: solicitudes().filter((s) => s.destinoId === id).reverse(),
+        fotosPendientes: fotos.filter((f) => f.destinoId === id && f.estado === 'pendiente').length,
+        agenda: agenda(id),
+        widget: `<iframe src="https://cuandoflorece.cabecerastudio.com/#widget=${id}" title="Cuándo Florece: ${d.nombre}" width="360" height="420" loading="lazy"></iframe>`,
+      });
+    },
+    guardarVisibilidad: async (id, body) => {
+      destino(id);
+      const v = { destinoId: id, modo: body.modo, aforoDiario: Math.max(0, Math.round(body.aforoDiario)), actualizadoEn: ahora() };
+      demo.visibilidad[id] = v;
+      guardar();
+      return wait(v, 300);
+    },
+    guardarAgenda: async (id, lista) => {
+      demo.agenda[id] = lista;
+      guardar();
+      return wait(lista);
+    },
+    guardarHistoria: async (id, historia) => {
+      destino(id).editorial.historia = historia;
+      demo.historia[id] = historia;
+      guardar();
+      return wait({ ok: true, mensaje: 'Historia publicada en la ficha del destino' });
+    },
+    reiniciarDemo: async () => {
+      reiniciar();
+      return wait({ ok: true, mensaje: 'Demo reiniciada' });
+    },
+  },
 
   login: async (email, password) => {
     if (!email || password.length < 4) throw new ApiError(401, 'Email o contraseña incorrectos');

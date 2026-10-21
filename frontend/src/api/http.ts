@@ -41,6 +41,19 @@ export const httpApi: Api = {
   subirFoto: ({ foto, destinoId, fase, consentimiento, lat, lon }) =>
     call('/observaciones', form({ foto, destinoId, fase, consentimiento: String(consentimiento), lat: lat?.toString(), lon: lon?.toString() })),
 
+  aforo: () => call('/aforo'),
+  alternativas: (id) => call(`/destinos/${encodeURIComponent(id)}/alternativas`),
+  agenda: (id) => call(`/destinos/${encodeURIComponent(id)}/agenda`),
+  altaNegocio: (body) => call('/negocios', post(body)),
+
+  destino: {
+    panel: (id) => call(`/destino/${encodeURIComponent(id)}/panel`),
+    guardarVisibilidad: (id, body) => call(`/destino/${encodeURIComponent(id)}/visibilidad`, { method: 'PUT', body: JSON.stringify(body) }),
+    guardarAgenda: (id, agenda) => call(`/destino/${encodeURIComponent(id)}/agenda`, { method: 'PUT', body: JSON.stringify(agenda) }),
+    guardarHistoria: (id, historia) => call(`/destino/${encodeURIComponent(id)}/historia`, { method: 'PUT', body: JSON.stringify({ historia }) }),
+    reiniciarDemo: async () => ({ ok: true, mensaje: 'Solo existe en la demo' }),
+  },
+
   login: (email, password) => call('/auth/login', post({ email, password })),
   logout: () => call('/auth/logout', post()),
   yo: () => call('/auth/yo'),

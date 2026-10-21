@@ -1,7 +1,9 @@
 import { Bo, Us } from "./fechas.js";
+import { reales } from "../data/reales.js";
 
-const qt = "2026-10-20",
-  Df = "2026-10-20T07:00:00+02:00",
+// "Hoy" y la hora de actualización salen de la última generación de datos (scripts/csv-a-web.mjs)
+const qt = reales.hoy,
+  Df = reales.generadoEn,
   Vu = [
     [35.8, -9.6],
     [43.9, 4.4],

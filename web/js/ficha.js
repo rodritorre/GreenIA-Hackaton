@@ -79,52 +79,59 @@ function bp({ d: f }) {
   });
 }
 const fs = 360,
-  dt = { l: 30, r: 10, t: 10, b: 24 };
-function Ip({ serie: f, prevision: v, umbrales: m }) {
-  var $e;
+  dt = { l: 36, r: 10, t: 10, b: 24 };
+// Serie de la temporada con datos reales: un punto por paso del satélite, × en los pasos con
+// nubes (no se rellenan), banda p25–p75 y umbrales. La escala se ajusta a los datos.
+function Ip({ grafica: g }) {
   const { t: j, lang: T } = tt(),
+    f = g.serie,
     S = 190,
+    esCosecha = g.tipo === "cosecha",
     M = f[0].fecha,
-    b = v[v.length - 1].fecha,
-    C = Bo(b, M),
+    b = f[f.length - 1].fecha > qt ? f[f.length - 1].fecha : qt,
+    C = Bo(b, M) || 1,
     O = (ue) => dt.l + (Bo(ue, M) / C) * (fs - dt.l - dt.r),
-    ne = (ue) => dt.t + (1 - ue) * (S - dt.t - dt.b),
-    J = [];
-  let ae = "";
-  for (const ue of f)
-    ue.indice === null
-      ? (ae && J.push(ae), (ae = ""))
-      : (ae += `${ae ? "L" : "M"}${O(ue.fecha).toFixed(1)} ${ne(ue.indice).toFixed(1)} `);
-  ae && J.push(ae);
-  const me =
-      v
-        .map((ue, We) => `${We ? "L" : "M"}${O(ue.fecha).toFixed(1)} ${ne(ue.p90).toFixed(1)}`)
-        .join(" ") +
-      " " +
-      v
-        .slice()
-        .reverse()
-        .map((ue) => `L${O(ue.fecha).toFixed(1)} ${ne(ue.p10).toFixed(1)}`)
-        .join(" ") +
-      " Z",
-    Pe = v
-      .map((ue, We) => `${We ? "L" : "M"}${O(ue.fecha).toFixed(1)} ${ne(ue.p50).toFixed(1)}`)
+    vals = f
+      .flatMap((ue) => [ue.indice, ue.p25, ue.p75])
+      .filter((x) => x !== null && x !== void 0)
+      .concat(g.umbrales.map((u) => u.v)),
+    lo = Math.min(0, Math.floor(Math.min(...vals) * 10) / 10),
+    hi = Math.ceil(Math.max(...vals) * 10) / 10,
+    ne = (ue) => dt.t + (1 - (ue - lo) / (hi - lo)) * (S - dt.t - dt.b),
+    fmt = (x) => (esCosecha ? `${Math.round(x * 100)} %` : x.toLocaleString(T)),
+    obs = f.filter((ue) => ue.indice !== null),
+    conBanda = obs.filter((ue) => ue.p25 !== null && ue.p75 !== null),
+    linea = obs
+      .map((ue, i) => `${i ? "L" : "M"}${O(ue.fecha).toFixed(1)} ${ne(ue.indice).toFixed(1)}`)
       .join(" "),
-    pe = f
-      .filter((ue) => ue.fecha.endsWith("-01") || ue.fecha.endsWith("-15"))
-      .map((ue) => ue.fecha);
-  pe.includes(v[v.length - 1].fecha) ||
-    pe.push((($e = v.find((ue) => ue.fecha.endsWith("-01"))) == null ? void 0 : $e.fecha) ?? b);
-  const Ee = ["inicio", "avance", "pleno"];
+    banda =
+      conBanda.length > 1
+        ? conBanda
+            .map((ue, i) => `${i ? "L" : "M"}${O(ue.fecha).toFixed(1)} ${ne(ue.p75).toFixed(1)}`)
+            .join(" ") +
+          " " +
+          conBanda
+            .slice()
+            .reverse()
+            .map((ue) => `L${O(ue.fecha).toFixed(1)} ${ne(ue.p25).toFixed(1)}`)
+            .join(" ") +
+          " Z"
+        : "",
+    huecos = f.filter((ue) => ue.indice === null),
+    meses = [];
+  for (let m = lh(ah(M), 1); m <= b; m = lh(m, 1)) meses.push(m);
+  const ticks = [lo, Math.round(((lo + hi) / 2) * 100) / 100, hi];
   return a.jsxs("figure", {
     className: "chart",
     children: [
       a.jsxs("svg", {
         viewBox: `0 0 ${fs} ${S}`,
         role: "img",
-        "aria-label": `${j("ficha.chartIndex")}. ${j("ficha.chartIndexDesc")}`,
+        "aria-label": esCosecha
+          ? `${j("ficha.chartHarvest")}. ${j("ficha.chartHarvestDesc")}`
+          : `${j("ficha.chartIndex")}. ${j("ficha.chartIndexDesc")}`,
         children: [
-          [0, 0.5, 1].map((ue) =>
+          ticks.map((ue) =>
             a.jsxs(
               "g",
               {
@@ -141,14 +148,14 @@ function Ip({ serie: f, prevision: v, umbrales: m }) {
                     y: ne(ue) + 4,
                     className: "chart__axis",
                     textAnchor: "end",
-                    children: ue.toLocaleString(T),
+                    children: fmt(ue),
                   }),
                 ],
               },
               ue,
             ),
           ),
-          Ee.map((ue) =>
+          g.umbrales.map((u) =>
             a.jsxs(
               "g",
               {
@@ -156,49 +163,53 @@ function Ip({ serie: f, prevision: v, umbrales: m }) {
                   a.jsx("line", {
                     x1: dt.l,
                     x2: fs - dt.r,
-                    y1: ne(m[ue]),
-                    y2: ne(m[ue]),
+                    y1: ne(u.v),
+                    y2: ne(u.v),
                     className: "chart__threshold",
                   }),
                   a.jsx("text", {
                     x: dt.l + 4,
-                    y: ne(m[ue]) - 3,
+                    y: ne(u.v) - 3,
                     className: "chart__th-label",
-                    children: j(`fase.short.${ue}`),
+                    children: u.fase ? j(`fase.short.${u.fase}`) : u.etiqueta,
                   }),
                 ],
               },
-              ue,
+              u.v,
             ),
           ),
-          a.jsx("path", { d: me, className: "chart__band" }),
-          a.jsx("path", { d: Pe, className: "chart__median" }),
-          J.map((ue, We) => a.jsx("path", { d: ue, className: "chart__line" }, We)),
-          f
-            .filter((ue) => ue.indice === null)
-            .map((ue) =>
-              a.jsxs(
-                "g",
-                {
-                  className: "chart__gap",
-                  children: [
-                    a.jsx("rect", {
-                      x: O(ue.fecha) - 2.5,
-                      y: dt.t,
-                      width: 5,
-                      height: S - dt.t - dt.b,
-                    }),
-                    a.jsx("text", {
-                      x: O(ue.fecha),
-                      y: S - dt.b - 4,
-                      textAnchor: "middle",
-                      children: "×",
-                    }),
-                  ],
-                },
-                ue.fecha,
-              ),
+          banda && a.jsx("path", { d: banda, className: "chart__band" }),
+          a.jsx("path", { d: linea, className: "chart__line" }),
+          obs.map((ue) =>
+            a.jsx(
+              "circle",
+              { cx: O(ue.fecha), cy: ne(ue.indice), r: 1.8, className: "chart__dot" },
+              ue.fecha,
             ),
+          ),
+          huecos.map((ue) =>
+            a.jsxs(
+              "g",
+              {
+                className: "chart__gap",
+                children: [
+                  a.jsx("rect", {
+                    x: O(ue.fecha) - 2.5,
+                    y: dt.t,
+                    width: 5,
+                    height: S - dt.t - dt.b,
+                  }),
+                  a.jsx("text", {
+                    x: O(ue.fecha),
+                    y: S - dt.b - 4,
+                    textAnchor: "middle",
+                    children: "×",
+                  }),
+                ],
+              },
+              ue.fecha,
+            ),
+          ),
           a.jsx("line", {
             x1: O(qt),
             x2: O(qt),
@@ -207,12 +218,13 @@ function Ip({ serie: f, prevision: v, umbrales: m }) {
             className: "chart__today",
           }),
           a.jsx("text", {
-            x: O(qt) + 3,
+            x: O(qt) - 3,
             y: dt.t + 9,
             className: "chart__today-label",
+            textAnchor: "end",
             children: j("map.today"),
           }),
-          pe.map((ue) =>
+          meses.map((ue) =>
             a.jsx(
               "text",
               {
@@ -231,16 +243,27 @@ function Ip({ serie: f, prevision: v, umbrales: m }) {
         className: "chart__legend",
         children: [
           a.jsxs("span", {
-            children: [a.jsx("i", { className: "key key--line" }), j("ficha.chartObserved")],
+            children: [
+              a.jsx("i", { className: "key key--line" }),
+              j(esCosecha ? "ficha.chartHarvestObserved" : "ficha.chartObserved"),
+            ],
           }),
+          huecos.length > 0 &&
+            a.jsxs("span", {
+              children: [a.jsx("i", { className: "key key--gap" }), j("ficha.chartNoData")],
+            }),
+          banda &&
+            a.jsxs("span", {
+              children: [
+                a.jsx("i", { className: "key key--band" }),
+                j(esCosecha ? "ficha.chartHarvestBand" : "ficha.chartBand"),
+              ],
+            }),
           a.jsxs("span", {
-            children: [a.jsx("i", { className: "key key--gap" }), j("ficha.chartNoData")],
-          }),
-          a.jsxs("span", {
-            children: [a.jsx("i", { className: "key key--band" }), j("ficha.chartBand")],
-          }),
-          a.jsxs("span", {
-            children: [a.jsx("i", { className: "key key--threshold" }), j("ficha.chartThreshold")],
+            children: [
+              a.jsx("i", { className: "key key--threshold" }),
+              j(esCosecha ? "ficha.chartHarvestThreshold" : "ficha.chartThreshold"),
+            ],
           }),
         ],
       }),
@@ -383,6 +406,11 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
               a.jsx(Mr, { tipo: S.tipoDato }),
             ],
           }),
+          S.amplia &&
+            a.jsx("p", {
+              className: "small",
+              children: j("ficha.wideRange", { rango: xa(S.amplia.desde, S.amplia.hasta, T, !0) }),
+            }),
           a.jsxs("p", {
             className: "small muted",
             children: [
@@ -430,9 +458,39 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
                 children: fh.map((C) => {
                   const O = f.ventanas.find((Pe) => Pe.fase === C),
                     ne = f.habituales.find((Pe) => Pe.fase === C),
-                    J = O.desde.slice(0, 4),
-                    ae = Bo(O.desde, `${J}-${ne.tipica}`) + Math.round(Bo(O.hasta, O.desde) / 2),
                     me = f.estado.fase === C;
+                  // Fase sin datos en los CSV: se dice, no se inventa
+                  if (!O)
+                    return a.jsxs(
+                      "tr",
+                      {
+                        className: "is-nodata",
+                        children: [
+                          a.jsx("th", {
+                            scope: "row",
+                            children: a.jsxs("span", {
+                              className: "phases__fase",
+                              children: [
+                                a.jsx(zr, { fase: C, size: 16 }),
+                                j(`fase.${f.tipo}.${C}`),
+                              ],
+                            }),
+                          }),
+                          a.jsx("td", { className: "muted", children: j("ficha.noData") }),
+                          a.jsx("td", {
+                            className: "muted",
+                            children: ne ? jf(ne.tipica, T) : "—",
+                          }),
+                        ],
+                      },
+                      C,
+                    );
+                  const J = O.desde.slice(0, 4),
+                    // Con ventanas por fechas habituales la comparación sería circular: no se muestra
+                    ae =
+                      ne && O.metodo !== "climatologia"
+                        ? Bo(O.desde, `${J}-${ne.tipica}`) + Math.round(Bo(O.hasta, O.desde) / 2)
+                        : null;
                   return a.jsxs(
                     "tr",
                     {
@@ -462,15 +520,17 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
                         }),
                         a.jsxs("td", {
                           children: [
-                            jf(ne.tipica, T),
+                            ne ? jf(ne.tipica, T) : "—",
                             a.jsx("span", {
                               className: "phases__delta",
                               children:
-                                Math.abs(ae) <= 1
-                                  ? j("ficha.onTime")
-                                  : ae < 0
-                                    ? j("ficha.earlier", { n: -ae })
-                                    : j("ficha.later", { n: ae }),
+                                ae === null
+                                  ? j("ficha.fromUsual")
+                                  : Math.abs(ae) <= 1
+                                    ? j("ficha.onTime")
+                                    : ae < 0
+                                      ? j("ficha.earlier", { n: -ae })
+                                      : j("ficha.later", { n: ae }),
                             }),
                           ],
                         }),
@@ -528,35 +588,28 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
           }),
         ],
       }),
-      f.serie && f.serieprevision
-        ? a.jsxs(a.Fragment, {
+      f.grafica
+        ? a.jsxs("section", {
             children: [
-              a.jsxs("section", {
+              a.jsxs("div", {
+                className: "sub-row",
                 children: [
-                  a.jsxs("div", {
-                    className: "sub-row",
-                    children: [
-                      a.jsx("h4", { className: "sub", children: j("ficha.chartIndex") }),
-                      a.jsx(Mr, { tipo: "estimado" }),
-                    ],
+                  a.jsx("h4", {
+                    className: "sub",
+                    children: j(
+                      f.grafica.tipo === "cosecha" ? "ficha.chartHarvest" : "ficha.chartIndex",
+                    ),
                   }),
-                  a.jsx("p", { className: "small muted", children: j("ficha.chartIndexDesc") }),
-                  a.jsx(Ip, { serie: f.serie, prevision: f.serieprevision, umbrales: f.umbrales }),
+                  a.jsx(Mr, { tipo: "estimado" }),
                 ],
               }),
-              a.jsxs("section", {
-                children: [
-                  a.jsxs("div", {
-                    className: "sub-row",
-                    children: [
-                      a.jsx("h4", { className: "sub", children: j("ficha.chartTemp") }),
-                      a.jsx(Mr, { tipo: "observado" }),
-                    ],
-                  }),
-                  a.jsx("p", { className: "small muted", children: j("ficha.chartTempDesc") }),
-                  a.jsx(Op, { serie: f.serie }),
-                ],
+              a.jsx("p", {
+                className: "small muted",
+                children: j(
+                  f.grafica.tipo === "cosecha" ? "ficha.chartHarvestDesc" : "ficha.chartIndexDesc",
+                ),
               }),
+              a.jsx(Ip, { grafica: f.grafica }),
             ],
           })
         : a.jsxs("p", {
@@ -566,6 +619,20 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
               j("ficha.serieEmpty", { temporada: f.temporada }),
             ],
           }),
+      f.clima &&
+        a.jsxs("section", {
+          children: [
+            a.jsxs("div", {
+              className: "sub-row",
+              children: [
+                a.jsx("h4", { className: "sub", children: j("ficha.chartTemp") }),
+                a.jsx(Mr, { tipo: "observado" }),
+              ],
+            }),
+            a.jsx("p", { className: "small muted", children: j("ficha.chartTempDesc") }),
+            a.jsx(Op, { serie: f.clima }),
+          ],
+        }),
       f.zonas &&
         a.jsxs("section", {
           children: [
@@ -578,7 +645,7 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
             }),
             a.jsx("p", {
               className: "small muted",
-              children: j("ficha.zonesDesc", { fecha: un(f.entradasHasta, T) }),
+              children: j("ficha.zonesDesc"),
             }),
             a.jsx("ul", {
               className: "zones",
@@ -596,7 +663,7 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
                           C.indice !== null &&
                           a.jsx("span", {
                             className: "zones__bar",
-                            style: { width: `${C.indice * 100}%` },
+                            style: { width: `${Math.max(0, Math.min(1, C.indice / 0.4)) * 100}%` },
                           }),
                       }),
                       a.jsx("span", {
@@ -615,9 +682,15 @@ function Dp({ d: f, onMethod: v, onAlert: m }) {
                               })
                             : a.jsxs(a.Fragment, {
                                 children: [
-                                  C.indice.toLocaleString(T, { minimumFractionDigits: 2 }),
+                                  (C.indice > 0 ? "+" : "") +
+                                    C.indice.toLocaleString(T, { minimumFractionDigits: 2 }),
                                   " · ",
-                                  j(`fase.short.${C.fase}`),
+                                  un(C.fecha, T),
+                                  C.calidad === "nubes" &&
+                                    a.jsxs("span", {
+                                      className: "muted",
+                                      children: [" (", j("ficha.cloudsSince"), ")"],
+                                    }),
                                 ],
                               }),
                       }),
@@ -732,6 +805,31 @@ function Ap({ d: f }) {
           }),
         ],
       }),
+      f.fuentes &&
+        a.jsxs("section", {
+          children: [
+            a.jsx("h4", { className: "sub", children: v("ficha.sources") }),
+            a.jsx("ul", {
+              className: "bullets small",
+              children: f.fuentes.map((F) =>
+                a.jsx(
+                  "li",
+                  {
+                    children: F.url
+                      ? a.jsx("a", {
+                          href: F.url,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          children: F.nombre,
+                        })
+                      : F.nombre,
+                  },
+                  F.nombre,
+                ),
+              ),
+            }),
+          ],
+        }),
       f.patrocinio &&
         a.jsxs("aside", {
           className: "sponsor-slot",

@@ -17,6 +17,8 @@ const pp = "FeatureCollection",
     { nombre: "Palma", lat: 39.5696, lon: 2.6502, capital: !1 },
     { nombre: "Guadalajara", lat: 40.6326, lon: -3.1601, capital: !1 },
     { nombre: "Plasencia", lat: 40.0302, lon: -6.0884, capital: !1 },
+    { nombre: "Las Palmas", lat: 28.1235, lon: -15.4363, capital: !1 },
+    { nombre: "Santa Cruz de Tenerife", lat: 28.4636, lon: -16.2518, capital: !1 },
   ];
 
 export { gp, vp };

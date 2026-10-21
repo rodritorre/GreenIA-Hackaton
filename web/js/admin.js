@@ -102,7 +102,10 @@ function Lf() {
                 a.jsx("p", {
                   children: f("alerts.previewBody", {
                     n: Hd,
-                    conf: `${f(`confianza.${b.confianza}`)}, ${f("confianza.prob", { p: Math.round(b.probabilidad * 100) })}`,
+                    conf:
+                      b.probabilidad === void 0
+                        ? f(`confianza.${b.confianza}`)
+                        : `${f(`confianza.${b.confianza}`)}, ${f("confianza.prob", { p: Math.round(b.probabilidad * 100) })}`,
                   }),
                 }),
                 a.jsx(ps, { confianza: b.confianza, probabilidad: b.probabilidad }),

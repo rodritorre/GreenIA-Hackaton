@@ -1,4 +1,53 @@
+import { reales } from "./reales.js";
+
+const fechaCorta = (iso) =>
+  new Date(iso + "T00:00:00Z").toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+
 const wa = [
+    {
+      id: "tj-a1",
+      destinoId: "tejeda",
+      tipo: "alojamiento",
+      nombre: "Casa rural en Tejeda",
+      descripcion: "Oferta de ejemplo: alojamiento rural cerca de Tejeda.",
+      distanciaKm: 3,
+      precio: "[PRECIO]",
+      patrocinado: !1,
+    },
+    {
+      id: "tj-x1",
+      destinoId: "tejeda",
+      tipo: "actividad",
+      nombre: "Ruta de los almendros",
+      descripcion: "Oferta de ejemplo: ruta guiada durante la floración.",
+      distanciaKm: 0,
+      precio: "[PRECIO]",
+      patrocinado: !1,
+    },
+    {
+      id: "td-a1",
+      destinoId: "teide",
+      tipo: "alojamiento",
+      nombre: "Alojamiento en Las Cañadas",
+      descripcion: "Oferta de ejemplo: alojamiento junto a Las Cañadas del Teide.",
+      distanciaKm: 4,
+      precio: "[PRECIO]",
+      patrocinado: !1,
+    },
+    {
+      id: "td-x1",
+      destinoId: "teide",
+      tipo: "actividad",
+      nombre: "Ruta guiada del tajinaste",
+      descripcion: "Oferta de ejemplo: ruta guiada por Las Cañadas en mayo y junio.",
+      distanciaKm: 0,
+      precio: "[PRECIO]",
+      patrocinado: !1,
+    },
     {
       id: "tn-a1",
       destinoId: "tejera-negra",
@@ -174,30 +223,36 @@ const wa = [
       horas: 141,
     },
   ],
+  // Estado de las fuentes y registro de la última ingesta, a partir de reales.js
   wf = [
     {
-      id: "aemet",
-      nombre: "AEMET OpenData",
-      tipo: "meteo",
-      ultimaCarga: "2026-10-20T06:10:00+02:00",
+      id: "greenia",
+      nombre: "Datos proporcionados (Greenia)",
+      tipo: "proporcionado",
+      ultimaCarga: reales.generadoEn,
       estado: "ok",
-      detalle: "Máximas observadas y previstas a 7 días.",
+      detalle:
+        "9 CSV: Tejera Negra (color, clima, hitos), fechas de referencia (Tejera Negra y Montejo) y Brihuega (cosecha 2026 y previsión 2027).",
     },
     {
       id: "sentinel",
       nombre: "Copernicus Sentinel-2",
       tipo: "satelite",
-      ultimaCarga: "2026-10-18T12:40:00+02:00",
-      estado: "desactualizado",
-      detalle: "Nubes sobre la zona 4 el 19/10. Se mantiene el último dato válido.",
+      ultimaCarga: reales.tejeraNegra.ultimoPaso + "T12:00:00+02:00",
+      estado:
+        reales.tejeraNegra.ultimoPaso === reales.tejeraNegra.ultimaObs ? "ok" : "desactualizado",
+      detalle:
+        reales.tejeraNegra.ultimoPaso === reales.tejeraNegra.ultimaObs
+          ? "Último paso con datos válidos."
+          : `Último paso (${fechaCorta(reales.tejeraNegra.ultimoPaso)}) con nubes en todas las zonas. Se mantiene el último dato válido (${fechaCorta(reales.tejeraNegra.ultimaObs)}).`,
     },
     {
-      id: "greenia",
-      nombre: "Datos proporcionados (Greenia)",
-      tipo: "proporcionado",
-      ultimaCarga: "2026-10-20T06:00:00+02:00",
-      estado: "ok",
-      detalle: "Tejera Negra (DAT-1…4) y Brihuega (DAT-5).",
+      id: "aemet",
+      nombre: "AEMET OpenData",
+      tipo: "meteo",
+      ultimaCarga: reales.tejeraNegra.clima.at(-1).fecha + "T06:00:00+02:00",
+      estado: "desactualizado",
+      detalle: "Aún sin conectar: las máximas de Tejera Negra vienen en los CSV de Greenia.",
     },
     {
       id: "editorial",
@@ -209,14 +264,22 @@ const wa = [
     },
   ],
   kf = [
-    { hora: "06:00", nivel: "info", mensaje: "Inicio de la ingesta diaria" },
-    { hora: "06:10", nivel: "info", mensaje: "AEMET: 4 estaciones, 28 valores nuevos" },
+    { hora: "06:00", nivel: "info", mensaje: "Lectura de origin/*.csv (scripts/csv-a-web.mjs)" },
     {
-      hora: "06:14",
-      nivel: "warn",
-      mensaje: 'Sentinel-2: 1 de 7 zonas con nubes → "sin dato" (no se interpola)',
+      hora: "06:01",
+      nivel: "info",
+      mensaje: `Tejera Negra: ${reales.tejeraNegra.serie.length} pasos de Sentinel-2, ${reales.tejeraNegra.clima.length} días de clima`,
     },
-    { hora: "06:30", nivel: "info", mensaje: "Previsiones recalculadas: 4 destinos" },
+    {
+      hora: "06:01",
+      nivel: "warn",
+      mensaje: `Sentinel-2: ${reales.tejeraNegra.serie.filter((p) => p.indice === null).length} pasos sin ninguna zona válida → "sin dato" (no se interpola)`,
+    },
+    {
+      hora: "06:02",
+      nivel: "info",
+      mensaje: `Brihuega: ${reales.brihuega.satelite.parcelas} parcelas, ${reales.brihuega.satelite.pasos} pasos de satélite`,
+    },
   ],
   Sf = [
     { destinoId: "tejera-negra", fase: "pleno", confirmadas: 412, sinConfirmar: 37 },

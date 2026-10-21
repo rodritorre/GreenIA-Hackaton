@@ -53,7 +53,14 @@ class Kd extends ja.GridLayer {
     );
   }
 }
-const yp = "Contains modified Copernicus Sentinel-2 data (2025) · Natural Earth";
+const yp = "Contains modified Copernicus Sentinel-2 data (2025) · Natural Earth",
+  esriUrl =
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  // Las teselas Sentinel propias solo cubren la Península y Baleares
+  canarias = [
+    [27.55, -18.25],
+    [29.5, -13.3],
+  ];
 function xp() {
   const f = Sh();
   return (
@@ -65,16 +72,22 @@ function xp() {
           attribution: yp,
         }),
         m = new Kd(() => "detail.json", { minZoom: 10, maxNativeZoom: 14, className: "sat" }),
-        hi = ja.tileLayer(
-          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-          {
-            minZoom: 10,
-            maxZoom: 18,
-            maxNativeZoom: 18,
-            keepBuffer: 4,
-            attribution: "Ortofoto © Esri, Maxar, Earthstar Geographics",
-          },
-        ),
+        // Canarias a zoom bajo: ortofoto, porque no hay teselas Sentinel de las islas
+        ca = ja.tileLayer(esriUrl, {
+          minZoom: 5,
+          maxZoom: 9,
+          bounds: [
+            [26.5, -19],
+            [30.5, -12.5],
+          ],
+        }),
+        hi = ja.tileLayer(esriUrl, {
+          minZoom: 10,
+          maxZoom: 18,
+          maxNativeZoom: 18,
+          keepBuffer: 4,
+          attribution: "Ortofoto © Esri, Maxar, Earthstar Geographics",
+        }),
         lb = ja.tileLayer(
           "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
           { minZoom: 10, maxZoom: 18, maxNativeZoom: 18 },
@@ -83,10 +96,11 @@ function xp() {
       return (
         v.addTo(f),
         m.addTo(f),
+        ca.addTo(f),
         hi.addTo(f),
         lb.addTo(f),
         () => {
-          (v.remove(), m.remove(), hi.remove(), lb.remove());
+          (v.remove(), m.remove(), ca.remove(), hi.remove(), lb.remove());
         }
       );
     }, [f]),
@@ -188,9 +202,79 @@ function Cp({ sel: f, showZones: v }) {
     })
   );
 }
+function CaCapas() {
+  const f = Sh();
+  return (
+    ce.useEffect(() => {
+      const v = ja.tileLayer(esriUrl, { maxZoom: 9 });
+      return (v.addTo(f), () => v.remove());
+    }, [f]),
+    null
+  );
+}
+function Ca({ items: f, onSelect: v, mapa: m }) {
+  const { t: j } = tt(),
+    T = f.filter(({ it: S }) => S.d.region === "Canarias"),
+    // Se oculta cuando el mapa grande ya está mirando a Canarias
+    [enCanarias, setEnCanarias] = ce.useState(!1);
+  if (
+    (ce.useEffect(() => {
+      if (!m) return;
+      const S = () => setEnCanarias(m.getCenter().lat < 31);
+      return (m.on("moveend", S), () => m.off("moveend", S));
+    }, [m]),
+    enCanarias)
+  )
+    return null;
+  return a.jsxs("div", {
+    className: "map-inset",
+    children: [
+      a.jsxs(up, {
+        bounds: canarias,
+        zoomSnap: 0.25,
+        dragging: !1,
+        zoomControl: !1,
+        scrollWheelZoom: !1,
+        doubleClickZoom: !1,
+        touchZoom: !1,
+        boxZoom: !1,
+        keyboard: !1,
+        attributionControl: !1,
+        className: "map-inset__map",
+        children: [
+          a.jsx(ap, {
+            data: vp,
+            style: () => ({ fillColor: "#8C8A74", fillOpacity: 1, color: "#8C8A74", weight: 1 }),
+            interactive: !1,
+          }),
+          a.jsx(CaCapas, {}),
+          T.map(({ it: S, label: M }) =>
+            a.jsx(
+              kl,
+              {
+                position: [S.d.lat, S.d.lon],
+                icon: kp(S, !1, M),
+                title: M,
+                eventHandlers: { click: () => v(S.d.id) },
+              },
+              S.d.id,
+            ),
+          ),
+        ],
+      }),
+      a.jsxs("button", {
+        type: "button",
+        className: "map-inset__go",
+        onClick: () => m && m.flyToBounds(canarias, { duration: 0.8 }),
+        children: [j("map.canarias"), a.jsx(He, { name: "expand", size: 14 })],
+      }),
+    ],
+  });
+}
 function Pp(f) {
   const { t: v, lang: m } = tt(),
     j = oo(qu),
+    [mapa, setMapa] = ce.useState(null),
     T = ce.useMemo(
       () =>
         f.items.map((S) => {
@@ -203,13 +287,14 @@ function Pp(f) {
     className: "map-frame",
     children: [
       a.jsxs(up, {
+        ref: setMapa,
         bounds: Vu,
         minZoom: 5,
         maxZoom: 18,
         zoomSnap: 0.5,
         zoomDelta: 0.5,
         maxBounds: [
-          [33, -14],
+          [26.5, -19],
           [46.5, 8],
         ],
         zoomControl: !1,
@@ -297,6 +382,7 @@ function Pp(f) {
           a.jsx(Cp, { sel: f.sel, showZones: f.showZones }),
         ],
       }),
+      a.jsx(Ca, { items: T, onSelect: f.onSelect, mapa }),
       a.jsxs("div", {
         className: "map-status",
         children: [

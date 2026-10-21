@@ -95,6 +95,26 @@ const xf = {
     ],
   }),
   arrowRight: a.jsx("path", { d: "M5 12h14M13 6l6 6-6 6" }),
+  chevronDown: a.jsx("path", { d: "M6 9l6 6 6-6" }),
+  calendar: a.jsxs(a.Fragment, {
+    children: [
+      a.jsx("rect", { x: "3.5", y: "5", width: "17", height: "15.5", rx: "2" }),
+      a.jsx("path", { d: "M3.5 10h17M8 3v4M16 3v4" }),
+    ],
+  }),
+  user: a.jsxs(a.Fragment, {
+    children: [
+      a.jsx("circle", { cx: "12", cy: "8", r: "4" }),
+      a.jsx("path", { d: "M4.5 21a7.5 7.5 0 0 1 15 0" }),
+    ],
+  }),
+  utensils: a.jsx("path", {
+    d: "M7 3v18M4 3v5a3 3 0 0 0 6 0V3M18 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H18",
+  }),
+  phone: a.jsx("path", {
+    d: "M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2",
+  }),
+  external: a.jsx("path", { d: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" }),
   database: a.jsxs(a.Fragment, {
     children: [
       a.jsx("ellipse", { cx: "12", cy: "6", rx: "7", ry: "3" }),

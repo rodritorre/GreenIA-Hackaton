@@ -1,11 +1,15 @@
-# Production stack. Run from the repo root via scripts/deploy.sh.
-# Phase 1: Caddy only. Future services (api, db, worker) join the `internal` network
-# and get a route in the Caddyfile; Caddy stays the only container publishing ports.
+# Live demo stack. Run from the repo root via scripts/deploy.sh.
+# Caddy serves the frontend's demo build (in-browser mock API), built in deploy/Dockerfile.
+# Future services (api, db, worker; see fullstack/) join the `internal` network and get a
+# route in the Caddyfile; Caddy stays the only container publishing ports.
 name: hackathon
 
 services:
   caddy:
-    image: caddy:2.11-alpine
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: hackathon-web:latest
     container_name: caddy
     restart: unless-stopped
     ports:
@@ -15,8 +19,6 @@ services:
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in deploy/.env}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ../frontend/public:/srv:ro
       - caddy_data:/data     # certificates: must persist or Let's Encrypt rate limits bite
       - caddy_config:/config
     networks:

@@ -20,9 +20,43 @@ with its tests; `deploy/fullstack/` is how it would run in production.
 
 Only the operator deploys: push to `main`, then the operator runs `scripts/deploy.sh` on the server.
 
+Demo routes: the public site at `/`, the destination panel at `#destino` (one click, no login; pick
+Brihuega or Tejera Negra), Greenia's internal panel at `#admin`.
+
 ### What is real and what is simulated
 
-To be completed as the demo features land.
+**Real**
+- The organisers' datasets in `data/organizadores/`, turned into the demo's data by
+  `frontend/scripts/import_floral_data.py` (output: `frontend/src/api/mock/datosOrganizadores.ts`):
+  - Tejera Negra: the colour index series (21 Jul to 14 Oct 2026), cloud gaps from the Sentinel-2 passes,
+    daily maximum temperatures, the start milestone (4 Sep 2026) and the 8-season reference dates.
+  - Brihuega: the 2026 harvest (10 % cut on 21 Jul, 50 % on 11 Aug, 61 % of 832 ha) and the provided
+    2027 forecast (full bloom 1 to 8 Jul, central 5 Jul, v0-climatologia over 10 years).
+- Phase thresholds recalibrated to the real index range: inicio 0.20 (it reproduces the organisers'
+  detected start), avance 0.30, pleno 0.40.
+- The backend (FastAPI + PostGIS + worker), its tests and the OpenAPI contract. The seed fixture is
+  regenerated from the same mock (`npm run export-fixture`).
+- The satellite basemap (Copernicus Sentinel-2 2025 mosaic).
+
+**Estimated from real data**
+- Per-zone values in Tejera Negra: the organisers give the median and the 25th to 75th percentile across
+  zones; we spread the zones with data across that range, ordered by each zone's own satellite change.
+  Zone positions on the map are placeholders (the datasets have zone ids, not geometries).
+
+**Simulated** (labelled "simulado" or "(simulado)" on screen)
+- The v0 model's forecast band after the last observation, and phase windows the organisers did not
+  provide (Tejera Negra full colour and end; Brihuega first flowers).
+- Everything in the destination panel's demand and impact figures. Alerts typed into the demo do add to
+  the "by province" count.
+- AI moderation of business listings: scripted rules in the demo. In production it is a call to an LLM
+  API with human review of doubtful cases.
+- Email sending (outbox only), logins, booking links (`[PRECIO]`).
+- Jerte: public historical dates only, low confidence. Alpujarra: "coming soon", no real data.
+
+Demo state (visibility, capacity, sign-ups, agenda, story) lives in the browser's localStorage, so a reload
+keeps it. "Reiniciar demo" in the panel clears it. The panel's destination licence, visibility control,
+business moderation and capacity endpoints exist in the frontend's API contract (`src/api/types.ts`) and
+the mock; the backend does not implement them yet.
 
 - **Deploy the full stack on your server**: [docs/DEPLOY.md](docs/DEPLOY.md)
 - **Decisions and inputs still needed**: [docs/DECISIONS.md](docs/DECISIONS.md)

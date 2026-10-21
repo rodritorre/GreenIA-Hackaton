@@ -30,7 +30,7 @@ Brihuega or Tejera Negra), Greenia's internal panel at `#admin`.
 ### What is real and what is simulated
 
 **Real**
-- The organisers' datasets in `data/organizadores/`, turned into the demo's data by
+- The organisers' datasets in `origin/`, turned into the demo's data by
   `frontend/scripts/import_floral_data.py` (output: `frontend/src/api/mock/datosOrganizadores.ts`):
   - Tejera Negra: the colour index series (21 Jul to 14 Oct 2026), cloud gaps from the Sentinel-2 passes,
     daily maximum temperatures, the start milestone (4 Sep 2026) and the 8-season reference dates.

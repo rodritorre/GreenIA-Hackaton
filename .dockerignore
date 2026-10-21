@@ -2,7 +2,9 @@
 **/node_modules
 **/dist
 backend
-data
+origin
+web
 docs
 deploy/fullstack
 **/.env
+.claude

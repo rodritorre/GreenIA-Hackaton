@@ -11,7 +11,7 @@ export function Hero({ onPick, onMethod }: { onPick: (id: string) => void; onMet
   const { estados } = useMapa(HOY);
   const ahora = destinos
     .map((d) => ({ d, e: estados.get(d.id) }))
-    .filter((x): x is { d: typeof x.d; e: NonNullable<typeof x.e> } => x.e?.fase === 'avance' || x.e?.fase === 'pleno');
+    .filter((x): x is { d: typeof x.d; e: NonNullable<typeof x.e> } => x.e?.fase === 'inicio' || x.e?.fase === 'avance' || x.e?.fase === 'pleno');
   const proximo = destinos
     .filter((d) => d.estado.fase === 'fuera_temporada' && ventanaPleno(d))
     .sort((a, b) => ventanaPleno(a)!.desde.localeCompare(ventanaPleno(b)!.desde))[0];

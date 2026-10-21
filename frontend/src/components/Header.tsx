@@ -26,6 +26,7 @@ export function Header({ onMethod }: { onMethod: () => void }) {
             <a href="#mapa">{t('nav.calendar')}</a>
             <a href="#planes">{t('nav.plans')}</a>
             <a href="#avisos">{t('nav.alerts')}</a>
+            <a href="#negocio">{t('nav.towns')}</a>
             <button type="button" className="link-button" onClick={onMethod}>
               {t('nav.method')}
             </button>

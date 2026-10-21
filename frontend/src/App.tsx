@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { AlertsSection } from './components/AlertsSection';
+import { AltaNegocio } from './components/AltaNegocio';
 import { BusinessSection } from './components/BusinessSection';
 import { CitizenSection } from './components/CitizenSection';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { ImpactSection } from './components/ImpactSection';
 import { MapSection } from './components/MapSection';
 import { MethodModal } from './components/MethodModal';
 import { PlansSection } from './components/PlansSection';
@@ -44,7 +46,9 @@ export default function App() {
         <PlansSection fecha={fecha} onPick={pick} />
         <AlertsSection preselect={alertFor} />
         <CitizenSection />
+        <ImpactSection />
         <BusinessSection />
+        <AltaNegocio />
       </main>
       <Footer onMethod={openMethod} />
       <MethodModal open={method} onClose={() => setMethod(false)} />

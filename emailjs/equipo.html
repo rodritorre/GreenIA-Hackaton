@@ -1,0 +1,34 @@
+<!--
+  Plantilla EmailJS «equipo»: le llega al equipo con cada formulario de la web.
+  Pegar en EmailJS → Email Templates → (nueva) → Content → Edit content → modo código.
+
+  Ajustes de la plantilla en EmailJS:
+    Subject:   [Cuándo Florece] {{asunto}}
+    To Email:  el correo del equipo (fijo)
+    From Name: Cuándo Florece
+    Reply To:  {{reply_to}}
+    Attachments → Add Attachment → Variable Attachment:
+               Parameter name: adjunto · Filename: foto.jpg · Content type: image/jpeg
+               (solo lo usa la observación ciudadana; en el resto va vacío)
+
+  Variables que envía la web (js/email.js):
+    tipo      aviso | reserva | negocio | observacion | contacto
+    asunto    resumen de una línea
+    resumen   todos los campos, uno por línea («Etiqueta: valor»)
+    nombre    nombre de quien envía (puede ir vacío)
+    reply_to  email de quien envía (puede ir vacío)
+    fecha     fecha y hora del envío (Europe/Madrid)
+    sitio     URL de la web (config.siteUrl)
+    adjunto   foto en data URL (solo «observacion»)
+-->
+<div style="font-family: Arial, Helvetica, sans-serif; color: #2b1f1a; max-width: 600px;">
+  <p style="margin: 0 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #a5432c; font-weight: bold;">
+    {{tipo}}
+  </p>
+  <h1 style="margin: 0 0 16px; font-size: 20px;">{{asunto}}</h1>
+  <div style="white-space: pre-line; background: #fbf6ee; border: 1px solid #eadfcf; border-radius: 8px; padding: 14px 16px; font-size: 14px; line-height: 1.5;">{{resumen}}</div>
+  <p style="margin: 16px 0 0; font-size: 13px; color: #67574e;">
+    Enviado el {{fecha}} desde {{sitio}}.<br>
+    Responder a este correo contesta directamente a {{nombre}} ({{reply_to}}), si dejó su email.
+  </p>
+</div>

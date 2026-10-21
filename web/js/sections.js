@@ -5,19 +5,50 @@ import { un, xa } from "./utils/fechas.js";
 import { Ot, oo } from "./data/destinos.js";
 import { Mr, Tl, zr } from "./components/ui.js";
 import { Cl, fh, qt, ro } from "./utils/fases.js";
+import { provincias } from "./data/pueblos.js";
+import { UserMenu, useAuth } from "./auth.js";
+import { onEnlace, useSeccionActiva } from "./utils/scroll.js";
+import { enviarFormulario, fotoComprimida } from "./email.js";
+import { EstadoEnvio, useEnvio } from "./negocio.js";
+import { config } from "./config.js";
 
 function Ff({ preselect: f }) {
   const { t: v } = tt(),
     [m, j] = ce.useState(f ?? Ot[0].id),
     [T, S] = ce.useState("pleno"),
     [M, b] = ce.useState(7),
-    [C, O] = ce.useState(!1);
+    envio = useEnvio(),
+    [P, Q] = ce.useState(""),
+    { user: U } = useAuth();
   ce.useEffect(() => {
     f && j(f);
   }, [f]);
   const ne = oo(m),
     J = (ae) => {
-      (ae.preventDefault(), O(!0));
+      ae.preventDefault();
+      const email = ae.currentTarget.elements.email.value.trim(),
+        fase = v(`fase.${ne.tipo}.${T}`),
+        w = ne.ventanas.find((x) => x.fase === T);
+      envio.run(() =>
+        enviarFormulario({
+          tipo: "aviso",
+          asunto: `Nuevo aviso: ${ne.nombre} · ${fase}`,
+          email,
+          nombre: U ? U.nombre : "",
+          campos: {
+            Destino: ne.nombre,
+            Fase: fase,
+            Antelación: v("alerts.days", { n: M }),
+            "Ventana prevista": w ? `${w.desde} → ${w.hasta}` : "",
+            Provincia: P || v("alerts.provinceAny"),
+            Email: email,
+          },
+          confirmacion: {
+            asunto: v("mail.alertSubject", { destino: ne.nombre }),
+            mensaje: v("mail.alertBody", { destino: ne.nombre, fase: fase.toLowerCase(), n: M }),
+          },
+        }),
+      );
     };
   return a.jsx("section", {
     id: "avisos",
@@ -83,35 +114,56 @@ function Ff({ preselect: f }) {
                 ],
               }),
               a.jsxs("label", {
+                className: "field",
+                children: [
+                  v("alerts.province"),
+                  a.jsxs("select", {
+                    value: P,
+                    onChange: (ae) => Q(ae.target.value),
+                    children: [
+                      a.jsx("option", { value: "", children: v("alerts.provinceAny") }),
+                      provincias.map((ae) => a.jsx("option", { value: ae, children: ae }, ae)),
+                    ],
+                  }),
+                ],
+              }),
+              a.jsxs("label", {
                 className: "field field--wide",
                 children: [
                   v("alerts.email"),
                   a.jsx("input", {
                     type: "email",
+                    name: "email",
                     required: !0,
                     placeholder: "tu@email.com",
                     autoComplete: "email",
-                  }),
+                    defaultValue: U ? U.email : void 0,
+                  }, U ? U.email : "anon"),
                 ],
               }),
               a.jsxs("label", {
                 className: "consent",
-                children: [a.jsx("input", { type: "checkbox", required: !0 }), v("alerts.consent")],
+                children: [
+                  a.jsx("input", { type: "checkbox", required: !0 }),
+                  a.jsxs("span", {
+                    children: [
+                      v("alerts.consent"),
+                      " ",
+                      a.jsx("a", { href: "privacidad.html", target: "_blank", rel: "noopener", children: v("mail.privacy") }),
+                    ],
+                  }),
+                ],
               }),
               a.jsx("div", {
                 className: "alerts__actions",
                 children: a.jsx("button", {
                   type: "submit",
                   className: "btn btn--sun",
+                  disabled: envio.estado === "enviando",
                   children: v("alerts.submit"),
                 }),
               }),
-              C &&
-                a.jsxs("p", {
-                  className: "alerts__done",
-                  role: "status",
-                  children: [a.jsx(He, { name: "check", size: 18 }), v("alerts.done")],
-                }),
+              a.jsx("div", { className: "alerts__status", children: a.jsx(EstadoEnvio, { envio, ok: v("alerts.done") }) }),
             ],
           }),
         ],
@@ -119,82 +171,40 @@ function Ff({ preselect: f }) {
     }),
   });
 }
-function Bf() {
-  const { t: f } = tt(),
-    v = [
-      { icon: "bed", title: f("business.stayT"), text: f("business.stayD") },
-      { icon: "compass", title: f("business.doT"), text: f("business.doD") },
-      { icon: "tag", title: f("business.sponsorT"), text: f("business.sponsorD") },
-      { icon: "database", title: f("business.b2bT"), text: f("business.b2bD") },
-    ];
-  return a.jsx("section", {
-    id: "negocio",
-    className: "business",
-    "aria-labelledby": "business-title",
-    children: a.jsxs("div", {
-      className: "container",
-      children: [
-        a.jsxs("div", {
-          className: "section-head",
-          children: [
-            a.jsxs("div", {
-              children: [
-                a.jsx(Tl, { children: f("business.eyebrow") }),
-                a.jsx("h2", {
-                  id: "business-title",
-                  className: "h2",
-                  children: f("business.title"),
-                }),
-                a.jsx("p", { className: "muted lead-sm", children: f("business.lead") }),
-              ],
-            }),
-            a.jsx("a", {
-              href: "#",
-              className: "btn btn--primary",
-              children: f("business.contact"),
-            }),
-          ],
-        }),
-        a.jsx("ul", {
-          className: "biz-grid",
-          children: v.map((m) =>
-            a.jsxs(
-              "li",
-              {
-                className: "biz",
-                children: [
-                  a.jsx("span", { className: "biz__icon", children: a.jsx(He, { name: m.icon }) }),
-                  a.jsx("h3", { className: "biz__title", children: m.title }),
-                  a.jsx("p", { className: "biz__text", children: m.text }),
-                ],
-              },
-              m.title,
-            ),
-          ),
-        }),
-        a.jsxs("p", {
-          className: "biz-scale",
-          children: [a.jsx(He, { name: "arrowRight", size: 18 }), f("business.scale")],
-        }),
-      ],
-    }),
-  });
-}
 function Zf() {
   const { t: f } = tt(),
+    { user: U } = useAuth(),
     [v, m] = ce.useState(Ot[0].id),
     [j, T] = ce.useState(null),
     [S, M] = ce.useState(null),
-    [b, C] = ce.useState(!1),
+    envio = useEnvio(),
     O = ["inicio", "avance", "pleno", "final"],
-    ne = Ot.find((me) => me.id === v).tipo,
+    ne = Ot.find((me) => me.id === v),
     J = (me) => {
-      (me.preventDefault(), C(!0));
-    },
-    ae = [
-      { ok: !0, text: f("citizen.checkPlace", { n: "0,8", zona: "Zona 2" }) },
-      { ok: !0, text: f("citizen.checkTime", { n: 2 }) },
-    ];
+      me.preventDefault();
+      const el = me.currentTarget.elements,
+        email = el.email.value.trim(),
+        nota = el.nota.value.trim();
+      envio.run(async () => {
+        const foto = await fotoComprimida(j);
+        await enviarFormulario({
+          tipo: "observacion",
+          asunto: `Observación ciudadana: ${ne.nombre} · ${f(`fase.${ne.tipo}.${S}`)}`,
+          email,
+          nombre: U ? U.nombre : "",
+          campos: {
+            Destino: ne.nombre,
+            "Fase observada": f(`fase.${ne.tipo}.${S}`),
+            Archivo: `${j.name} (${Math.round(j.size / 1024)} KB, original)`,
+            "Fecha del archivo": new Date(j.lastModified).toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
+            Comentario: nota,
+            Email: email,
+          },
+          adjunto: foto,
+          confirmacion: { asunto: f("mail.photoSubject"), mensaje: f("mail.photoBody", { destino: ne.nombre }) },
+        });
+      });
+    };
   return a.jsx("section", {
     id: "verifica",
     className: "citizen",
@@ -208,7 +218,6 @@ function Zf() {
             a.jsx(Tl, { children: f("citizen.eyebrow") }),
             a.jsx("h2", { id: "citizen-title", className: "h2", children: f("citizen.title") }),
             a.jsx("p", { className: "muted lead-sm", children: f("citizen.lead") }),
-            a.jsx("p", { className: "small muted", children: f("citizen.limits") }),
           ],
         }),
         a.jsxs("form", {
@@ -222,9 +231,7 @@ function Zf() {
                 a.jsx("select", {
                   value: v,
                   onChange: (me) => m(me.target.value),
-                  children: Ot.map((me) =>
-                    a.jsx("option", { value: me.id, children: me.nombre }, me.id),
-                  ),
+                  children: Ot.map((me) => a.jsx("option", { value: me.id, children: me.nombre }, me.id)),
                 }),
               ],
             }),
@@ -236,45 +243,20 @@ function Zf() {
                   className: "upload",
                   children: [
                     a.jsx(He, { name: "camera" }),
-                    a.jsx("span", { children: j ?? f("citizen.choose") }),
+                    a.jsx("span", { children: j ? j.name : f("citizen.choose") }),
                     a.jsx("input", {
                       type: "file",
                       accept: "image/*",
                       className: "sr-only",
                       onChange: (me) => {
-                        var Pe, pe;
-                        (T(
-                          ((pe = (Pe = me.target.files) == null ? void 0 : Pe[0]) == null
-                            ? void 0
-                            : pe.name) ?? null,
-                        ),
-                          C(!1));
+                        var Pe;
+                        (T(((Pe = me.target.files) == null ? void 0 : Pe[0]) ?? null), envio.reset());
                       },
                     }),
                   ],
                 }),
               ],
             }),
-            j &&
-              a.jsxs("div", {
-                className: "checks",
-                "aria-live": "polite",
-                children: [
-                  a.jsx("p", { className: "label", children: f("citizen.checks") }),
-                  a.jsx("ul", {
-                    children: ae.map((me) =>
-                      a.jsxs(
-                        "li",
-                        {
-                          className: me.ok ? "is-ok" : "is-bad",
-                          children: [a.jsx(He, { name: me.ok ? "check" : "x", size: 16 }), me.text],
-                        },
-                        me.text,
-                      ),
-                    ),
-                  }),
-                ],
-              }),
             a.jsxs("fieldset", {
               className: "phase-pick",
               children: [
@@ -286,7 +268,7 @@ function Zf() {
                       type: "button",
                       "aria-pressed": S === me,
                       onClick: () => M(me),
-                      children: [a.jsx(zr, { fase: me, size: 18 }), f(`fase.${ne}.${me}`)],
+                      children: [a.jsx(zr, { fase: me, size: 18 }), f(`fase.${ne.tipo}.${me}`)],
                     },
                     me,
                   ),
@@ -294,21 +276,36 @@ function Zf() {
               ],
             }),
             a.jsxs("label", {
+              className: "field field--light",
+              children: [f("citizen.note"), a.jsx("textarea", { name: "nota", rows: 2 })],
+            }),
+            a.jsxs("label", {
+              className: "field field--light",
+              children: [
+                f("citizen.email"),
+                a.jsx("input", { type: "email", name: "email", autoComplete: "email", defaultValue: U ? U.email : void 0 }, U ? U.email : "anon"),
+              ],
+            }),
+            a.jsxs("label", {
               className: "consent consent--light",
-              children: [a.jsx("input", { type: "checkbox", required: !0 }), f("citizen.consent")],
+              children: [
+                a.jsx("input", { type: "checkbox", required: !0 }),
+                a.jsxs("span", {
+                  children: [
+                    f("citizen.consent"),
+                    " ",
+                    a.jsx("a", { href: "privacidad.html", target: "_blank", rel: "noopener", children: f("mail.privacy") }),
+                  ],
+                }),
+              ],
             }),
             a.jsx("button", {
               type: "submit",
               className: "btn btn--primary",
-              disabled: !j || !S,
+              disabled: !j || !S || envio.estado === "enviando",
               children: f("citizen.submit"),
             }),
-            b &&
-              a.jsxs("p", {
-                role: "status",
-                className: "notice notice--ok",
-                children: [a.jsx(He, { name: "check", size: 18 }), f("citizen.accepted")],
-              }),
+            a.jsx(EstadoEnvio, { envio, ok: f("citizen.accepted") }),
           ],
         }),
       ],
@@ -354,12 +351,14 @@ function Hf({ onMethod: f }) {
                     children: v("nav.method"),
                   }),
                   a.jsx("a", { href: "#negocio", children: v("footer.business") }),
-                  a.jsx("a", { href: "#", children: v("footer.privacy") }),
-                  a.jsx("a", {
-                    href: "#admin",
-                    className: "site-footer__admin",
-                    children: v("footer.admin"),
-                  }),
+                  a.jsx("a", { href: "#destino", children: v("footer.panel") }),
+                  a.jsx("a", { href: "privacidad.html", children: v("footer.privacy") }),
+                  config.demo &&
+                    a.jsx("a", {
+                      href: "#admin",
+                      className: "site-footer__admin",
+                      children: v("footer.admin"),
+                    }),
                 ],
               }),
             ],
@@ -376,15 +375,20 @@ function Hf({ onMethod: f }) {
     ],
   });
 }
+const navItems = [
+  { id: "mapa", label: "nav.map" },
+  { id: "calendario", label: "nav.calendar" },
+  { id: "packs", label: "nav.packs" },
+  { id: "avisos", label: "nav.alerts" },
+  { id: "negocio", label: "nav.towns" },
+];
 function $f({ onMethod: f }) {
   const { t: v, lang: m, setLang: j } = tt(),
-    T = ["es", "en"];
+    T = ["es", "en"],
+    // «Calendario» está dentro de la sección del mapa: no se marca aparte.
+    act = useSeccionActiva(navItems.map((S) => S.id).filter((S) => S !== "calendario"));
   return a.jsxs(a.Fragment, {
     children: [
-      a.jsxs("p", {
-        className: "mock-banner",
-        children: [a.jsx(He, { name: "info", size: 16 }), v("mockBanner")],
-      }),
       a.jsx("header", {
         className: "site-header",
         children: a.jsxs("div", {
@@ -402,10 +406,18 @@ function $f({ onMethod: f }) {
               "aria-label": v("nav.main"),
               className: "site-nav",
               children: [
-                a.jsx("a", { href: "#mapa", "aria-current": "page", children: v("nav.map") }),
-                a.jsx("a", { href: "#mapa", children: v("nav.calendar") }),
-                a.jsx("a", { href: "#packs", children: v("nav.packs") }),
-                a.jsx("a", { href: "#avisos", children: v("nav.alerts") }),
+                navItems.map((S) =>
+                  a.jsx(
+                    "a",
+                    {
+                      href: `#${S.id}`,
+                      onClick: onEnlace,
+                      "aria-current": act === S.id ? "location" : void 0,
+                      children: v(S.label),
+                    },
+                    S.id,
+                  ),
+                ),
                 a.jsx("button", {
                   type: "button",
                   className: "link-button",
@@ -445,9 +457,11 @@ function $f({ onMethod: f }) {
                     ),
                   ),
                 }),
+                a.jsx(UserMenu, {}),
                 a.jsx("a", {
                   href: "#packs",
-                  className: "btn btn--primary",
+                  onClick: onEnlace,
+                  className: "btn btn--primary site-header__cta",
                   children: v("nav.cta"),
                 }),
               ],
@@ -589,4 +603,4 @@ function Wf({ onPick: f, onMethod: v }) {
   });
 }
 
-export { $f, Bf, Ff, Hf, Wf, Zf };
+export { $f, Ff, Hf, Wf, Zf };

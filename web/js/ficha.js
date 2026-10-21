@@ -1,78 +1,126 @@
 import { a, ce } from "./vendor/react.min.js";
 import { tt } from "./i18n.js";
 import { He } from "./components/icons.js";
-import { jl, wa } from "./data/ofertas.js";
+import { jl } from "./data/ofertas.js";
+import { alojamientos, opciones } from "./data/ofertasMes.js";
+import { packs } from "./data/packs.js";
 import { Bo, El, Ho, ah, jf, lh, un, xa } from "./utils/fechas.js";
 import { $s, Ku, Mr, Qu, ps, zr } from "./components/ui.js";
 import { fh, ph, qt, ro } from "./utils/fases.js";
 import { jh } from "./components/ilustraciones.js";
+import { agendaDe, aforo as aforoDe, alternativasDe, conPanel } from "./data/pueblos.js";
+import { AforoAviso, Alternativas } from "./pueblo.js";
 
-function Qd({ o: f }) {
-  const { t: v } = tt();
+// Agenda que publica el ayuntamiento y pueblos cercanos con menos gente.
+function Descubrir({ id: f }) {
+  const { t: v, lang: m } = tt(),
+    j = agendaDe(f),
+    T = alternativasDe(f);
+  return !j.length && !T.length
+    ? null
+    : a.jsxs("div", {
+        className: "ficha-body ficha-body--editorial descubrir",
+        children: [
+          !!j.length &&
+            a.jsxs("section", {
+              children: [
+                a.jsxs("div", {
+                  className: "sub-row",
+                  children: [
+                    a.jsx("h4", { className: "sub", children: v("descubrir.agenda") }),
+                    a.jsx("span", { className: "small muted", children: v("descubrir.agendaBy") }),
+                  ],
+                }),
+                a.jsx("ul", {
+                  className: "agenda",
+                  children: j.map((S) =>
+                    a.jsxs("li", { children: [a.jsx("span", { className: "agenda__date", children: un(S.fecha, m) }), S.titulo] }, `${S.fecha}-${S.titulo}`),
+                  ),
+                }),
+              ],
+            }),
+          !!T.length &&
+            a.jsxs("section", {
+              children: [
+                a.jsx("h4", { className: "sub", children: v("descubrir.title") }),
+                a.jsx("p", { className: "small muted", children: v("descubrir.lead") }),
+                a.jsx(Alternativas, { lista: T }),
+              ],
+            }),
+        ],
+      });
+}
+
+// «Dormir y hacer»: alojamientos con tarifa publicada (ofertasMes.js) y las paradas de
+// los packs (packs.js). Todo son sitios reales con su fuente; nada patrocinado.
+const Lx = (x, l) => (x && typeof x == "object" ? (x[l] ?? x.es) : x);
+function Parada({ icon: f, nombre: v, lugar: m, nota: j, tel: T, web: S, fuente: M }) {
+  const { t: b } = tt();
   return a.jsxs("li", {
     className: "offer",
     children: [
-      a.jsx("span", {
-        className: "offer__icon",
-        "aria-hidden": "true",
-        children: a.jsx(He, { name: f.tipo === "alojamiento" ? "bed" : "compass" }),
-      }),
+      a.jsx("span", { className: "offer__icon", "aria-hidden": "true", children: a.jsx(He, { name: f }) }),
       a.jsxs("span", {
         className: "offer__text",
         children: [
-          a.jsxs("span", {
-            className: "offer__name",
-            children: [f.nombre, f.patrocinado && a.jsx(Qu, {})],
-          }),
-          a.jsx("span", { className: "small muted", children: f.descripcion }),
-          a.jsx("span", {
-            className: "small muted",
-            children: f.distanciaKm === 0 ? v("ficha.onSite") : v("ficha.km", { n: f.distanciaKm }),
-          }),
+          a.jsx("span", { className: "offer__name", children: v }),
+          m && a.jsx("span", { className: "small muted", children: m }),
+          j && a.jsx("span", { className: "small", children: j }),
+          T && a.jsx("span", { className: "small muted", children: `${b("ficha.phone")}: ${T}` }),
         ],
       }),
-      a.jsxs("span", {
-        className: "offer__end",
-        children: [
-          a.jsxs("span", {
-            className: "small muted",
-            children: [
-              v("ficha.fromPrice"),
-              " ",
-              a.jsx("strong", { className: "price", children: f.precio }),
-            ],
+      S &&
+        a.jsx("span", {
+          className: "offer__end",
+          children: a.jsxs("a", {
+            href: S,
+            target: "_blank",
+            rel: "noopener",
+            className: "btn btn--ghost btn--sm",
+            children: [M || b("ficha.web"), a.jsx(He, { name: "external", size: 14 })],
           }),
-          a.jsx("a", { href: "#", className: "btn btn--ghost btn--sm", children: v("ficha.book") }),
-        ],
-      }),
+        }),
     ],
   });
 }
 function bp({ d: f }) {
-  const { t: v } = tt(),
-    m = wa.filter((S) => S.destinoId === f.id),
-    j = m.filter((S) => S.tipo === "alojamiento"),
-    T = m.filter((S) => S.tipo === "actividad");
+  const { t: v, lang: L } = tt(),
+    vistos = new Set(),
+    j = (opciones[f.id] ?? [])
+      .map((S) => S.aloj)
+      .filter((S) => !vistos.has(S) && vistos.add(S))
+      .map((S) => alojamientos[S]),
+    pack = packs.find((S) => S.destinoId === f.id),
+    T = pack ? pack.dias.flat().filter((S) => S.tipo !== "alojamiento") : [];
   return a.jsxs("div", {
     className: "ficha-body",
     children: [
-      a.jsx($s, {
-        capa: "comercial",
-        children: a.jsx("span", { className: "small muted", children: v("ficha.neutral") }),
-      }),
-      m.length === 0 && a.jsx("p", { className: "empty", children: v("ficha.nothing") }),
+      a.jsx("p", { className: "small muted", children: v("ficha.staySource") }),
+      j.length === 0 && T.length === 0 && a.jsx("p", { className: "empty", children: v("ficha.nothing") }),
       j.length > 0 &&
         a.jsxs("section", {
           children: [
             a.jsx("h4", { className: "sub", children: v("ficha.stayTitle") }),
-            a.jsx("ul", { className: "offers", children: j.map((S) => a.jsx(Qd, { o: S }, S.id)) }),
+            a.jsx("ul", {
+              className: "offers",
+              children: j.map((S) => a.jsx(Parada, { icon: "bed", nombre: S.nombre, lugar: S.lugar, web: S.web, fuente: S.fuente }, S.nombre)),
+            }),
           ],
         }),
       T.length > 0 &&
         a.jsxs("section", {
           children: [
             a.jsx("h4", { className: "sub", children: v("ficha.doTitle") }),
-            a.jsx("ul", { className: "offers", children: T.map((S) => a.jsx(Qd, { o: S }, S.id)) }),
+            a.jsx("ul", {
+              className: "offers",
+              children: T.map((S) =>
+                a.jsx(
+                  Parada,
+                  { icon: S.tipo === "restaurante" ? "utensils" : "compass", nombre: S.nombre, lugar: S.lugar, nota: Lx(S.nota, L), tel: S.tel },
+                  `${S.nombre}-${S.lugar}`,
+                ),
+              ),
+            }),
           ],
         }),
     ],
@@ -920,6 +968,7 @@ function Fp({ d: f, e: v, fecha: m, onBack: j, onMethod: T, onAlert: S }) {
               M("ficha.source", { fuente: f.estado.fuente }),
             ],
           }),
+          conPanel.includes(f.id) && a.jsx(AforoAviso, { aforo: aforoDe(f.id) }),
         ],
       }),
       a.jsx("div", {
@@ -958,6 +1007,7 @@ function Fp({ d: f, e: v, fecha: m, onBack: j, onMethod: T, onAlert: S }) {
         children: [
           C === "when" && a.jsx(Dp, { d: f, onMethod: T, onAlert: S }),
           C === "see" && a.jsx(Ap, { d: f }),
+          C === "see" && a.jsx(Descubrir, { id: f.id }),
           C === "stay" && a.jsx(bp, { d: f }),
         ],
       }),

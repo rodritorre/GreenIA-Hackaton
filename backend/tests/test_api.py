@@ -84,11 +84,11 @@ def test_alerta_doble_opt_in(client, admin):
     assert correo['para'] == 'turista@example.com' and correo['estado'] == 'simulado'
     token = correo['cuerpo'].split('token=')[1].split()[0]
     assert 'Aviso confirmado' in client.get(f'{API}/alertas/confirmar', params={'token': token}).text
-    # Pleno window starts 24 Oct; 7 days' notice → due on 20 Oct
+    # Pleno window (v0 model on the organisers' data) starts 26 Oct; 7 days' notice → due on 19 Oct
     assert admin.post(f'{API}/admin/alertas/despachar').json()['mensaje'].startswith('1 ')
     aviso = _ultimo_correo(admin, 'aviso')
-    assert 'entre el 24 oct 2026 y el 31 oct 2026' in aviso['asunto']
-    assert 'Confianza media' in aviso['cuerpo'] and 'Darme de baja' in aviso['cuerpo']
+    assert 'entre el 26 oct 2026 y el 8 nov 2026' in aviso['asunto']
+    assert 'Confianza baja' in aviso['cuerpo'] and 'Darme de baja' in aviso['cuerpo']
     # sent once per season only
     assert admin.post(f'{API}/admin/alertas/despachar').json()['mensaje'].startswith('0 ')
     assert 'baja' in client.post(f'{API}/alertas/baja', params={'token': token}).text

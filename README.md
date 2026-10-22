@@ -15,7 +15,7 @@ Esto es lo que falta para entregar, qué pide el jurado en cada documento y toda
 |---|---|---|
 | 1 | Presentación (PPT o PDF), la misma del pitch | Sin empezar |
 | 2 | Business Model Canvas (PDF) | **Hecho:** [entregables/business-model-canvas.pdf](entregables/business-model-canvas.pdf) |
-| 3 | Memoria breve de viabilidad | Sin empezar. Todo el contenido está en la sección 4 |
+| 3 | Memoria breve de viabilidad | **Hecho:** [entregables/memoria-viabilidad.pdf](entregables/memoria-viabilidad.pdf) |
 | 4 | Arquitectura y diagramas C4 | **Hecho:** [entregables/arquitectura-c4.pdf](entregables/arquitectura-c4.pdf) (diagramas sueltos en `entregables/diagramas/`) |
 | 5 | Prototipo y código | Hecho (web en vivo). Falta el zip del código |
 | 6 | README breve (1 página) | Sin empezar. Guion en la sección 6 |

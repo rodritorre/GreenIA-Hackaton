@@ -668,7 +668,7 @@ export const en: Dict = {
     web: "Website",
     directions: "Directions",
     seeMap: "See on the map",
-    disclaimer: "Places checked in {fecha}. Opening hours and prices change: please confirm with each place before you go. We don’t take bookings or commission.",
+    disclaimer: "Places checked in {fecha}. Opening hours and prices change: please confirm with each place before you go. Requesting a booking here costs you nothing: if it is confirmed, the place pays us an 8 to 10% commission.",
     sources: "Sources:",
   },
   contact: {

@@ -666,7 +666,7 @@ export const es = {
     web: "Web",
     directions: "Cómo llegar",
     seeMap: "Ver en el mapa",
-    disclaimer: "Sitios comprobados en {fecha}. Horarios y precios cambian: confirma con cada local antes de ir. No gestionamos reservas ni cobramos comisión.",
+    disclaimer: "Sitios comprobados en {fecha}. Horarios y precios cambian: confirma con cada local antes de ir. Solicitar la reserva desde aquí no te cuesta nada: si se confirma, el alojamiento nos paga una comisión del 8 al 10 %.",
     sources: "Fuentes:",
   },
   contact: {

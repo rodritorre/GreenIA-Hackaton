@@ -6,7 +6,7 @@ import { enviarFormulario, type Formulario } from '../email';
 import { ApiError, type Api, type DestinoConfig, type DestinoResumen, type EmailOut, type Oferta, type SolicitudNegocio, type Usuario } from '../types';
 import { FOTOS, FUENTES, LOG_INGESTA, OFERTAS, SUSCRIPCIONES } from './comercial';
 import { HOY, ULTIMA_ACTUALIZACION } from './config';
-import { correo } from './correos';
+import { correo, type Clave } from './correos';
 import { DESTINOS, fuentesDe } from './destinos';
 import { estadoEn } from './fenologia';
 import type { Destino } from './tipos';
@@ -127,11 +127,11 @@ export const mockApi: Api = {
       },
       confirmacion: {
         asunto: correo('alertSubject', body.idioma, { destino: d.nombre }),
-        mensaje: correo('alertBody', body.idioma, { destino: d.nombre, fase: body.fase, n: body.antelacionDias ?? 7 }),
+        mensaje: correo('alertBody', body.idioma, { destino: d.nombre, fase: correo(`fase_${body.fase}` as Clave, body.idioma), n: body.antelacionDias ?? 7 }),
       },
     }, body.idioma);
     sumarAlerta(body.destinoId, body.provincia);
-    return wait({ ok: true, mensaje: 'Revisa tu correo para confirmar el aviso.' }, 400);
+    return wait({ ok: true, mensaje: 'Aviso creado. Te hemos enviado un correo de confirmación.' }, 400);
   },
   subirFoto: async ({ foto, destinoId, fase, lat, lon }) => {
     const d = destino(destinoId);

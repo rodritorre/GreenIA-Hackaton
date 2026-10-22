@@ -4,6 +4,11 @@ const T = {
   es: {
     alertSubject: 'Tu aviso para {destino}',
     alertBody: 'Hemos registrado tu aviso: te escribiremos {n} días antes de que se prevea {fase} en {destino}. Para darte de baja, responde a este correo.',
+    // Phase names that read well for any species (flowers or autumn colour).
+    fase_inicio: 'el inicio',
+    fase_avance: 'el avance',
+    fase_pleno: 'el momento álgido',
+    fase_final: 'el final de temporada',
     bizSubject: 'Hemos recibido tu alta de negocio',
     bizBody: 'Hemos recibido la solicitud de {nombre}. La revisaremos con el pueblo y te escribiremos con la respuesta.',
     photoSubject: 'Hemos recibido tu observación',
@@ -15,6 +20,10 @@ const T = {
   en: {
     alertSubject: 'Your alert for {destino}',
     alertBody: "We've registered your alert: we'll email you {n} days before {fase} is forecast in {destino}. To unsubscribe, reply to this email.",
+    fase_inicio: 'the start',
+    fase_avance: 'the build-up',
+    fase_pleno: 'the peak',
+    fase_final: 'the end of the season',
     bizSubject: "We've received your business sign-up",
     bizBody: "We've received the request for {nombre}. We'll review it with the town and email you the answer.",
     photoSubject: "We've received your observation",
@@ -25,7 +34,9 @@ const T = {
   },
 };
 
-export function correo(clave: keyof (typeof T)['es'], idioma: string | undefined, vars: Record<string, string | number> = {}) {
+export type Clave = keyof (typeof T)['es'];
+
+export function correo(clave: Clave, idioma: string | undefined, vars: Record<string, string | number> = {}) {
   const lang: Idioma = idioma === 'en' ? 'en' : 'es';
   return T[lang][clave].replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
 }

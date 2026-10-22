@@ -44,7 +44,7 @@ export async function enviarFormulario({ tipo, asunto, campos, email, nombre, co
   });
   if (email && confirmacion && config.emailjs.templates.usuario) {
     await enviarPlantilla(config.emailjs.templates.usuario, {
-      ...comun, to_email: email, to_name: nombre ?? '', asunto: confirmacion.asunto, mensaje: confirmacion.mensaje, resumen: resumen(campos),
+      ...comun, to_email: email, to_name: nombre ? ` ${nombre}` : '', asunto: confirmacion.asunto, mensaje: confirmacion.mensaje, resumen: resumen(campos),
     });
   }
 }

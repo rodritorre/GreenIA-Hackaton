@@ -48,7 +48,7 @@ for (const [id, historia] of Object.entries(demo.historia)) {
 async function enviar(f: Formulario, idioma?: string) {
   if (!emailConfigurado()) return;
   try {
-    await enviarFormulario(f);
+    await enviarFormulario({ ...f, idioma });
   } catch (e) {
     console.error(e);
     throw new ApiError(502, correo('error', idioma));

@@ -4,6 +4,7 @@
 //   usuario: confirmation for the sender (only when they left an email)
 // The demo has no backend, so the browser sends; in production the API does it (backend correo.py).
 import { config, emailConfigurado } from '../config';
+import { htmlGenerico } from './correoHtml';
 
 const API = 'https://api.emailjs.com/api/v1.0/email/send';
 
@@ -33,10 +34,12 @@ export interface Formulario {
   /** Sender's email: reply-to for the team and recipient of the confirmation. */
   email?: string;
   nombre?: string;
-  confirmacion?: { asunto: string; mensaje: string };
+  /** `html` replaces the plain layout (the booking sends its own). */
+  confirmacion?: { asunto: string; mensaje: string; html?: string };
+  idioma?: string;
 }
 
-export async function enviarFormulario({ tipo, asunto, campos, email, nombre, confirmacion }: Formulario) {
+export async function enviarFormulario({ tipo, asunto, campos, email, nombre, confirmacion, idioma }: Formulario) {
   if (!emailConfigurado()) throw new Error('email-no-configurado');
   const comun = { tipo, sitio: config.siteUrl, fecha: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }) };
   await enviarPlantilla(config.emailjs.templates.equipo, {
@@ -45,6 +48,7 @@ export async function enviarFormulario({ tipo, asunto, campos, email, nombre, co
   if (email && confirmacion && config.emailjs.templates.usuario) {
     await enviarPlantilla(config.emailjs.templates.usuario, {
       ...comun, to_email: email, to_name: nombre ? ` ${nombre}` : '', asunto: confirmacion.asunto, mensaje: confirmacion.mensaje, resumen: resumen(campos),
+      html: confirmacion.html ?? htmlGenerico({ nombre, mensaje: confirmacion.mensaje, resumen: resumen(campos), sitio: config.siteUrl, idioma }),
     });
   }
 }

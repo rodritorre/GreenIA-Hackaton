@@ -373,6 +373,15 @@ function Ficha({ m, grupo, lang, t, onClose, onMap }) {
         ],
         total: q.total,
         noIncluye: L(m.noIncluye, lang),
+        // Para la confirmación (página y correo): fase prevista, plato y plan día a día del pack.
+        nNoches: grupo.noches,
+        fase: t(`fase.${d.tipo}.${m.fase}`),
+        plato: pack ? L(pack.plato, lang) : "",
+        dias: pack
+          ? pack.dias.map((dia) =>
+              dia.map((s) => ({ momento: L(s.momento, lang), tipo: s.tipo, nombre: L(s.nombre, lang), lugar: L(s.lugar, lang), nota: L(s.nota, lang), tel: s.tel })),
+            )
+          : [],
       };
       window.open(`reserva.html#${encodeURIComponent(JSON.stringify(pedido))}`, "_blank", "noopener");
     };

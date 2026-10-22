@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Solicitar reserva · Cuándo Florece</title>
+<title>Reservar · Cuándo Florece</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
@@ -103,6 +103,9 @@
   .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
   .btn--p { background: var(--accent); color: #fff; }
   .btn--g { background: var(--surface); color: var(--ink); border-color: var(--border-input); }
+  .ok { max-width: 640px; margin: 0 auto; padding: 24px 0 56px; }
+  .ok__sent { text-align: center; color: var(--ink-2); font-size: 14px; padding: 0 16px; }
+  .ok .btns { margin-top: 8px; }
   .hidden { display: none !important; }
   @media (max-width: 860px) {
     .wrap { grid-template-columns: 1fr; }
@@ -120,14 +123,14 @@
 <body>
   <header class="top">
     <a class="brand" href="./" style="color:inherit;text-decoration:none"><span aria-hidden="true">🌸</span> Cuándo Florece</a>
-    <div class="secure"><span data-t="noCharge">Sin pago: solo solicitud</span></div>
+    <div class="secure"><span data-t="noCharge">Reserva de demostración: sin cobro</span></div>
   </header>
 
   <!-- Paso 1: solicitud -->
   <main id="paso-form" class="wrap">
     <div>
-      <h1 data-t="h1">Solicita tu escapada</h1>
-      <p class="lead" data-t="lead">No se cobra nada. Te escribimos para confirmar disponibilidad y precio final con el alojamiento.</p>
+      <h1 data-t="h1">Reserva tu escapada</h1>
+      <p class="lead" data-t="lead">Es una reserva de demostración del prototipo: no se cobra nada. Recibirás la confirmación y tu plan por correo.</p>
 
       <form id="form">
         <section class="card">
@@ -141,7 +144,7 @@
           </div>
         </section>
         <label class="check"><input type="checkbox" required> <span><span data-t="terms">Acepto que se usen mis datos para gestionar esta solicitud.</span> <a href="privacidad.html" target="_blank" rel="noopener" data-t="privacy">Política de privacidad</a></span></label>
-        <button id="send" class="pay" type="submit" data-t="send">Enviar solicitud</button>
+        <button id="send" class="pay" type="submit" data-t="send">Confirmar reserva</button>
         <p id="err" class="err hidden" role="alert"></p>
       </form>
     </div>
@@ -171,10 +174,9 @@
   </main>
 
   <!-- Paso 2: enviada -->
-  <main id="paso-ok" class="done hidden" aria-live="polite">
-    <div class="done__icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-    <h1 data-t="okTitle">Solicitud enviada</h1>
-    <p class="lead" id="ok-text"></p>
+  <main id="paso-ok" class="ok hidden" aria-live="polite">
+    <p class="ok__sent" id="ok-sent"></p>
+    <div id="ok-mail"></div>
     <div class="btns"><a class="btn btn--g" href="./" data-t="back">Volver a Cuándo Florece</a></div>
   </main>
 

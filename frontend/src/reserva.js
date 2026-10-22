@@ -1,19 +1,20 @@
 // Página de solicitud de reserva (reserva.html). Sin pago: se envía por EmailJS.
 // Sin claves de EmailJS la solicitud se simula, para que la demo nunca falle.
-import { emailConfigurado } from "./config";
+import { config, emailConfigurado } from "./config";
 import { enviarFormulario } from "./api/email";
+import { htmlReserva, referenciaReserva } from "./api/correoHtml";
 
 const T = {
   es: {},
   en: {
-    noCharge: "No payment: request only", h1: "Request your getaway",
-    lead: "Nothing is charged. We'll email you to confirm availability and the final price with the place to stay.",
+    noCharge: "Demo booking: nothing charged", h1: "Book your getaway",
+    lead: "This is a demo booking in the prototype: nothing is charged. You will get the confirmation and your plan by email.",
     who: "Your details", name: "Full name", email: "Email", phone: "Phone (optional)", checkin: "Arrival date",
     notes: "Comments (optional)", terms: "I agree to my data being used to handle this request.", privacy: "Privacy policy",
-    send: "Send request", stay: "Stay", guests: "Guests", total: "Estimate",
+    send: "Confirm booking", stay: "Stay", guests: "Guests", total: "Estimate",
     estimate: "Indicative price from published rates. The place to stay confirms the final price.",
     emptyTitle: "Choose your getaway first", emptyText: "Open a pack on the website and press “Request booking”.", toPacks: "See the packs",
-    okTitle: "Request sent", back: "Back to Cuándo Florece",
+    back: "Back to Cuándo Florece",
   },
 };
 let p = null;
@@ -25,7 +26,7 @@ const $ = (id) => document.getElementById(id);
 
 document.documentElement.lang = lang;
 document.querySelectorAll("[data-t]").forEach((el) => { const v = T[lang][el.dataset.t]; if (v) el.textContent = v; });
-document.title = tx("Solicitar reserva", "Request booking") + " · Cuándo Florece";
+document.title = tx("Reservar", "Book") + " · Cuándo Florece";
 
 if (!p || !p.destino) {
   $("paso-form").classList.add("hidden");
@@ -56,30 +57,34 @@ $("form").addEventListener("submit", async (e) => {
   btn.disabled = true;
   btn.textContent = tx("Enviando…", "Sending…");
   const nombre = f.nombre.value.trim(), email = f.email.value.trim();
+  const referencia = referenciaReserva();
+  const html = htmlReserva({
+    idioma: lang, sitio: config.siteUrl || location.origin, referencia, nombre,
+    destino: p.destino, provincia: p.provincia, titulo: p.titulo, entrada: f.entrada.value, noches: p.nNoches || 1,
+    alojamiento: p.alojamiento, lugar: p.lugar, habitacion: p.habitacion, grupo: p.grupo,
+    fase: p.fase, plato: p.plato, dias: p.dias, lineas: p.lineas, total: p.total, noIncluye: p.noIncluye,
+  });
   try {
     if (emailConfigurado()) await enviarFormulario({
       tipo: "reserva",
-      asunto: `Solicitud de reserva: ${p.titulo} · ${p.destino}`,
-      email, nombre,
+      asunto: `Reserva ${referencia}: ${p.titulo} · ${p.destino}`,
+      email, nombre, idioma: lang,
       campos: {
-        Nombre: nombre, Email: email, Teléfono: f.telefono.value.trim(), Llegada: f.entrada.value,
+        Referencia: referencia, Nombre: nombre, Email: email, Teléfono: f.telefono.value.trim(), Llegada: f.entrada.value,
         Destino: `${p.destino} (${p.provincia})`, Pack: `${p.mes} · ${p.titulo}`,
         Alojamiento: `${p.alojamiento} · ${p.habitacion} · ${p.lugar}`, Huéspedes: `${p.grupo} · ${p.noches}`,
         Desglose: p.lineas.map((l) => `${l.c}: ${eur(l.v)}`).join(" | "),
         "Estimación total": eur(p.total), "No incluye": p.noIncluye, Comentarios: f.comentarios.value.trim(),
       },
       confirmacion: {
-        asunto: tx(`Hemos recibido tu solicitud: ${p.titulo}`, `We've received your request: ${p.titulo}`),
-        mensaje: tx(
-          `Gracias, ${nombre}. Hemos recibido tu solicitud para ${p.destino} (llegada ${f.entrada.value}). Te escribiremos para confirmar disponibilidad y precio final. No se ha cobrado nada.`,
-          `Thanks, ${nombre}. We've received your request for ${p.destino} (arrival ${f.entrada.value}). We'll email you to confirm availability and the final price. Nothing has been charged.`,
-        ),
+        asunto: tx(`🌸 Confirmada: tu escapada a ${p.destino} · Ref. ${referencia}`, `🌸 Confirmed: your getaway to ${p.destino} · Ref. ${referencia}`),
+        mensaje: tx(`Reserva ${referencia} confirmada.`, `Booking ${referencia} confirmed.`),
+        html,
       },
     });
-    $("ok-text").textContent = tx(
-      `${p.titulo} · ${p.destino}. Te escribiremos a ${email} para confirmar disponibilidad y precio. No se ha cobrado nada.`,
-      `${p.titulo} · ${p.destino}. We'll email ${email} to confirm availability and price. Nothing has been charged.`,
-    );
+    // The page shows the same confirmation as the email (all values are escaped in htmlReserva).
+    $("ok-mail").innerHTML = html;
+    $("ok-sent").textContent = tx(`Te hemos enviado esta confirmación a ${email}.`, `We have sent this confirmation to ${email}.`);
     $("paso-form").classList.add("hidden");
     $("paso-ok").classList.remove("hidden");
     window.scrollTo(0, 0);
@@ -90,6 +95,6 @@ $("form").addEventListener("submit", async (e) => {
       : tx("No hemos podido enviar la solicitud. Revisa tu conexión e inténtalo de nuevo.", "We couldn't send your request. Check your connection and try again.");
     err.classList.remove("hidden");
     btn.disabled = false;
-    btn.textContent = tx("Enviar solicitud", "Send request");
+    btn.textContent = tx("Confirmar reserva", "Confirm booking");
   }
 });

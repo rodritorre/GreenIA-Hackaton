@@ -7,18 +7,13 @@
     To Email:  {{to_email}}
     From Name: Cuándo Florece
     Reply To:  el correo del equipo (fijo), para que las respuestas (y las bajas) lleguen al equipo
+    Content:   Edit Content → modo código → pegar solo la línea de abajo.
 
-  Variables que envía la web (js/email.js):
-    to_email, to_name (" Nombre" con espacio delante, o vacío), asunto, mensaje, resumen (copia de lo enviado), fecha, sitio
+  La web construye el correo entero (frontend/src/api/correoHtml.ts) y lo manda en la variable
+  html; las tres llaves hacen que EmailJS la pegue como HTML sin escaparla. Los avisos, fotos,
+  altas y contactos usan un diseño sencillo; las reservas de un pack, el diseño de
+  aporte-marco/confirmacion-reserva.html (resumen, previsión, plan día a día, precio).
+
+  Variables que envía la web: html, to_email, to_name, asunto, mensaje, resumen, fecha, sitio.
 -->
-<div style="font-family: Arial, Helvetica, sans-serif; color: #2b1f1a; max-width: 600px;">
-  <p style="margin: 0 0 16px; font-size: 18px; font-weight: bold; color: #a5432c;">Cuándo Florece</p>
-  <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">Hola{{to_name}},</p>
-  <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5;">{{mensaje}}</p>
-  <p style="margin: 0 0 6px; font-size: 13px; color: #67574e;">Esto es lo que nos has enviado:</p>
-  <div style="white-space: pre-line; background: #fbf6ee; border: 1px solid #eadfcf; border-radius: 8px; padding: 14px 16px; font-size: 14px; line-height: 1.5;">{{resumen}}</div>
-  <p style="margin: 16px 0 0; font-size: 13px; color: #67574e;">
-    Si no has sido tú o quieres que borremos tus datos, responde a este correo.<br>
-    <a href="{{sitio}}" style="color: #a5432c;">{{sitio}}</a> · <a href="{{sitio}}/privacidad.html" style="color: #a5432c;">Privacidad</a>
-  </p>
-</div>
+{{{html}}}

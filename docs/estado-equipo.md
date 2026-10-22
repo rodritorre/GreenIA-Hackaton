@@ -1,3 +1,5 @@
+> **Documento histórico (21 de octubre).** El estado actual del proyecto está en el [README](../README.md).
+
 # Cuándo Florece · Reto Greenia (Hackathon EPS UFV, 20–22 oct 2026)
 
 Mapa vivo de la floración en España: adónde ir, cuándo y con qué confianza.

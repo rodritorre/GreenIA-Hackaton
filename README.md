@@ -10,7 +10,7 @@
 | --- | --- |
 | Presentación del pitch | `entregables/` *(pendiente)* |
 | Business Model Canvas | [entregables/business-model-canvas.pdf](entregables/business-model-canvas.pdf) |
-| Memoria de viabilidad | `entregables/` *(pendiente)* |
+| Memoria de viabilidad | [entregables/memoria-viabilidad.pdf](entregables/memoria-viabilidad.pdf) |
 | Arquitectura y diagramas C4 | `entregables/` *(pendiente)* |
 | Código | Este repositorio: `frontend/` (React + TypeScript), `backend/` (FastAPI + PostGIS), `origin/` (CSV de Greenia), `deploy/` (Docker y Caddy) |
 

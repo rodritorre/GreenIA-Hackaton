@@ -16,7 +16,7 @@ Esto es lo que falta para entregar, qué pide el jurado en cada documento y toda
 | 1 | Presentación (PPT o PDF), la misma del pitch | Sin empezar |
 | 2 | Business Model Canvas (PDF) | **Hecho:** [entregables/business-model-canvas.pdf](entregables/business-model-canvas.pdf) |
 | 3 | Memoria breve de viabilidad | Sin empezar. Todo el contenido está en la sección 4 |
-| 4 | Arquitectura y diagramas C4 | Sin empezar. Todo el contenido está en la sección 5 |
+| 4 | Arquitectura y diagramas C4 | **Hecho:** [entregables/arquitectura-c4.pdf](entregables/arquitectura-c4.pdf) (diagramas sueltos en `entregables/diagramas/`) |
 | 5 | Prototipo y código | Hecho (web en vivo). Falta el zip del código |
 | 6 | README breve (1 página) | Sin empezar. Guion en la sección 6 |
 | | Pitch en directo (4 min + 2 min de preguntas) | Sin ensayar |
@@ -255,7 +255,7 @@ C4Container
 | Base de datos | PostgreSQL 16 + PostGIS | Consultas geográficas (zonas, radio de 3 km para las fotos) |
 | Tareas | APScheduler | Ingesta diaria sin intervención humana: «el sistema tiene que funcionar solo», como pide el reto |
 | Previsión | Modelo v0: curva logística sobre el índice de color de la temporada; si no hay datos, fecha habitual ± desviación histórica | Pequeño, explicable y sustituible; siempre da un rango con confianza |
-| Correo | EmailJS (demo); proveedor SMTP intercambiable (producción) | Sin servidor para la demo; en producción, doble confirmación y baja en un clic (RFC 8058) |
+| Correo | EmailJS (demo); en el backend, interfaz con proveedor intercambiable | Sin servidor para la demo. Hoy el backend solo escribe los correos en un registro y una tabla de salida; conectar un proveedor SMTP real es añadir una clase. Doble confirmación y baja en un clic (RFC 8058) |
 | Servidor | Docker + Caddy en Hetzner (UE) | HTTPS automático, datos en la UE, un solo archivo describe todo el despliegue |
 
 ### 5.5 Flujo de datos (un párrafo)
@@ -272,6 +272,9 @@ Cada mañana a las 06:00 las tareas programadas descargan las temperaturas de AE
 - En la demo, los formularios pasan por EmailJS (empresa fuera de la UE) hasta el buzón del equipo. En producción el correo sale del propio backend.
 
 ### 5.7 Límites (decirlos)
+
+- Los endpoints del modelo de negocio (panel del pueblo, visibilidad y aforo, alta de negocio) solo existen en la API simulada del navegador; sus tipos ya están definidos en la web y son el siguiente trabajo del backend.
+- El correo del backend aún no usa un proveedor real: escribe en un registro (ver tabla de tecnologías).
 
 - En la demo la API funciona en el navegador; el backend real está probado pero no desplegado.
 - La moderación con IA es un diseño con casos preparados; no llama aún a ningún modelo.

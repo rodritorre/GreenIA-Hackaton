@@ -9,11 +9,11 @@
     Reply To:  el correo del equipo (fijo), para que las respuestas (y las bajas) lleguen al equipo
 
   Variables que envía la web (js/email.js):
-    to_email, to_name, asunto, mensaje, resumen (copia de lo enviado), fecha, sitio
+    to_email, to_name (" Nombre" con espacio delante, o vacío), asunto, mensaje, resumen (copia de lo enviado), fecha, sitio
 -->
 <div style="font-family: Arial, Helvetica, sans-serif; color: #2b1f1a; max-width: 600px;">
   <p style="margin: 0 0 16px; font-size: 18px; font-weight: bold; color: #a5432c;">Cuándo Florece</p>
-  <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">Hola {{to_name}},</p>
+  <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">Hola{{to_name}},</p>
   <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5;">{{mensaje}}</p>
   <p style="margin: 0 0 6px; font-size: 13px; color: #67574e;">Esto es lo que nos has enviado:</p>
   <div style="white-space: pre-line; background: #fbf6ee; border: 1px solid #eadfcf; border-radius: 8px; padding: 14px 16px; font-size: 14px; line-height: 1.5;">{{resumen}}</div>

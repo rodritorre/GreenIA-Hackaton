@@ -11,17 +11,15 @@ Esto es lo que falta para entregar, qué pide el jurado en cada documento y toda
 
 ## 1. Los 6 entregables
 
-| # | Entregable | Estado | Responsable |
-|---|---|---|---|
-| 1 | Presentación (PPT o PDF), la misma del pitch | Sin empezar | |
-| 2 | Business Model Canvas (PDF) | **Hecho:** [entregables/business-model-canvas.pdf](entregables/business-model-canvas.pdf) | Luka |
-| 3 | Memoria breve de viabilidad | Sin empezar. Todo el contenido está en la sección 4 | |
-| 4 | Arquitectura y diagramas C4 | Sin empezar. Todo el contenido está en la sección 5 | |
-| 5 | Prototipo y código | Hecho (web en vivo). Falta el zip del código | Luka |
-| 6 | README breve (1 página) | Sin empezar. Guion en la sección 6 | |
-| | Pitch en directo (4 min + 2 min de preguntas) | Sin ensayar | Todos |
-
-Poned vuestro nombre en «Responsable» y avisad por el grupo.
+| # | Entregable | Estado |
+|---|---|---|
+| 1 | Presentación (PPT o PDF), la misma del pitch | Sin empezar |
+| 2 | Business Model Canvas (PDF) | **Hecho:** [entregables/business-model-canvas.pdf](entregables/business-model-canvas.pdf) |
+| 3 | Memoria breve de viabilidad | Sin empezar. Todo el contenido está en la sección 4 |
+| 4 | Arquitectura y diagramas C4 | Sin empezar. Todo el contenido está en la sección 5 |
+| 5 | Prototipo y código | Hecho (web en vivo). Falta el zip del código |
+| 6 | README breve (1 página) | Sin empezar. Guion en la sección 6 |
+| | Pitch en directo (4 min + 2 min de preguntas) | Sin ensayar |
 
 ## 2. Cómo puntúa el jurado
 
